@@ -178,7 +178,7 @@ Navio is built using:
 
 ## Project Structure
 
-A simplified structure may look like this:
+A simplified version of the structure looks like this:
 
 ```txt
 navio/
@@ -266,7 +266,7 @@ or use a local development server.
 
 ## License
 
-This project is currently private/prototype-stage. Licensing details can be added later.
+This project is currently private/prototype-stage.
 
 ---
 
