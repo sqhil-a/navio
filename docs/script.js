@@ -121,7 +121,9 @@ if (!prefersReducedMotion) {
   );
 
   document
-    .querySelectorAll(".feature, .score-panel, .download, .contact, .section-head")
+    .querySelectorAll(
+      ".feature, .founder-card, .program-list article, .app-showcase, .score-panel, .contact, .contact-card-grid article, .section-head",
+    )
     .forEach((el) => {
       el.classList.add("reveal");
       observer.observe(el);
