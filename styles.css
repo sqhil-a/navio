@@ -713,6 +713,22 @@ footer {
   transform: translateX(4px);
 }
 
+.founder-link {
+  color: var(--text);
+  font-weight: 860;
+  text-decoration: underline;
+  text-decoration-color: rgba(138, 124, 255, 0.5);
+  text-underline-offset: 0.18em;
+  transition:
+    color 280ms var(--ease-out),
+    text-decoration-color 280ms var(--ease-out);
+}
+
+.founder-link:hover {
+  color: var(--accent-bright);
+  text-decoration-color: rgba(168, 156, 255, 0.9);
+}
+
 .score-panel {
   padding: 30px;
   box-shadow:
