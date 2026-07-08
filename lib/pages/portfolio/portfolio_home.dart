@@ -1,25 +1,31 @@
 import 'dart:convert';
 import 'dart:math' as math;
-
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:navio/app_storage.dart';
 import 'package:navio/pages/portfolio/plan_service.dart';
 import 'package:navio/services/field_to_job_title.dart';
 import 'package:navio/services/groq_service.dart';
+import 'package:navio/services/pdf_file_picker.dart';
+import 'package:navio/services/pdf_saver.dart';
+import 'package:navio/services/resume_grading_service.dart';
 import 'package:navio/widgets/auto_scale_text.dart';
 import 'package:navio/widgets/buttons/label_button.dart';
 import 'package:navio/widgets/custom_text_field.dart';
 import 'package:navio/widgets/line_seperator.dart';
 import 'package:navio/widgets/navio_theme.dart';
+import 'package:navio/widgets/navio_notification.dart';
 import 'package:navio/widgets/notifiers.dart';
 import 'package:navio/widgets/spacing.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-
+import 'package:lottie/lottie.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart' as sf_pdf;
+import 'package:url_launcher/url_launcher.dart';
 part 'portfolio_models.dart';
 part 'portfolio_resume_widgets.dart';
 part 'portfolio_skill_widgets.dart';
@@ -27,16 +33,38 @@ part 'portfolio_dashboard_widgets.dart';
 part 'portfolio_info_widgets.dart';
 part 'portfolio_todo_widgets.dart';
 
+const List<String> _stageOptions = [
+  "Middle school",
+  "High school",
+  "College",
+  "University",
+  "Gap year",
+  "Working",
+  "Exploring careers",
+];
 const _todoCacheKey = "portfolioTodos";
+const _taskButtonCooldownUntilKey = "portfolioTaskButtonCooldownUntil";
 const _todoCareerKey = "portfolioTodosCareer";
 const _skillsCacheKey = "portfolioSkills";
 const _skillsCareerKey = "portfolioSkillsCareer";
 const _resumeCacheKey = "portfolioResume";
+const _uploadedResumeCacheKey = "portfolioUploadedResume";
+const _resumeGradesCacheKey = "portfolioResumeGrades";
+const _resumeGradeHistoryLimit = 10;
+const _resumeGradeMinTextLength = 250;
+const _resumeGradeMaxTextLength = 12000;
+const _resumePdfMaxBytes = 6 * 1024 * 1024;
 const _todoKindNormal = "normal";
 const _todoKindResources = "resources";
 const _todoKindSkills = "skills";
+const _todoKindResume = "resume";
+const _instagramUrl =
+    "https://www.instagram.com/naviopathways/?utm_source=ig_web_button_share_sheet";
+const _websiteUrl = "https://naviopathways.com";
+const _contactEmailUrl =
+    "mailto:hello@naviopathways.com?subject=Navio%20Support";
 
-enum _PortfolioSection { home, info, skills, todo, resume, reset }
+enum _PortfolioSection { home, info, skills, todo, resume, options }
 
 class PortfolioHome extends StatefulWidget {
   final VoidCallback onOpenPlan;
@@ -67,21 +95,38 @@ class _PortfolioHomeState extends State<PortfolioHome> {
   final _resumeLanguagesController = TextEditingController();
   final _resumeReferencesController = TextEditingController();
   final _planService = PlanService();
+  final _resumeGradingService = ResumeGradingService();
+  final GlobalKey<AnimatedListState> _todoListKey =
+      GlobalKey<AnimatedListState>();
   final List<_TodoItem> _todos = [];
   final List<_SkillItem> _skills = [];
   final List<_ResumeEntry> _resumeExperiences = [];
   final List<_ResumeEntry> _resumeAchievements = [];
+  final List<ResumeGradeHistoryItem> _resumeGradeHistory = [];
 
   bool isLoading = false;
   bool _hasTodoText = false;
   bool _isSeedingTodos = false;
   bool _isGeneratingTasks = false;
+  bool _isResetting = false;
   bool _hasSkillAssessment = false;
+  // ignore: unused_field
   bool _showResumePreview = false;
+  bool _isPickingResumePdf = false;
+  bool _isGradingResume = false;
   int _skillAssessmentIndex = 0;
   int _careerChangeSerial = 0;
   int _taskGenerationRun = 0;
   _PortfolioSection _section = _PortfolioSection.home;
+  int _resumePdfPickRun = 0;
+  int _resumeGradeRun = 0;
+  String _uploadedResumeFileName = "";
+  String _uploadedResumeText = "";
+  String _uploadedResumePreview = "";
+  int? _uploadedResumePageCount;
+  ResumeGradeReport? _latestResumeGradeReport;
+  bool _hideGenerateTasksButton = false;
+  Timer? _generateTasksHideTimer;
 
   @override
   void initState() {
@@ -97,11 +142,14 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     _loadTodos();
     _loadSkills();
     _loadResume();
+    _loadUploadedResume();
     _convertCareer();
+    _restoreGenerateTasksButtonCooldown();
   }
 
   @override
   void dispose() {
+    _generateTasksHideTimer?.cancel();
     careerNotifier.removeListener(_onCareerChanged);
     portfolioTabTapNotifier.removeListener(_onPortfolioTabTapped);
     roadmapResourceOpenedNotifier.removeListener(_onRoadmapResourceOpened);
@@ -127,6 +175,27 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     super.dispose();
   }
 
+  @override
+  void reassemble() {
+    super.reassemble();
+    _resetResumeUploadActivity(includeGrading: true);
+  }
+
+  void _resetResumeUploadActivity({bool includeGrading = false}) {
+    if (!_isPickingResumePdf && (!includeGrading || !_isGradingResume)) return;
+    _resumePdfPickRun++;
+    if (includeGrading) _resumeGradeRun++;
+    if (mounted) {
+      setState(() {
+        _isPickingResumePdf = false;
+        if (includeGrading) _isGradingResume = false;
+      });
+    } else {
+      _isPickingResumePdf = false;
+      if (includeGrading) _isGradingResume = false;
+    }
+  }
+
   void _onCareerChanged() {
     _taskGenerationRun++;
     careerTitleNotifier.value = "";
@@ -145,6 +214,8 @@ class _PortfolioHomeState extends State<PortfolioHome> {
   }
 
   void _onPortfolioTabTapped() {
+    _restoreGenerateTasksButtonCooldown();
+
     if (_section == _PortfolioSection.home) return;
     setState(() => _section = _PortfolioSection.home);
   }
@@ -156,17 +227,37 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     }
   }
 
-  void _syncInfoControllers() {
-    if (_section != _PortfolioSection.info) return;
-    _infoNameController.text = usernameNotifier.value;
-    _infoStageController.text = stageNotifier.value;
-    _infoCareerController.text = careerNotifier.value;
-    _infoStyleController.text = selectedStyleNotifier.value ?? "";
+  void _showInfoOptionPicker({
+    required String title,
+    required List<String> options,
+    required String selectedValue,
+    required void Function(String value) onSelected,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return _InfoOptionSheet(
+          title: title,
+          options: options,
+          selectedValue: selectedValue,
+          onSelected: onSelected,
+        );
+      },
+    );
   }
 
-  Future<void> _saveInfoField(String key, String value) async {
+  Future<void> _saveInfoField(
+    String key,
+    String value, {
+    bool haptic = true,
+    bool refreshUi = true,
+  }) async {
     final clean = value.trim();
-    HapticFeedback.selectionClick();
+    if (haptic) {
+      HapticFeedback.selectionClick();
+    }
 
     switch (key) {
       case "username":
@@ -186,7 +277,7 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     }
 
     await AppStorage.saveString(key, clean);
-    if (mounted) setState(() {});
+    if (refreshUi && mounted) setState(() {});
   }
 
   Future<void> _addInterest() async {
@@ -301,7 +392,7 @@ class _PortfolioHomeState extends State<PortfolioHome> {
   }
 
   Future<void> _completeSkillAssessment() async {
-    HapticFeedback.mediumImpact();
+    Haptics.vibrate(HapticsType.success);
     setState(() => _hasSkillAssessment = true);
     _completeSpecialTodo(_todoKindSkills);
     await _saveSkills();
@@ -337,6 +428,7 @@ class _PortfolioHomeState extends State<PortfolioHome> {
           ..clear()
           ..addAll(items);
       });
+      _ensureResumeTodo();
     }
 
     await _seedTodosForCareerIfNeeded(career, todoCareer);
@@ -390,6 +482,13 @@ class _PortfolioHomeState extends State<PortfolioHome> {
       _TodoItem(
         title: "Open Resources and save one useful link",
         kind: _todoKindResources,
+      ),
+    );
+    todos.add(
+      _TodoItem(
+        title: "Upload your resume",
+        kind: _todoKindResume,
+        isDone: _hasUploadedResume,
       ),
     );
     todos.add(
@@ -580,15 +679,18 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     final kind = _todoKindForTitle(migratedTitle, fallback: todo.kind);
     final title = switch (kind) {
       _todoKindResources => "Open Resources and save one useful link",
+      _todoKindResume => "Upload your resume",
       _todoKindSkills => "Complete your first Skills quiz",
       _ => _limitTodo(migratedTitle),
     };
 
     return _TodoItem(
       title: title,
-      isDone: kind == _todoKindSkills && _hasSkillAssessment
-          ? true
-          : todo.isDone,
+      isDone: switch (kind) {
+        _todoKindSkills => _hasSkillAssessment || todo.isDone,
+        _todoKindResume => _hasUploadedResume || todo.isDone,
+        _ => todo.isDone,
+      },
       kind: kind,
     );
   }
@@ -602,7 +704,45 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     if (lower.contains("skills quiz") || lower.contains("skill quiz")) {
       return _todoKindSkills;
     }
+    if (lower.contains("upload") && lower.contains("resume")) {
+      return _todoKindResume;
+    }
     return fallback;
+  }
+
+  bool get _hasUploadedResume => _uploadedResumeText.trim().isNotEmpty;
+
+  void _ensureResumeTodo({bool save = true}) {
+    if (!mounted) return;
+
+    final existingIndex = _todos.indexWhere(
+      (todo) => todo.kind == _todoKindResume,
+    );
+    final resumeTodo = _TodoItem(
+      title: "Upload your resume",
+      kind: _todoKindResume,
+      isDone: _hasUploadedResume,
+    );
+
+    if (existingIndex < 0) {
+      final insertIndex = _todos.indexWhere(
+        (todo) => todo.kind == _todoKindSkills,
+      );
+      _insertTodoAt(insertIndex < 0 ? 0 : insertIndex, resumeTodo);
+      if (save) _saveTodos();
+      return;
+    }
+
+    final existing = _todos[existingIndex];
+    if (existing.title == resumeTodo.title &&
+        existing.isDone == resumeTodo.isDone) {
+      return;
+    }
+
+    setState(() {
+      _todos[existingIndex] = resumeTodo;
+    });
+    if (save) _saveTodos();
   }
 
   String _shortTodoStepTitle(String value) {
@@ -650,6 +790,11 @@ class _PortfolioHomeState extends State<PortfolioHome> {
       _TodoItem(
         title: "Open Resources and save one useful link",
         kind: _todoKindResources,
+      ),
+      _TodoItem(
+        title: "Upload your resume",
+        kind: _todoKindResume,
+        isDone: _hasUploadedResume,
       ),
       _TodoItem(
         title: "Complete your first Skills quiz",
@@ -978,20 +1123,67 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     await AppStorage.saveString(_todoCareerKey, careerNotifier.value);
   }
 
+  Future<void> _restoreGenerateTasksButtonCooldown() async {
+    final raw = await AppStorage.loadString(_taskButtonCooldownUntilKey);
+
+    if (raw == null || raw.trim().isEmpty) {
+      if (mounted && _hideGenerateTasksButton) {
+        setState(() => _hideGenerateTasksButton = false);
+      }
+      return;
+    }
+
+    final cooldownUntilMs = int.tryParse(raw);
+    if (cooldownUntilMs == null) {
+      await AppStorage.saveString(_taskButtonCooldownUntilKey, "");
+      return;
+    }
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final remainingMs = cooldownUntilMs - nowMs;
+
+    if (remainingMs <= 0) {
+      await AppStorage.saveString(_taskButtonCooldownUntilKey, "");
+
+      _generateTasksHideTimer?.cancel();
+
+      if (mounted) {
+        setState(() => _hideGenerateTasksButton = false);
+      }
+
+      return;
+    }
+
+    _generateTasksHideTimer?.cancel();
+
+    if (mounted) {
+      setState(() => _hideGenerateTasksButton = true);
+    }
+
+    _generateTasksHideTimer = Timer(
+      Duration(milliseconds: remainingMs),
+      () async {
+        await AppStorage.saveString(_taskButtonCooldownUntilKey, "");
+
+        if (!mounted) return;
+
+        setState(() => _hideGenerateTasksButton = false);
+      },
+    );
+  }
+
   void _addTodo() {
     final text = _todoController.text.trim();
     if (text.isEmpty) return;
 
     HapticFeedback.lightImpact();
-    setState(() {
-      _todos.insert(0, _TodoItem(title: text));
-      _todoController.clear();
-    });
+    _insertTodoAt(0, _TodoItem(title: text));
+    _todoController.clear();
     _saveTodos();
   }
 
   Future<void> _generateMoreTasks() async {
-    if (_isGeneratingTasks) return;
+    if (_isGeneratingTasks || _hideGenerateTasksButton) return;
 
     final career = careerNotifier.value.trim();
     if (career.isEmpty) {
@@ -999,8 +1191,12 @@ class _PortfolioHomeState extends State<PortfolioHome> {
       return;
     }
 
+    HapticFeedback.lightImpact();
+
     final run = ++_taskGenerationRun;
+
     setState(() => _isGeneratingTasks = true);
+
     var generated = <_TodoItem>[];
 
     try {
@@ -1008,16 +1204,19 @@ class _PortfolioHomeState extends State<PortfolioHome> {
           .map((todo) => _todoDuplicateKey(todo.title))
           .where((key) => key.isNotEmpty)
           .toSet();
+
       var steps = <Map<String, String>>[];
 
       try {
         steps = await _planService.loadOrGenerate();
+
         if (!mounted || run != _taskGenerationRun) return;
 
         final aiTasks = await _planService.generateTasks(
           roadmapSteps: steps,
           existingTasks: _todos.map((todo) => todo.title).toList(),
         );
+
         if (!mounted || run != _taskGenerationRun) return;
 
         generated = _generatedTodosFromTitles(aiTasks, existingKeys);
@@ -1025,43 +1224,69 @@ class _PortfolioHomeState extends State<PortfolioHome> {
         generated = const [];
       }
 
-    if (generated.length < 3) {
-      if (steps.isEmpty) {
+      if (generated.length < 3) {
+        if (steps.isEmpty) {
+          try {
+            steps = await _planService.loadOrGenerate();
+          } catch (_) {
+            steps = const [];
+          }
+        }
+
         try {
-          steps = await _planService.loadOrGenerate();
+          generated = [
+            ...generated,
+            ..._fallbackGeneratedTodos(steps, existingKeys),
+          ].take(3).toList();
         } catch (_) {
-          steps = const [];
+          generated = const [];
         }
       }
-
-      try {
-        generated = [
-          ...generated,
-          ..._fallbackGeneratedTodos(steps, existingKeys),
-        ].take(3).toList();
-      } catch (e) {
-        // If all else fails, just leave the generated list empty
-        // without crashing the UI.
-      }
-    }
-
     } catch (_) {
       generated = const [];
-    }
+    } finally {
+      if (mounted && run == _taskGenerationRun) {
+        final didGenerateTasks = generated.isNotEmpty;
 
-    if (!mounted || run != _taskGenerationRun) return;
+        setState(() => _isGeneratingTasks = false);
 
-    setState(() {
-      if (generated.isNotEmpty) {
-        _todos.insertAll(0, generated);
+        if (didGenerateTasks) {
+          _insertTodosAtTop(generated);
+          Haptics.vibrate(HapticsType.success);
+          try {
+            await _saveTodos();
+          } catch (_) {}
+
+          final cooldownUntilMs = DateTime.now()
+              .add(const Duration(seconds: 5))
+              .millisecondsSinceEpoch;
+
+          await AppStorage.saveString(
+            _taskButtonCooldownUntilKey,
+            cooldownUntilMs.toString(),
+          );
+
+          _generateTasksHideTimer?.cancel();
+
+          if (mounted) {
+            setState(() {
+              _hideGenerateTasksButton = true;
+            });
+          }
+
+          _generateTasksHideTimer = Timer(const Duration(seconds: 5), () async {
+            await AppStorage.saveString(_taskButtonCooldownUntilKey, "");
+
+            if (!mounted) return;
+
+            setState(() {
+              _hideGenerateTasksButton = false;
+            });
+          });
+        } else {
+          Haptics.vibrate(HapticsType.error);
+        }
       }
-      _isGeneratingTasks = false;
-    });
-
-    if (generated.isNotEmpty) {
-      try {
-        await _saveTodos();
-      } catch (_) {}
     }
   }
 
@@ -1108,28 +1333,28 @@ class _PortfolioHomeState extends State<PortfolioHome> {
     return _generatedTodosFromTitles(candidates, existingKeys);
   }
 
-String? _prepareGeneratedTodoTitle(
-  String? value,
-  Set<String> existingKeys,
-) {
-  if (value == null) return null;
+  String? _prepareGeneratedTodoTitle(String? value, Set<String> existingKeys) {
+    if (value == null) return null;
 
-  final trimmed = value.trim();
-  if (trimmed.isEmpty) return null;
-  if (trimmed.length < 3) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.length < 3) return null;
 
-  final clean = _limitTodo(
-    trimmed.replaceFirst(RegExp(r'^Do this\s*:?\s*', caseSensitive: false), '')
-  );
+    final clean = _limitTodo(
+      trimmed.replaceFirst(
+        RegExp(r'^Do this\s*:?\s*', caseSensitive: false),
+        '',
+      ),
+    );
 
-  if (!_isUsableGeneratedTodo(clean)) return null;
+    if (!_isUsableGeneratedTodo(clean)) return null;
 
-  final key = _todoDuplicateKey(clean);
-  if (key.isEmpty || existingKeys.contains(key)) return null;
+    final key = _todoDuplicateKey(clean);
+    if (key.isEmpty || existingKeys.contains(key)) return null;
 
-  existingKeys.add(key);
-  return clean;
-}
+    existingKeys.add(key);
+    return clean;
+  }
 
   bool _isUsableGeneratedTodo(String value) {
     final clean = _compactText(value);
@@ -1176,6 +1401,12 @@ String? _prepareGeneratedTodoTitle(
       return;
     }
 
+    if (!todo.isDone && todo.kind == _todoKindResume) {
+      HapticFeedback.lightImpact();
+      setState(() => _section = _PortfolioSection.resume);
+      return;
+    }
+
     HapticFeedback.selectionClick();
     setState(() => _todos[index].isDone = !_todos[index].isDone);
     _saveTodos();
@@ -1195,8 +1426,58 @@ String? _prepareGeneratedTodoTitle(
 
   void _deleteTodo(int index) {
     HapticFeedback.lightImpact();
-    setState(() => _todos.removeAt(index));
+    _removeTodoAt(index);
     _saveTodos();
+  }
+
+  void _insertTodoAt(int index, _TodoItem todo, {bool animate = true}) {
+    if (!mounted) return;
+
+    setState(() {
+      _todos.insert(index, todo);
+    });
+
+    if (animate) {
+      _todoListKey.currentState?.insertItem(index, duration: NavioTheme.normal);
+    }
+  }
+
+  void _insertTodosAtTop(List<_TodoItem> todos, {bool animate = true}) {
+    if (!mounted || todos.isEmpty) return;
+
+    setState(() {
+      for (final todo in todos.reversed) {
+        _todos.insert(0, todo);
+      }
+    });
+
+    if (animate) {
+      for (var i = 0; i < todos.length; i++) {
+        _todoListKey.currentState?.insertItem(i, duration: NavioTheme.normal);
+      }
+    }
+  }
+
+  void _removeTodoAt(int index, {bool animate = true}) {
+    if (!mounted || index < 0 || index >= _todos.length) return;
+
+    final removedTodo = _todos[index];
+    setState(() {
+      _todos.removeAt(index);
+    });
+
+    if (animate) {
+      _todoListKey.currentState?.removeItem(
+        index,
+        (context, animation) => _buildAnimatedTodoTile(
+          todo: removedTodo,
+          animation: animation,
+          onToggle: () {},
+          onDelete: () {},
+        ),
+        duration: NavioTheme.normal,
+      );
+    }
   }
 
   Future<void> _convertCareer() async {
@@ -1291,8 +1572,8 @@ String? _prepareGeneratedTodoTitle(
         return _buildTodoScreen();
       case _PortfolioSection.resume:
         return _buildResumeScreen();
-      case _PortfolioSection.reset:
-        return _buildResetScreen();
+      case _PortfolioSection.options:
+        return _buildOptionsScreen();
       case _PortfolioSection.home:
         return _buildHomeScreen(career, displayTitle);
     }
@@ -1414,97 +1695,109 @@ String? _prepareGeneratedTodoTitle(
   }
 
   Widget _buildMenuButtons({bool compact = false}) {
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      final gap = constraints.maxHeight < 150 ? 5.0 : compact ? 8.0 : 10.0;
-      
-      // FIX: Ensure buttonHeight has a robust minimum threshold (e.g. clamp 50.0 instead of 38.0)
-      // to handle cases where layout height reports smaller values upon item removal.
-      final buttonHeight = ((constraints.maxHeight - gap * 2) / 3)
-          .clamp(50.0, compact ? 66.0 : 76.0) 
-          .toDouble();
-          
-      final showSubtitles = buttonHeight >= 58;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final gap = constraints.maxHeight < 150
+            ? 5.0
+            : compact
+            ? 8.0
+            : 10.0;
 
-      Widget button({
-        required IconData icon,
-        required String title,
-        required String subtitle,
-        required VoidCallback onTap,
-      }) {
-        return Expanded(
-          child: _PortfolioButton(
-            height: buttonHeight,
-            showSubtitle: showSubtitles,
-            compact: compact,
-            icon: icon,
-            title: title,
-            subtitle: subtitle,
-            onTap: onTap,
-          ),
+        // FIX: Ensure buttonHeight has a robust minimum threshold (e.g. clamp 50.0 instead of 38.0)
+        // to handle cases where layout height reports smaller values upon item removal.
+        final buttonHeight = ((constraints.maxHeight - gap * 2) / 3)
+            .clamp(50.0, compact ? 66.0 : 76.0)
+            .toDouble();
+
+        final showSubtitles = buttonHeight >= 58;
+
+        Widget button({
+          required IconData icon,
+          required String title,
+          required String subtitle,
+          required VoidCallback onTap,
+        }) {
+          return Expanded(
+            child: _PortfolioButton(
+              height: buttonHeight,
+              showSubtitle: showSubtitles,
+              compact: compact,
+              icon: icon,
+              title: title,
+              subtitle: subtitle,
+              onTap: onTap,
+            ),
+          );
+        }
+
+        return Column(
+          children: [
+            Row(
+              children: [
+                button(
+                  icon: Icons.route_rounded,
+                  title: "My Plan",
+                  subtitle: "Open roadmap",
+                  onTap: widget.onOpenPlan,
+                ),
+                const SizedBox(width: 10),
+                button(
+                  icon: Icons.badge_outlined,
+                  title: "My Info",
+                  subtitle: "View profile",
+                  onTap: () =>
+                      setState(() => _section = _PortfolioSection.info),
+                ),
+              ],
+            ),
+            SizedBox(height: gap),
+            Row(
+              children: [
+                button(
+                  icon: Icons.radar_rounded,
+                  title: "Skills",
+                  subtitle: _hasSkillAssessment
+                      ? "View skill map"
+                      : "Assess fit",
+                  onTap: () =>
+                      setState(() => _section = _PortfolioSection.skills),
+                ),
+                const SizedBox(width: 10),
+                button(
+                  icon: Icons.checklist_rounded,
+                  title: "Tasks",
+                  subtitle:
+                      "${_todos.where((todo) => !todo.isDone).length} left",
+                  onTap: () =>
+                      setState(() => _section = _PortfolioSection.todo),
+                ),
+              ],
+            ),
+            SizedBox(height: gap),
+            Row(
+              children: [
+                button(
+                  icon: Icons.description_outlined,
+                  title: "Resume",
+                  subtitle: _hasResumeContent() ? "View draft" : "Build draft",
+                  onTap: () =>
+                      setState(() => _section = _PortfolioSection.resume),
+                ),
+                const SizedBox(width: 10),
+                button(
+                  icon: Icons.settings_outlined,
+                  title: "Options",
+                  subtitle: "Links & reset",
+                  onTap: () =>
+                      setState(() => _section = _PortfolioSection.options),
+                ),
+              ],
+            ),
+          ],
         );
-      }
-
-      return Column(
-        children: [
-          Row(
-            children: [
-              button(
-                icon: Icons.route_rounded,
-                title: "My Plan",
-                subtitle: "Open roadmap",
-                onTap: widget.onOpenPlan,
-              ),
-              const SizedBox(width: 10),
-              button(
-                icon: Icons.badge_outlined,
-                title: "My Info",
-                subtitle: "View profile",
-                onTap: () => setState(() => _section = _PortfolioSection.info),
-              ),
-            ],
-          ),
-          SizedBox(height: gap),
-          Row(
-            children: [
-              button(
-                icon: Icons.radar_rounded,
-                title: "Skills",
-                subtitle: _hasSkillAssessment ? "View skill map" : "Assess fit",
-                onTap: () => setState(() => _section = _PortfolioSection.skills),
-              ),
-              const SizedBox(width: 10),
-              button(
-                icon: Icons.checklist_rounded,
-                title: "Tasks",
-                subtitle: "${_todos.where((todo) => !todo.isDone).length} left",
-                onTap: () => setState(() => _section = _PortfolioSection.todo),
-              ),
-            ],
-          ),
-          SizedBox(height: gap),
-          Row(
-            children: [
-              button(
-                icon: Icons.description_outlined,
-                title: "Resume",
-                subtitle: _hasResumeContent() ? "View draft" : "Build draft",
-                onTap: () => setState(() => _section = _PortfolioSection.resume),
-              ),
-              const SizedBox(width: 10),
-              button(
-                icon: Icons.refresh_rounded,
-                title: "Reset",
-                subtitle: "Start over",
-                onTap: () => setState(() => _section = _PortfolioSection.reset),
-              ),
-            ],
-          ),
-        ],
-      );
-    },
-  );
-}
+      },
+    );
+  }
 
   bool _hasResumeContent() {
     return [
@@ -1610,13 +1903,295 @@ String? _prepareGeneratedTodoTitle(
         .join("\n");
   }
 
-  Future<void> _saveResume({bool showPreview = true}) async {
+  Future<void> _saveResume({
+    bool showPreview = true,
+    bool haptic = true,
+  }) async {
     final draft = _resumeDraft();
     await AppStorage.saveString(_resumeCacheKey, jsonEncode(draft.toJson()));
-    HapticFeedback.lightImpact();
+    if (haptic) Haptics.vibrate(HapticsType.success);
     if (mounted) {
       setState(() => _showResumePreview = showPreview);
     }
+  }
+
+  // ignore: unused_element
+  Future<void> _loadResumeGradeHistory() async {
+    final raw = await AppStorage.loadString(_resumeGradesCacheKey);
+    if (raw == null || raw.trim().isEmpty) return;
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return;
+
+      final history = decoded
+          .whereType<Map>()
+          .map(ResumeGradeHistoryItem.fromJson)
+          .where((item) => item.id.trim().isNotEmpty)
+          .take(_resumeGradeHistoryLimit)
+          .toList();
+
+      if (!mounted) return;
+      setState(() {
+        _resumeGradeHistory
+          ..clear()
+          ..addAll(history);
+        if (_latestResumeGradeReport == null && history.isNotEmpty) {
+          _latestResumeGradeReport = history.first.report;
+        }
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _saveResumeGradeHistory() async {
+    final trimmed = _resumeGradeHistory.take(_resumeGradeHistoryLimit).toList();
+    await AppStorage.saveString(
+      _resumeGradesCacheKey,
+      jsonEncode(trimmed.map((item) => item.toJson()).toList()),
+    );
+  }
+
+  Future<void> _loadUploadedResume() async {
+    final raw = await AppStorage.loadString(_uploadedResumeCacheKey);
+    if (raw == null || raw.trim().isEmpty) return;
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return;
+      final upload = _UploadedResume.fromJson(decoded);
+      if (upload.text.trim().isEmpty) return;
+
+      if (!mounted) return;
+      setState(() {
+        _uploadedResumeFileName = upload.fileName;
+        _uploadedResumeText = upload.text;
+        _uploadedResumePreview = upload.textPreview.isNotEmpty
+            ? upload.textPreview
+            : _resumeGradeTextPreview(upload.text);
+        _uploadedResumePageCount = upload.pageCount;
+        _latestResumeGradeReport = upload.report;
+      });
+      _ensureResumeTodo();
+    } catch (_) {}
+  }
+
+  Future<void> _saveUploadedResume({ResumeGradeReport? report}) async {
+    if (_uploadedResumeText.trim().isEmpty) return;
+
+    final upload = _UploadedResume(
+      fileName: _uploadedResumeFileName,
+      text: _uploadedResumeText,
+      textPreview: _uploadedResumePreview,
+      pageCount: _uploadedResumePageCount,
+      uploadedAt: DateTime.now(),
+      report: report ?? _latestResumeGradeReport,
+    );
+
+    await AppStorage.saveString(
+      _uploadedResumeCacheKey,
+      jsonEncode(upload.toJson()),
+    );
+  }
+
+  Future<void> _pickResumePdf() async {
+    if (_isPickingResumePdf || _isGradingResume) return;
+
+    final runId = ++_resumePdfPickRun;
+    Timer? watchdog;
+    setState(() => _isPickingResumePdf = true);
+
+    try {
+      watchdog = Timer(const Duration(seconds: 45), () {
+        if (!mounted || runId != _resumePdfPickRun || !_isPickingResumePdf) {
+          return;
+        }
+
+        _resumePdfPickRun++;
+        setState(() => _isPickingResumePdf = false);
+        NavioNotification.show(
+          context,
+          "This PDF is taking too long to read. Try a smaller text-based PDF.",
+          duration: const Duration(seconds: 3),
+        );
+      });
+
+      final file = await pickPdfFileBytes().timeout(
+        const Duration(seconds: 120),
+        onTimeout: () {
+          throw const ResumeGradingException(
+            "The file picker did not finish. Please try again.",
+          );
+        },
+      );
+
+      if (!mounted || runId != _resumePdfPickRun) return;
+
+      if (file == null) {
+        return;
+      }
+
+      if (!file.name.toLowerCase().endsWith(".pdf")) {
+        throw const ResumeGradingException("Please choose a PDF resume.");
+      }
+
+      if (file.size > _resumePdfMaxBytes) {
+        throw const ResumeGradingException(
+          "This PDF is too large. Try a smaller text-based resume PDF.",
+        );
+      }
+
+      final extraction = await compute(_extractResumePdfText, file.bytes)
+          .timeout(
+            const Duration(seconds: 18),
+            onTimeout: () {
+              throw const ResumeGradingException(
+                "This PDF took too long to read. Try a simpler text-based PDF.",
+              );
+            },
+          );
+      final text = _normalizeResumeGradeText(extraction.text);
+
+      if (!mounted || runId != _resumePdfPickRun) return;
+
+      if (text.length < _resumeGradeMinTextLength) {
+        throw const ResumeGradingException(
+          "This PDF does not have enough readable text to grade.",
+        );
+      }
+
+      if (text.length > _resumeGradeMaxTextLength) {
+        throw const ResumeGradingException(
+          "This resume is too long to grade in one pass.",
+        );
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _uploadedResumeFileName = file.name;
+        _uploadedResumeText = text;
+        _uploadedResumePreview = _resumeGradeTextPreview(text);
+        _uploadedResumePageCount = extraction.pageCount;
+        _latestResumeGradeReport = null;
+        _isPickingResumePdf = false;
+      });
+      await _saveUploadedResume(report: null);
+      _ensureResumeTodo();
+      await _analyzeUploadedResume();
+    } on ResumeGradingException catch (error) {
+      if (mounted && runId == _resumePdfPickRun) {
+        setState(() => _isPickingResumePdf = false);
+        NavioNotification.show(context, error.message);
+        Haptics.vibrate(HapticsType.error);
+      }
+    } catch (_) {
+      if (mounted && runId == _resumePdfPickRun) {
+        setState(() => _isPickingResumePdf = false);
+        NavioNotification.show(context, "Could not read this PDF.");
+        Haptics.vibrate(HapticsType.error);
+      }
+    } finally {
+      watchdog?.cancel();
+      if (mounted && runId == _resumePdfPickRun && _isPickingResumePdf) {
+        setState(() => _isPickingResumePdf = false);
+      }
+    }
+  }
+
+  void _cancelResumePdfPick() {
+    if (!_isPickingResumePdf) return;
+    _resumePdfPickRun++;
+    setState(() => _isPickingResumePdf = false);
+  }
+
+  String _normalizeResumeGradeText(String value) {
+    return value
+        .replaceAll(RegExp(r'\r\n?'), '\n')
+        .replaceAll(RegExp(r'[ \t]+'), ' ')
+        .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+        .trim();
+  }
+
+  String _resumeGradeTextPreview(String value) {
+    final clean = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (clean.length <= 260) return clean;
+    return "${clean.substring(0, 257).trimRight()}...";
+  }
+
+  Future<void> _analyzeUploadedResume() async {
+    if (_uploadedResumeText.isEmpty || _isGradingResume) return;
+
+    final runId = ++_resumeGradeRun;
+    setState(() => _isGradingResume = true);
+
+    try {
+      final report = await _resumeGradingService
+          .grade(
+            ResumeGradeRequest(
+              resumeText: _uploadedResumeText,
+              fileName: _uploadedResumeFileName,
+            ),
+          )
+          .timeout(
+            const Duration(seconds: 95),
+            onTimeout: () {
+              throw const ResumeGradingException(
+                "Resume grading took too long. Please try again.",
+              );
+            },
+          );
+
+      final historyItem = ResumeGradeHistoryItem(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        fileName: _uploadedResumeFileName,
+        textPreview: _uploadedResumePreview,
+        pageCount: _uploadedResumePageCount,
+        createdAt: DateTime.now(),
+        report: report,
+      );
+
+      if (!mounted || runId != _resumeGradeRun) return;
+      setState(() {
+        _latestResumeGradeReport = report;
+        _resumeGradeHistory.insert(0, historyItem);
+        if (_resumeGradeHistory.length > _resumeGradeHistoryLimit) {
+          _resumeGradeHistory.removeRange(
+            _resumeGradeHistoryLimit,
+            _resumeGradeHistory.length,
+          );
+        }
+        _isGradingResume = false;
+      });
+      await _saveResumeGradeHistory();
+      await _saveUploadedResume(report: report);
+      Haptics.vibrate(HapticsType.success);
+    } on ResumeGradingException catch (error) {
+      if (mounted && runId == _resumeGradeRun) {
+        setState(() => _isGradingResume = false);
+        NavioNotification.show(context, error.message);
+        Haptics.vibrate(HapticsType.error);
+      }
+    } catch (_) {
+      if (mounted && runId == _resumeGradeRun) {
+        setState(() => _isGradingResume = false);
+        NavioNotification.show(context, "Could not grade this resume.");
+        Haptics.vibrate(HapticsType.error);
+      }
+    } finally {
+      if (mounted && runId == _resumeGradeRun && _isGradingResume) {
+        setState(() => _isGradingResume = false);
+      }
+    }
+  }
+
+  void _openResumeGradeHistory(ResumeGradeHistoryItem item) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _latestResumeGradeReport = item.report;
+      _uploadedResumeFileName = item.fileName;
+      _uploadedResumePreview = item.textPreview;
+      _uploadedResumePageCount = item.pageCount;
+      _uploadedResumeText = "";
+    });
   }
 
   void _addResumeEntry({required bool achievement}) {
@@ -1963,50 +2538,551 @@ String? _prepareGeneratedTodoTitle(
   }
 
   Future<void> _saveResumePdf() async {
-    await _saveResume(showPreview: true);
-    HapticFeedback.lightImpact();
+    await _saveResume(showPreview: true, haptic: false);
     final bytes = await _buildResumePdfBytes();
-    await Printing.layoutPdf(
-      name: "navio_resume.pdf",
-      onLayout: (_) async => bytes,
-    );
+    await savePdfBytes(bytes: bytes, filename: "navio_resume.pdf");
+    Haptics.vibrate(HapticsType.success);
   }
 
   Widget _buildResumeScreen() {
-    final draft = _resumeDraft();
-
     return _buildSubScreen(
       title: "Resume",
-      trailing: _hasResumeContent()
-          ? MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  setState(() => _showResumePreview = !_showResumePreview);
-                },
-                child: Text(
-                  _showResumePreview ? "Edit" : "Preview",
-                  style: TextStyle(
-                    fontFamily: "SF-Pro",
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: NavioTheme.textSecondary(alpha: 0.74),
-                  ),
-                ),
-              ),
-            )
-          : null,
-      child: AnimatedSwitcher(
-        duration: NavioTheme.normal,
-        transitionBuilder: _fadeTransition,
-        child: _showResumePreview && draft.hasContent
-            ? _buildResumePreview(draft)
-            : _buildResumeForm(),
+      child: _buildUploadedResumeWorkspace(),
+    );
+  }
+
+  Widget _buildUploadedResumeWorkspace() {
+    return SingleChildScrollView(
+      key: const ValueKey("uploaded-resume-workspace"),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 120),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _uploadedResumeText.isEmpty
+                ? "Upload your resume once. Navio will save it, grade it, and use it to personalize simulator advice."
+                : "This is the resume Navio is using for grading and simulator context.",
+            style: TextStyle(
+              fontFamily: "SF-Pro",
+              fontSize: 13,
+              color: NavioTheme.textSecondary(alpha: 0.64),
+              height: 1.45,
+            ),
+          ),
+          const Spacing(height: 16),
+          _buildResumeUploadCard(),
+          if (_isGradingResume) ...[
+            const Spacing(height: 18),
+            _buildResumeGradeLoading(),
+          ] else if (_latestResumeGradeReport != null) ...[
+            const Spacing(height: 18),
+            _buildResumeGradeReport(_latestResumeGradeReport!),
+          ],
+        ],
       ),
     );
   }
 
+  // ignore: unused_element
+  Widget _buildUploadedResumePreview() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: NavioTheme.surfaceDecoration(
+        radius: NavioTheme.radiusMedium,
+        border: false,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ResumeReportHeading("Resume preview"),
+          const SizedBox(height: 10),
+          Text(
+            _uploadedResumePreview,
+            maxLines: 8,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: "SF-Pro",
+              fontSize: 12.5,
+              color: NavioTheme.textSecondary(alpha: 0.68),
+              height: 1.42,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumeGradeLoading() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: NavioTheme.surfaceDecoration(
+        active: true,
+        radius: NavioTheme.radiusMedium,
+        border: false,
+      ),
+      child: Row(
+        children: [
+          Lottie.asset(
+            'assets/animations/loading.json',
+            width: 42,
+            height: 42,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Grading your saved resume...",
+              style: TextStyle(
+                fontFamily: "SF-Pro",
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: NavioTheme.textSecondary(alpha: 0.72),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumeUploadCard() {
+    final hasFile = _uploadedResumeFileName.trim().isNotEmpty;
+    final meta = [
+      if (_uploadedResumePageCount != null)
+        "$_uploadedResumePageCount page${_uploadedResumePageCount == 1 ? '' : 's'}",
+      if (_uploadedResumeText.isNotEmpty) "Saved for simulator",
+    ].join(" - ");
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: NavioTheme.surfaceDecoration(
+        radius: NavioTheme.radiusMedium,
+        border: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                alignment: Alignment.center,
+                decoration: NavioTheme.surfaceDecoration(
+                  active: true,
+                  radius: NavioTheme.radiusSmall,
+                  border: false,
+                ),
+                child: Icon(
+                  Icons.picture_as_pdf_rounded,
+                  size: 22,
+                  color: NavioTheme.textPrimary(alpha: 0.86),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hasFile ? _uploadedResumeFileName : "No PDF selected",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: "SF-Pro",
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: NavioTheme.textPrimary(alpha: 0.9),
+                      ),
+                    ),
+                    if (meta.isNotEmpty) ...[
+                      const SizedBox(height: 5),
+                      Text(
+                        meta,
+                        style: TextStyle(
+                          fontFamily: "SF-Pro",
+                          fontSize: 12,
+                          color: NavioTheme.textMuted(alpha: 0.5),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          LabelButton(
+            height: 50,
+            width: double.infinity,
+            text: hasFile ? "Replace Resume" : "Upload Resume",
+            enabled: !_isPickingResumePdf && !_isGradingResume,
+            isLoading: _isPickingResumePdf || _isGradingResume,
+            onTap: _pickResumePdf,
+          ),
+          if (_isPickingResumePdf) ...[
+            const SizedBox(height: 10),
+            Center(
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _cancelResumePdfPick,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        fontFamily: "SF-Pro",
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: NavioTheme.textSecondary(alpha: 0.68),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumeGradeReport(ResumeGradeReport report) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: NavioTheme.surfaceDecoration(
+        active: true,
+        glow: true,
+        radius: NavioTheme.radiusMedium,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: NavioTheme.surfaceDecoration(
+              radius: NavioTheme.radiusSmall,
+              border: false,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Resume score",
+                        style: TextStyle(
+                          fontFamily: "SF-Pro",
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: NavioTheme.textMuted(alpha: 0.48),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(
+                          begin: 0,
+                          end: report.overallScore.clamp(0, 100).toDouble(),
+                        ),
+                        duration: NavioTheme.slow,
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, _) {
+                          return AutoScaleText(
+                            "${value.round()}/100",
+                            maxLines: 1,
+                            minFontSize: 22,
+                            style: TextStyle(
+                              fontFamily: "SF-Pro",
+                              fontSize: 38,
+                              fontWeight: FontWeight.w900,
+                              color: NavioTheme.textPrimary(alpha: 0.94),
+                              height: 1,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 74,
+                  height: 74,
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween<double>(
+                      begin: 0,
+                      end: report.overallScore.clamp(0, 100) / 100,
+                    ),
+                    duration: NavioTheme.slow,
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, _) {
+                      return CircularProgressIndicator(
+                        strokeWidth: 8,
+                        value: value,
+                        backgroundColor: Colors.white.withValues(alpha: 0.08),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          NavioTheme.accent.withValues(alpha: 0.88),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (report.summary.trim().isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              report.summary,
+              style: TextStyle(
+                fontFamily: "SF-Pro",
+                fontSize: 13,
+                color: NavioTheme.textSecondary(alpha: 0.72),
+                height: 1.42,
+              ),
+            ),
+          ],
+          if (report.breakdown.isNotEmpty)
+            _buildResumeGradeBreakdown(report.breakdown),
+          _ResumeReportList(title: "Strengths", items: report.strengths),
+          _ResumeReportList(title: "Issues", items: report.issues),
+          _ResumeReportList(
+            title: "Priority improvements",
+            items: report.improvements,
+          ),
+          if (report.rewriteSuggestions.isNotEmpty)
+            _buildResumeRewriteSuggestions(report.rewriteSuggestions),
+          _ResumeReportList(title: "ATS notes", items: report.atsNotes),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumeGradeBreakdown(List<ResumeGradeBreakdownItem> items) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ResumeReportHeading("Score breakdown"),
+          const SizedBox(height: 8),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: "SF-Pro",
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w800,
+                            color: NavioTheme.textPrimary(alpha: 0.86),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "${item.score}/100",
+                        style: TextStyle(
+                          fontFamily: "SF-Pro",
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: NavioTheme.textSecondary(alpha: 0.66),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(
+                        begin: 0,
+                        end: item.score.clamp(0, 100) / 100,
+                      ),
+                      duration: NavioTheme.slow,
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, _) {
+                        return LinearProgressIndicator(
+                          minHeight: 6,
+                          value: value,
+                          backgroundColor: Colors.white.withValues(alpha: 0.08),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            NavioTheme.accent.withValues(alpha: 0.82),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (item.note.trim().isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      item.note,
+                      style: TextStyle(
+                        fontFamily: "SF-Pro",
+                        fontSize: 12,
+                        color: NavioTheme.textMuted(alpha: 0.52),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumeRewriteSuggestions(
+    List<ResumeRewriteSuggestion> suggestions,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ResumeReportHeading("Rewrite suggestions"),
+          const SizedBox(height: 8),
+          ...suggestions.map(
+            (item) => Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(12),
+              decoration: NavioTheme.surfaceDecoration(
+                radius: NavioTheme.radiusSmall,
+                border: false,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ResumeRewriteLine(label: "Before", value: item.before),
+                  const SizedBox(height: 8),
+                  _ResumeRewriteLine(label: "After", value: item.after),
+                  if (item.reason.trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      item.reason,
+                      style: TextStyle(
+                        fontFamily: "SF-Pro",
+                        fontSize: 12,
+                        color: NavioTheme.textMuted(alpha: 0.52),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _buildResumeGradeHistory() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ResumeReportHeading("Recent reports"),
+        const SizedBox(height: 8),
+        ..._resumeGradeHistory.map(
+          (item) => MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _openResumeGradeHistory(item),
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: NavioTheme.surfaceDecoration(
+                  radius: NavioTheme.radiusMedium,
+                  border: false,
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 54,
+                      child: Text(
+                        "${item.report.overallScore}",
+                        style: TextStyle(
+                          fontFamily: "SF-Pro",
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: NavioTheme.textPrimary(alpha: 0.88),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.fileName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: "SF-Pro",
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: NavioTheme.textPrimary(alpha: 0.84),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${_formatResumeGradeDate(item.createdAt)} - ${item.fileName}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: "SF-Pro",
+                              fontSize: 11.5,
+                              color: NavioTheme.textMuted(alpha: 0.48),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: NavioTheme.textMuted(alpha: 0.36),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatResumeGradeDate(DateTime value) {
+    return "${value.month}/${value.day}/${value.year}";
+  }
+
+  // ignore: unused_element
   Widget _buildResumeForm() {
     return SingleChildScrollView(
       key: const ValueKey("resume-form"),
@@ -2141,6 +3217,7 @@ String? _prepareGeneratedTodoTitle(
     );
   }
 
+  // ignore: unused_element
   Widget _buildResumePreview(_ResumeDraft draft) {
     return Padding(
       key: const ValueKey("resume-preview"),
@@ -2199,122 +3276,157 @@ String? _prepareGeneratedTodoTitle(
   }
 
   Widget _buildInfoScreen(String career) {
-    _syncInfoControllers();
-
     return _buildSubScreen(
       title: "My info",
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 120),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _EditableInfoField(
-              label: "Name",
-              hint: "Your name",
-              controller: _infoNameController,
-              onSubmitted: (value) => _saveInfoField("username", value),
-            ),
-            _EditableInfoField(
-              label: "Stage",
-              hint: "Highschool, university, working...",
-              controller: _infoStageController,
-              onSubmitted: (value) => _saveInfoField("stage", value),
-            ),
-            _EditableInfoField(
-              label: "Career",
-              hint: "Career you are building toward",
-              controller: _infoCareerController,
-              onSubmitted: (value) => _saveInfoField("career", value),
-            ),
-            _EditableInfoField(
-              label: "Style",
-              hint: "Planner, builder, creative...",
-              controller: _infoStyleController,
-              onSubmitted: (value) => _saveInfoField("style", value),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Interests (${selectedAoiNotifier.value.length}/10)",
-              style: TextStyle(
-                fontFamily: "SF-Pro",
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: NavioTheme.textMuted(alpha: 0.46),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ValueListenableBuilder<List<String>>(
-              valueListenable: selectedAoiNotifier,
-              builder: (context, aois, _) {
-                final canAdd = aois.length < 10;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxHeight < 620;
+          final interests = selectedAoiNotifier.value;
+          final canAdd = interests.length < 10;
+
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 120),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _EditableInfoField(
+                  label: "First name",
+                  hint: "First name",
+                  controller: _infoNameController,
+                  compact: compact,
+                  maxLength: 24,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r"[A-Za-z'-]")),
+                  ],
+                  onChanged: (value) {
+                    _saveInfoField(
+                      "username",
+                      value,
+                      haptic: false,
+                      refreshUi: false,
+                    );
+                  },
+                  onSubmitted: (value) {
+                    final firstName = value.trim().split(RegExp(r'\s+')).first;
+                    _saveInfoField("username", firstName);
+                  },
+                ),
+                _InfoReadOnlyEditField(
+                  label: "Career",
+                  value: careerNotifier.value,
+                  emptyText: "Choose your career",
+                  editText: "Open",
+                  compact: compact,
+                  onEdit: () {
+                    HapticFeedback.selectionClick();
+                    selectedNavIndexNotifier.value = 0;
+                  },
+                ),
+                _InfoReadOnlyEditField(
+                  label: "Stage",
+                  value: stageNotifier.value,
+                  emptyText: "Choose your stage",
+                  editText: "Edit",
+                  compact: compact,
+                  onEdit: () {
+                    HapticFeedback.selectionClick();
+                    _showInfoOptionPicker(
+                      title: "Stage",
+                      options: _stageOptions,
+                      selectedValue: stageNotifier.value,
+                      onSelected: (value) {
+                        _infoStageController.text = value;
+                        _saveInfoField("stage", value);
+                      },
+                    );
+                  },
+                ),
+                _InfoReadOnlyEditField(
+                  label: "Style",
+                  value: selectedStyleNotifier.value ?? "",
+                  emptyText: "Choose your style",
+                  editText: "Edit",
+                  compact: compact,
+                  onEdit: () {
+                    HapticFeedback.selectionClick();
+                    _showInfoOptionPicker(
+                      title: "Style",
+                      options: styleListNotifier.value,
+                      selectedValue: selectedStyleNotifier.value ?? "",
+                      onSelected: (value) {
+                        _infoStyleController.text = value;
+                        _saveInfoField("style", value);
+                      },
+                    );
+                  },
+                ),
+                SizedBox(height: compact ? 3 : 6),
+                Text(
+                  "Interests (${interests.length}/10)",
+                  style: TextStyle(
+                    fontFamily: "SF-Pro",
+                    fontSize: compact ? 11 : 12,
+                    fontWeight: FontWeight.w700,
+                    color: NavioTheme.textMuted(alpha: 0.46),
+                  ),
+                ),
+                SizedBox(height: compact ? 6 : 8),
+                if (interests.isEmpty)
+                  Text(
+                    "Not selected yet",
+                    style: TextStyle(
+                      fontFamily: "SF-Pro",
+                      fontSize: 13,
+                      color: NavioTheme.textMuted(alpha: 0.42),
+                    ),
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: compact ? 6 : 8,
+                    children: interests
+                        .map(
+                          (aoi) => _InfoChip(
+                            label: aoi,
+                            compact: compact,
+                            onRemove: () => _removeInterest(aoi),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                SizedBox(height: compact ? 8 : 12),
+                Row(
                   children: [
-                    if (aois.isEmpty)
-                      Text(
-                        "Not selected yet",
-                        style: TextStyle(
-                          fontFamily: "SF-Pro",
-                          fontSize: 13,
-                          color: NavioTheme.textMuted(alpha: 0.42),
-                        ),
-                      )
-                    else
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: aois
-                            .map(
-                              (aoi) => _InfoChip(
-                                label: aoi,
-                                onRemove: () => _removeInterest(aoi),
-                              ),
-                            )
-                            .toList(),
+                    Expanded(
+                      child: CustomTextField(
+                        controller: _interestController,
+                        hintText: canAdd
+                            ? "Add an interest..."
+                            : "Interest limit reached",
+                        maxLength: 50,
+                        maxLines: 1,
+                        enabled: canAdd,
+                        height: compact ? 46 : 50,
+                        fontSize: 14,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        onSubmitted: (_) => _addInterest(),
                       ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _InfoInlineInput(
-                            controller: _interestController,
-                            hint: canAdd
-                                ? "Add an interest..."
-                                : "Interest limit reached",
-                            enabled: canAdd,
-                            onSubmitted: (_) => _addInterest(),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: canAdd ? _addInterest : null,
-                          child: AnimatedContainer(
-                            duration: NavioTheme.normal,
-                            width: 46,
-                            height: 46,
-                            decoration: NavioTheme.surfaceDecoration(
-                              active: canAdd,
-                              disabled: !canAdd,
-                              radius: NavioTheme.radiusMedium,
-                              border: false,
-                            ),
-                            child: Icon(
-                              Icons.add_rounded,
-                              color: canAdd
-                                  ? NavioTheme.accent
-                                  : NavioTheme.textMuted(alpha: 0.24),
-                            ),
-                          ),
-                        ),
-                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    LabelButton(
+                      height: compact ? 46 : 50,
+                      width: compact ? 62 : 66,
+                      text: "+",
+                      enabled: canAdd,
+                      onTap: _addInterest,
                     ),
                   ],
-                );
-              },
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -2381,15 +3493,21 @@ String? _prepareGeneratedTodoTitle(
               ),
             ),
             const Spacing(height: 24),
-            LabelButton(
-              height: 56,
-              width: double.infinity,
-              text: "Open Career Finder",
-              enabled: true,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                selectedNavIndexNotifier.value = 0;
-              },
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 390),
+                child: LabelButton(
+                  height: 56,
+                  width: double.infinity,
+                  text: "Open Career Finder",
+                  enabled: true,
+                  centerText: true,
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    selectedNavIndexNotifier.value = 0;
+                  },
+                ),
+              ),
             ),
           ],
         ),
@@ -2763,73 +3881,170 @@ String? _prepareGeneratedTodoTitle(
         padding: const EdgeInsets.only(bottom: 120),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    decoration: NavioTheme.surfaceDecoration(
-                      radius: NavioTheme.radiusMedium,
-                      border: false,
-                    ),
-                    child: TextField(
-                      controller: _todoController,
-                      maxLength: 80,
-                      onSubmitted: (_) => _addTodo(),
-                      style: TextStyle(
-                        fontFamily: "SF-Pro",
-                        fontSize: 14,
-                        color: NavioTheme.textPrimary(),
-                      ),
-                      decoration: InputDecoration(
-                        counterText: "",
-                        hintText: "Add a next step...",
-                        hintStyle: TextStyle(
-                          color: NavioTheme.textMuted(alpha: 0.42),
-                        ),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                _TaskSquareButton(
-                  icon: Icons.add_rounded,
-                  enabled: _hasTodoText,
-                  onTap: _addTodo,
-                ),
-                const SizedBox(width: 8),
-                _TaskSquareButton(
-                  icon: Icons.auto_awesome_rounded,
-                  enabled: !_isGeneratingTasks,
-                  isLoading: _isGeneratingTasks,
-                  onTap: _generateMoreTasks,
-                ),
-              ],
-            ),
+            _buildTodoComposer(),
             const SizedBox(height: 12),
-            if (_todos.isEmpty)
-              _EmptyTodoState()
-            else
-              Column(
-                children: [
-                  for (var i = 0; i < _todos.length; i++)
-                    _TodoTile(
-                      todo: _todos[i],
-                      onToggle: () => _toggleTodo(i),
-                      onDelete: () => _deleteTodo(i),
-                    ),
-                ],
-              ),
+            AnimatedSwitcher(
+              duration: NavioTheme.normal,
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: (child, animation) {
+                final curved = CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                  reverseCurve: Curves.easeInCubic,
+                );
+
+                return FadeTransition(
+                  opacity: curved,
+                  child: SizeTransition(
+                    sizeFactor: curved,
+                    axisAlignment: -1,
+                    child: child,
+                  ),
+                );
+              },
+              child: _todos.isEmpty
+                  ? const _EmptyTodoState(key: ValueKey("todo-empty"))
+                  : const SizedBox.shrink(key: ValueKey("todo-empty-hidden")),
+            ),
+            AnimatedList(
+              key: _todoListKey,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              initialItemCount: _todos.length,
+              itemBuilder: (context, index, animation) {
+                final todo = _todos[index];
+                return _buildAnimatedTodoTile(
+                  todo: todo,
+                  animation: animation,
+                  onToggle: () => _toggleTodo(index),
+                  onDelete: () => _deleteTodo(index),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildResetScreen() {
+  Widget _buildAnimatedTodoTile({
+    required _TodoItem todo,
+    required Animation<double> animation,
+    required VoidCallback onToggle,
+    required VoidCallback onDelete,
+  }) {
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+
+    return FadeTransition(
+      opacity: curved,
+      child: SizeTransition(
+        sizeFactor: curved,
+        axisAlignment: -1,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.05),
+            end: Offset.zero,
+          ).animate(curved),
+          child: _TodoTile(todo: todo, onToggle: onToggle, onDelete: onDelete),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodoComposer() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 360;
+        final gap = compact ? 7.0 : 10.0;
+        final inputPadding = EdgeInsets.symmetric(
+          horizontal: compact ? 13 : 16,
+        );
+        final inputRow = Row(
+          children: [
+            Expanded(
+              child: CustomTextField(
+                controller: _todoController,
+                hintText: "Add a next step...",
+                maxLength: 80,
+                maxLines: 1,
+                height: 46,
+                fontSize: compact ? 13 : 14,
+                padding: inputPadding,
+                onSubmitted: (_) => _addTodo(),
+              ),
+            ),
+            SizedBox(width: gap),
+            _TaskSquareButton(
+              icon: Icons.add_rounded,
+              enabled: _hasTodoText,
+              onTap: _addTodo,
+            ),
+          ],
+        );
+
+        final generateButton = _buildGenerateTasksButtonSlot(spacing: gap);
+
+        return Row(
+          children: [
+            Expanded(child: inputRow),
+            generateButton,
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGenerateTasksButtonSlot({required double spacing}) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: SizeTransition(
+            sizeFactor: curved,
+            axis: Axis.horizontal,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.92, end: 1).animate(curved),
+              child: child,
+            ),
+          ),
+        );
+      },
+      child: _hideGenerateTasksButton
+          ? SizedBox(
+              key: const ValueKey("generate-hidden"),
+              width: 0,
+              height: 46,
+            )
+          : Padding(
+              key: const ValueKey("generate-visible"),
+              padding: EdgeInsets.only(left: spacing),
+              child: _TaskSquareButton(
+                icon: Icons.auto_awesome_rounded,
+                enabled: !_isGeneratingTasks,
+                isLoading: _isGeneratingTasks,
+                onTap: _generateMoreTasks,
+              ),
+            ),
+    );
+  }
+
+  Widget _buildOptionsScreen() {
     return _buildSubScreen(
-      title: "Reset",
+      title: "Options",
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 120),
@@ -2837,7 +4052,7 @@ String? _prepareGeneratedTodoTitle(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "This clears onboarding, saved career, roadmap cache, simulator chat, and your local tasks.",
+              "Quick links, contact options, and account controls live here.",
               style: TextStyle(
                 fontFamily: "SF-Pro",
                 fontSize: 14,
@@ -2847,17 +4062,51 @@ String? _prepareGeneratedTodoTitle(
             ),
             const Spacing(height: 18),
             _PortfolioButton(
-              icon: Icons.close_rounded,
-              title: "Cancel",
-              subtitle: "Keep everything",
-              onTap: () => setState(() => _section = _PortfolioSection.home),
+              icon: Icons.camera_alt_outlined,
+              title: "Instagram",
+              subtitle: "@naviopathways",
+              onTap: () => _openExternal(_instagramUrl),
             ),
             const SizedBox(height: 10),
             _PortfolioButton(
+              icon: Icons.mail_outline_rounded,
+              title: "Email",
+              subtitle: "hello@naviopathways.com",
+              onTap: () => _openExternal(_contactEmailUrl),
+            ),
+            const SizedBox(height: 10),
+            _PortfolioButton(
+              icon: Icons.language_rounded,
+              title: "Website",
+              subtitle: "naviopathways.com",
+              onTap: () => _openExternal(_websiteUrl),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              "Reset",
+              style: TextStyle(
+                fontFamily: "SF-Pro",
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: NavioTheme.textMuted(alpha: 0.48),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "This clears onboarding, saved career, roadmap cache, simulator chat, and your local tasks.",
+              style: TextStyle(
+                fontFamily: "SF-Pro",
+                fontSize: 13,
+                color: NavioTheme.textSecondary(alpha: 0.58),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 14),
+            _PortfolioButton(
               icon: Icons.warning_amber_rounded,
-              title: "Confirm reset",
-              subtitle: "Clear saved progress",
-              onTap: resetPrefs,
+              title: "Reset app",
+              subtitle: _isResetting ? "Clearing..." : "Clear saved progress",
+              onTap: _isResetting ? () {} : _confirmResetPrefs,
             ),
           ],
         ),
@@ -2920,8 +4169,155 @@ String? _prepareGeneratedTodoTitle(
   }
 
   Future<void> resetPrefs() async {
+    if (_isResetting) return;
+
+    setState(() => _isResetting = true);
     await AppStorage.resetAll();
-    setState(() => _section = _PortfolioSection.home);
+    if (!mounted) return;
+
+    setState(() {
+      _isResetting = false;
+      _section = _PortfolioSection.home;
+    });
+  }
+
+  Future<void> _confirmResetPrefs() async {
+    HapticFeedback.selectionClick();
+
+    final didConfirm = await showDialog<bool>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.62),
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 390),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+                    decoration: NavioTheme.surfaceDecoration(
+                      active: true,
+                      glow: true,
+                      radius: NavioTheme.radiusLarge + 6,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: NavioTheme.accent.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(
+                                  color: NavioTheme.accent.withValues(
+                                    alpha: 0.18,
+                                  ),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.restart_alt_rounded,
+                                color: NavioTheme.accent,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "Reset app?",
+                                style: TextStyle(
+                                  fontFamily: "New-York",
+                                  fontSize: 27,
+                                  height: 1.05,
+                                  color: NavioTheme.textPrimary(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          "This clears onboarding, saved career, roadmap cache, simulator chat, and your local tasks.",
+                          style: TextStyle(
+                            fontFamily: "SF-Pro",
+                            fontSize: 14.5,
+                            height: 1.45,
+                            color: NavioTheme.textSecondary(alpha: 0.72),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: LabelButton(
+                                height: 56,
+                                width: double.infinity,
+                                text: "Cancel",
+                                enabled: true,
+                                centerText: true,
+                                onTap: () =>
+                                    Navigator.of(dialogContext).pop(false),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: LabelButton(
+                                height: 56,
+                                width: double.infinity,
+                                text: "Reset",
+                                enabled: true,
+                                emphasized: true,
+                                centerText: true,
+                                onTap: () =>
+                                    Navigator.of(dialogContext).pop(true),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (didConfirm == true && mounted) {
+      await resetPrefs();
+    }
+  }
+
+  Future<void> _openExternal(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      if (mounted) {
+        NavioNotification.show(context, "Couldn't open that link.");
+      }
+      return;
+    }
+
+    try {
+      final canLaunch = await canLaunchUrl(uri);
+      final didLaunch = canLaunch
+          ? await launchUrl(uri, mode: LaunchMode.externalApplication)
+          : false;
+
+      if (!didLaunch && mounted) {
+        NavioNotification.show(context, "Couldn't open that link.");
+      }
+    } catch (_) {
+      if (mounted) {
+        NavioNotification.show(context, "Couldn't open that link.");
+      }
+    }
   }
 
   String getTimeOfDay() {
@@ -2933,3 +4329,15 @@ String? _prepareGeneratedTodoTitle(
   }
 }
 
+_ResumePdfExtraction _extractResumePdfText(Uint8List bytes) {
+  final document = sf_pdf.PdfDocument(inputBytes: bytes);
+  try {
+    final extractor = sf_pdf.PdfTextExtractor(document);
+    return _ResumePdfExtraction(
+      text: extractor.extractText(),
+      pageCount: document.pages.count,
+    );
+  } finally {
+    document.dispose();
+  }
+}

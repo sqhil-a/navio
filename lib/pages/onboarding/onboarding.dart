@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:navio/app_storage.dart';
 import 'package:navio/pages/onboarding/steps/aoi.dart';
 import 'package:navio/pages/onboarding/steps/career.dart';
@@ -31,7 +32,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     // If already completed, skip straight to the main app
     if (completedOnboardingNotifier.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _completeOnboard();
+        _completeOnboard(haptic: false);
       });
       return;
     }
@@ -142,8 +143,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
     onboardingStepNotifier.value += 1;
   }
 
-  Future<void> _completeOnboard() async {
+  Future<void> _completeOnboard({bool haptic = true}) async {
     await AppStorage.saveBool("completedOnboarding", true);
     completedOnboardingNotifier.value = true;
+    if (haptic) Haptics.vibrate(HapticsType.success);
   }
 }

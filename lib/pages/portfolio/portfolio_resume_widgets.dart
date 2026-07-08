@@ -44,6 +44,114 @@ class _ResumeField extends StatelessWidget {
   }
 }
 
+class _ResumeReportHeading extends StatelessWidget {
+  final String text;
+
+  const _ResumeReportHeading(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: "SF-Pro",
+        fontSize: 12,
+        fontWeight: FontWeight.w900,
+        color: NavioTheme.textPrimary(alpha: 0.82),
+      ),
+    );
+  }
+}
+
+class _ResumeReportList extends StatelessWidget {
+  final String title;
+  final List<String> items;
+
+  const _ResumeReportList({required this.title, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    final cleanItems = items
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList();
+
+    if (cleanItems.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ResumeReportHeading(title),
+          const SizedBox(height: 8),
+          ...cleanItems.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 7),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: const EdgeInsets.only(top: 7, right: 8),
+                    decoration: BoxDecoration(
+                      color: NavioTheme.textSecondary(alpha: 0.68),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontFamily: "SF-Pro",
+                        fontSize: 12.5,
+                        color: NavioTheme.textSecondary(alpha: 0.68),
+                        height: 1.38,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResumeRewriteLine extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _ResumeRewriteLine({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontFamily: "SF-Pro",
+          fontSize: 12.5,
+          color: NavioTheme.textSecondary(alpha: 0.68),
+          height: 1.35,
+        ),
+        children: [
+          TextSpan(
+            text: "$label: ",
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: NavioTheme.textPrimary(alpha: 0.82),
+            ),
+          ),
+          TextSpan(text: value.trim().isEmpty ? "Not provided" : value.trim()),
+        ],
+      ),
+    );
+  }
+}
+
 class _ResumeEntrySectionEditor extends StatelessWidget {
   final String title;
   final String emptyText;
@@ -777,4 +885,3 @@ class _ResumePreviewLine extends StatelessWidget {
     );
   }
 }
-

@@ -72,9 +72,11 @@ class _TaskSquareButtonState extends State<_TaskSquareButton> {
                     child: SizedBox(
                       width: 17,
                       height: 17,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: NavioTheme.accent,
+                      child: Lottie.asset(
+                        'assets/animations/loading.json',
+                        width: 26,
+                        height: 26,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   )
@@ -169,6 +171,7 @@ class _TodoActionControl extends StatelessWidget {
     return switch (todo.kind) {
       _todoKindResources => Icons.open_in_new_rounded,
       _todoKindSkills => Icons.radar_rounded,
+      _todoKindResume => Icons.upload_file_rounded,
       _ => Icons.check_rounded,
     };
   }
@@ -224,6 +227,8 @@ class _TodoActionControl extends StatelessWidget {
 }
 
 class _EmptyTodoState extends StatelessWidget {
+  const _EmptyTodoState({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

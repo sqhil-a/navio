@@ -205,6 +205,7 @@ class _DashboardMiniStat extends StatelessWidget {
               label,
               maxLines: 1,
               minFontSize: 8,
+              textAlign: TextAlign.start,
               style: TextStyle(
                 fontFamily: "SF-Pro",
                 fontSize: 11,
@@ -213,19 +214,17 @@ class _DashboardMiniStat extends StatelessWidget {
               ),
             ),
           ),
-          // Flexible prevents this value text from overflowing the Row
-          // when the parent Container has no intrinsic width constraint.
-          Flexible(
-            child: AutoScaleText(
-              value,
-              maxLines: 1,
-              minFontSize: 8,
-              style: TextStyle(
-                fontFamily: "SF-Pro",
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: NavioTheme.textSecondary(alpha: 0.76),
-              ),
+          const SizedBox(width: 8),
+          AutoScaleText(
+            value,
+            maxLines: 1,
+            minFontSize: 8,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              fontFamily: "SF-Pro",
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: NavioTheme.textSecondary(alpha: 0.76),
             ),
           ),
         ],
@@ -352,4 +351,3 @@ class _PortfolioButtonState extends State<_PortfolioButton> {
     );
   }
 }
-

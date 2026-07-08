@@ -1,12 +1,38 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:navio/services/groq_config.dart';
+
+class AiRateLimitException implements Exception {
+  final String message;
+
+  AiRateLimitException([
+    this.message = "AI is temporarily unavailable. Please wait a minute and try again.",
+  ]);
+
+  @override
+  String toString() => message;
+}
 
 class GroqService {
-  final Dio dio = Dio();
-  final String apiKey;
+  static const String _baseUrl =
+      'https://navio-worker.naviopathways.workers.dev';
 
-  GroqService({String? apiKey}) : apiKey = apiKey ?? GroqConfig.apiKey;
+  static const String _appToken = 'navio-pathways-v1';
+
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: _baseUrl,
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 60),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Navio-App': _appToken,
+      },
+    ),
+  );
+
+  /// Kept for compatibility with your existing code.
+  /// The API key is no longer used in the app.
+  GroqService({String? apiKey});
 
   /// Single-turn chat completion.
   Future<String?> sendChat({
@@ -21,8 +47,8 @@ class GroqService {
       temperature: temperature,
       maxTokens: maxTokens,
       messages: [
-        {"role": "system", "content": systemPrompt},
-        {"role": "user", "content": userPrompt},
+        {'role': 'system', 'content': systemPrompt},
+        {'role': 'user', 'content': userPrompt},
       ],
     );
   }
@@ -41,7 +67,7 @@ class GroqService {
       temperature: temperature,
       maxTokens: maxTokens,
       messages: [
-        {"role": "system", "content": systemPrompt},
+        {'role': 'system', 'content': systemPrompt},
         ...history,
       ],
     );
@@ -53,34 +79,39 @@ class GroqService {
     required int maxTokens,
     required List<Map<String, String>> messages,
   }) async {
-    const String apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    if (apiKey.trim().isEmpty) {
-      debugPrint(
-        "Groq API key is missing. Pass --dart-define=GROQ_API_KEY=...",
-      );
-      return null;
-    }
-
     try {
       final response = await dio.post(
-        apiUrl,
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $apiKey",
-            "Content-Type": "application/json",
-          },
-        ),
+        '/api/chat',
         data: {
-          "model": model,
-          "temperature": temperature,
-          "max_completion_tokens": maxTokens,
-          "messages": messages,
+          'model': model,
+          'temperature': temperature,
+          'maxTokens': maxTokens,
+          'messages': messages,
         },
       );
-      return response.data["choices"][0]["message"]["content"]?.trim();
-    } catch (e) {
-      debugPrint("Groq ERROR: $e");
+
+      final data = response.data;
+
+      if (data is Map && data['message'] is String) {
+        return (data['message'] as String).trim();
+      }
+
+      debugPrint('Worker returned invalid response: $data');
       return null;
-    }
+      } on DioException catch (e) {
+        final statusCode = e.response?.statusCode;
+        final data = e.response?.data;
+
+        if (statusCode == 429) {
+          final message = data is Map && data["message"] is String
+              ? data["message"] as String
+              : "Please wait a minute before trying again.";
+
+          throw AiRateLimitException(message);
+        }
+
+        debugPrint('Navio Worker ERROR: ${e.response?.data ?? e.message}');
+        return null;
+      }
   }
 }

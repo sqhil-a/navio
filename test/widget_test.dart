@@ -23,6 +23,13 @@ void main() {
   testWidgets('Magic task generation falls back without crashing', (
     WidgetTester tester,
   ) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     const career = 'Software Engineering';
     SharedPreferences.setMockInitialValues({
       'career': career,
@@ -51,7 +58,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Tasks').last);
+    await tester.tap(find.byIcon(Icons.checklist_rounded));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.auto_awesome_rounded));
@@ -60,7 +67,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('3 left'), findsOneWidget);
+    expect(find.text('4 left'), findsOneWidget);
+    expect(find.text('Upload your resume'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.auto_awesome_rounded));
     await tester.pump(const Duration(milliseconds: 100));
@@ -68,7 +79,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('6 left'), findsOneWidget);
+    expect(find.text('7 left'), findsOneWidget);
   });
 
   testWidgets('Portfolio dashboard uses singular task label', (
@@ -97,7 +108,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('1'), findsWidgets);
-    expect(find.text('task left'), findsOneWidget);
+    expect(find.text('2'), findsWidgets);
+    expect(find.text('tasks left'), findsOneWidget);
   });
 }

@@ -5,30 +5,21 @@
       "name": "Navio",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
-      "toolArgs": [
-        "--dart-define-from-file=env.json"
-      ]
+      "program": "lib/main.dart"
     },
     {
       "name": "Navio (Profile)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile",
-      "program": "lib/main.dart",
-      "toolArgs": [
-        "--dart-define-from-file=env.json"
-      ]
+      "program": "lib/main.dart"
     },
     {
       "name": "Navio (Release)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release",
-      "program": "lib/main.dart",
-      "toolArgs": [
-        "--dart-define-from-file=env.json"
-      ]
+      "program": "lib/main.dart"
     }
   ]
 }

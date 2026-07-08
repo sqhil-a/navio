@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:navio/app_storage.dart';
 import 'package:navio/widgets/custom_text_field.dart';
 import 'package:navio/widgets/buttons/label_button.dart';
@@ -36,6 +37,9 @@ class _NameState extends State<Name> {
             maxLength: 30,
             hintText: "Name",
             controller: nameController,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"[A-Za-z]")),
+            ],
             onChanged: setName,
           ),
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
@@ -24,6 +25,7 @@ class PortfolioPlan extends StatefulWidget {
 }
 
 class _PortfolioPlanState extends State<PortfolioPlan> {
+  static const _editCooldownUntilKey = "portfolioPlanEditCooldownUntil";
   final _service = PlanService();
   final _editController = TextEditingController();
 
@@ -32,6 +34,7 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
   bool _isLoading = true;
   bool _isEditing = false;
   bool _isApplyingEdit = false;
+  bool _hideEditSendButton = false;
   bool _resourcesExpanded = false;
   bool _resourcesPressed = false;
   bool _resourcesLoading = false;
@@ -40,6 +43,7 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
   int _roadmapRevealRun = 0;
   int _lastResourcesRequest = 0;
   int? _expandedIndex;
+  Timer? _editCooldownTimer;
 
   @override
   void initState() {
@@ -47,12 +51,14 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
     roadmapResourcesRequestNotifier.addListener(_onResourcesRequest);
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) => _onResourcesRequest());
+    _restoreEditCooldown();
   }
 
   @override
   void dispose() {
     _roadmapRevealRun++;
     roadmapResourcesRequestNotifier.removeListener(_onResourcesRequest);
+    _editCooldownTimer?.cancel();
     _editController.dispose();
     super.dispose();
   }
@@ -85,6 +91,7 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
       final steps = await _service.loadOrGenerate();
       if (mounted) {
         _showSteps(steps);
+        Haptics.vibrate(HapticsType.success);
       }
     } catch (e) {
       if (mounted) {
@@ -92,13 +99,14 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
           _error = "Couldn't generate your plan.\nTap to retry.";
           _isLoading = false;
         });
+        Haptics.vibrate(HapticsType.error);
       }
     }
   }
 
   Future<void> _applyEdit() async {
     final instruction = _editController.text.trim();
-    if (instruction.isEmpty) return;
+    if (instruction.isEmpty || _isApplyingEdit || _hideEditSendButton) return;
 
     setState(() {
       _isApplyingEdit = true;
@@ -115,13 +123,16 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
           _editController.clear();
         });
         _showSteps(steps);
+        Haptics.vibrate(HapticsType.success);
       }
+      await _startEditCooldown();
     } catch (e) {
       if (mounted) {
         setState(() {
           _error = "Couldn't apply edit. Tap to retry.";
           _isApplyingEdit = false;
         });
+        Haptics.vibrate(HapticsType.error);
       }
     }
   }
@@ -138,9 +149,13 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
           _resources = resources;
           _resourcesLoading = false;
         });
+        Haptics.vibrate(HapticsType.success);
       }
     } catch (e) {
-      if (mounted) setState(() => _resourcesLoading = false);
+      if (mounted) {
+        setState(() => _resourcesLoading = false);
+        Haptics.vibrate(HapticsType.error);
+      }
     }
   }
 
@@ -148,6 +163,65 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
     setState(() {
       _isEditing = !_isEditing;
       if (!_isEditing) _editController.clear();
+    });
+  }
+
+  Future<void> _restoreEditCooldown() async {
+    final raw = await AppStorage.loadString(_editCooldownUntilKey);
+
+    if (raw == null || raw.trim().isEmpty) {
+      if (mounted && _hideEditSendButton) {
+        setState(() => _hideEditSendButton = false);
+      }
+      return;
+    }
+
+    final cooldownUntilMs = int.tryParse(raw);
+    if (cooldownUntilMs == null) {
+      await AppStorage.saveString(_editCooldownUntilKey, "");
+      return;
+    }
+
+    final remainingMs = cooldownUntilMs - DateTime.now().millisecondsSinceEpoch;
+    if (remainingMs <= 0) {
+      await AppStorage.saveString(_editCooldownUntilKey, "");
+      if (mounted && _hideEditSendButton) {
+        setState(() => _hideEditSendButton = false);
+      }
+      return;
+    }
+
+    _editCooldownTimer?.cancel();
+    if (mounted) {
+      setState(() => _hideEditSendButton = true);
+    }
+
+    _editCooldownTimer = Timer(Duration(milliseconds: remainingMs), () async {
+      await AppStorage.saveString(_editCooldownUntilKey, "");
+      if (!mounted) return;
+      setState(() => _hideEditSendButton = false);
+    });
+  }
+
+  Future<void> _startEditCooldown() async {
+    final cooldownUntilMs = DateTime.now()
+        .add(const Duration(seconds: 5))
+        .millisecondsSinceEpoch;
+
+    await AppStorage.saveString(
+      _editCooldownUntilKey,
+      cooldownUntilMs.toString(),
+    );
+
+    _editCooldownTimer?.cancel();
+    if (mounted) {
+      setState(() => _hideEditSendButton = true);
+    }
+
+    _editCooldownTimer = Timer(const Duration(seconds: 5), () async {
+      await AppStorage.saveString(_editCooldownUntilKey, "");
+      if (!mounted) return;
+      setState(() => _hideEditSendButton = false);
     });
   }
 
@@ -353,15 +427,21 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
               ),
             ),
             const Spacing(height: 24),
-            LabelButton(
-              height: 56,
-              width: double.infinity,
-              text: "Open Career Finder",
-              enabled: true,
-              onTap: () {
-                showPlanNotifier.value = false;
-                selectedNavIndexNotifier.value = 0;
-              },
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 390),
+                child: LabelButton(
+                  height: 56,
+                  width: double.infinity,
+                  text: "Open Career Finder",
+                  enabled: true,
+                  centerText: true,
+                  onTap: () {
+                    showPlanNotifier.value = false;
+                    selectedNavIndexNotifier.value = 0;
+                  },
+                ),
+              ),
             ),
           ],
         ),
@@ -388,12 +468,49 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
           ValueListenableBuilder<TextEditingValue>(
             valueListenable: _editController,
             builder: (context, value, child) {
-              final canSend = value.text.trim().isNotEmpty && !_isApplyingEdit;
+              final canSend =
+                  value.text.trim().isNotEmpty &&
+                  !_isApplyingEdit &&
+                  !_hideEditSendButton;
 
-              return SendButton(
-                isLoading: _isApplyingEdit,
-                enabled: canSend,
-                onTap: _applyEdit,
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  final curved = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                    reverseCurve: Curves.easeInCubic,
+                  );
+
+                  return FadeTransition(
+                    opacity: curved,
+                    child: SizeTransition(
+                      sizeFactor: curved,
+                      axis: Axis.horizontal,
+                      child: ScaleTransition(
+                        scale: Tween<double>(
+                          begin: 0.92,
+                          end: 1,
+                        ).animate(curved),
+                        child: child,
+                      ),
+                    ),
+                  );
+                },
+                child: _hideEditSendButton
+                    ? const SizedBox(
+                        key: ValueKey("plan-edit-send-hidden"),
+                        width: 0,
+                        height: 44,
+                      )
+                    : SendButton(
+                        key: const ValueKey("plan-edit-send-visible"),
+                        isLoading: _isApplyingEdit,
+                        enabled: canSend,
+                        onTap: _applyEdit,
+                      ),
               );
             },
           ),
@@ -470,7 +587,7 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
             isVisible: _visibleRoadmapCount > _steps.length,
             child: _buildResourcesCard(),
           ),
-          const Spacing(height: 80),
+          const Spacing(height: 140),
         ],
       ),
     );
@@ -564,12 +681,26 @@ class _PortfolioPlanState extends State<PortfolioPlan> {
           decoration: NavioTheme.surfaceDecoration(
             radius: NavioTheme.radiusSmall,
           ),
-          child: Text(
-            resource['title'] ?? "",
-            style: TextStyle(
-              fontFamily: "SF-Pro",
-              color: NavioTheme.textSecondary(alpha: 0.78),
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  resource['title'] ?? "",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: "SF-Pro",
+                    color: NavioTheme.textSecondary(alpha: 0.78),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(
+                Icons.open_in_new_rounded,
+                size: 18,
+                color: NavioTheme.textMuted(alpha: 0.54),
+              ),
+            ],
           ),
         ),
       ),

@@ -111,12 +111,17 @@ class _SplashScreen extends StatelessWidget {
 }
 
 /// The real app shell - only mounted after values are loaded.
-class _AppShell extends StatelessWidget {
+class _AppShell extends StatefulWidget {
   /// Controls length of crossfade in milliseconds.
   static const Duration crossfadeDuration = Duration(milliseconds: 100);
 
   const _AppShell({super.key});
 
+  @override
+  State<_AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<_AppShell> {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -133,7 +138,7 @@ class _AppShell extends StatelessWidget {
                   valueListenable: showAuthPageNotifier,
                   builder: (context, auth, child) {
                     return AnimatedSwitcher(
-                      duration: crossfadeDuration,
+                      duration: _AppShell.crossfadeDuration,
                       switchInCurve: Curves.easeIn,
                       switchOutCurve: Curves.easeOut,
                       transitionBuilder: (child, animation) {
@@ -158,27 +163,30 @@ class _AppShell extends StatelessWidget {
 
             return Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 10),
-                decoration: BoxDecoration(
-                  color: NavioTheme.background,
-                  boxShadow: [
-                    BoxShadow(
-                      color: NavioTheme.background.withValues(alpha: 0.96),
-                      blurRadius: 24,
-                      spreadRadius: 18,
-                      offset: const Offset(0, -10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const LineSeparator(),
-                    Spacing(height: 20),
-                    const NavBar(),
-                  ],
+              child: SafeArea(
+                top: false,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(top: 6),
+                  decoration: BoxDecoration(
+                    color: NavioTheme.background,
+                    boxShadow: [
+                      BoxShadow(
+                        color: NavioTheme.background.withValues(alpha: 0.96),
+                        blurRadius: 20,
+                        spreadRadius: 14,
+                        offset: const Offset(0, -8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const LineSeparator(),
+                      Spacing(height: 14),
+                      const NavBar(),
+                    ],
+                  ),
                 ),
               ),
             );

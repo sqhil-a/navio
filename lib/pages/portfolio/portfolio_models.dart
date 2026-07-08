@@ -189,6 +189,54 @@ class _ResumeEntry {
   };
 }
 
+class _ResumePdfExtraction {
+  final String text;
+  final int pageCount;
+
+  const _ResumePdfExtraction({required this.text, required this.pageCount});
+}
+
+class _UploadedResume {
+  final String fileName;
+  final String text;
+  final String textPreview;
+  final int? pageCount;
+  final DateTime uploadedAt;
+  final ResumeGradeReport? report;
+
+  const _UploadedResume({
+    required this.fileName,
+    required this.text,
+    required this.textPreview,
+    required this.pageCount,
+    required this.uploadedAt,
+    required this.report,
+  });
+
+  factory _UploadedResume.fromJson(Map<dynamic, dynamic> json) {
+    final uploadedAt = DateTime.tryParse(json['uploadedAt']?.toString() ?? "");
+
+    return _UploadedResume(
+      fileName: json['fileName']?.toString() ?? "resume.pdf",
+      text: json['text']?.toString() ?? "",
+      textPreview: json['textPreview']?.toString() ?? "",
+      pageCount: int.tryParse(json['pageCount']?.toString() ?? ""),
+      uploadedAt: uploadedAt ?? DateTime.now(),
+      report: json['report'] is Map
+          ? ResumeGradeReport.fromJson(json['report'] as Map)
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'fileName': fileName,
+    'text': text,
+    'textPreview': textPreview,
+    'pageCount': pageCount,
+    'uploadedAt': uploadedAt.toIso8601String(),
+    'report': report?.toJson(),
+  };
+}
 
 class _TodoItem {
   final String title;
@@ -248,4 +296,3 @@ class _SkillItem {
     'target': target,
   };
 }
-

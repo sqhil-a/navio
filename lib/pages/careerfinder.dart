@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:navio/app_storage.dart';
 import 'package:navio/services/groq_service.dart';
 import 'package:navio/widgets/auto_scale_text.dart';
@@ -67,7 +69,7 @@ class _CareerFinderPageState extends State<CareerFinderPage> {
     final allCareers = careerListNotifier.value.join(", ");
 
     final result = await _groq.sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt: """
 You are a career advisor. Given a user's profile and a list of careers, return the 5 most suitable careers.
 
@@ -96,6 +98,7 @@ Return the 5 best matching careers as a JSON array.
         await AppStorage.saveString("cachedRecommended", jsonEncode(list));
         if (!mounted) return;
         _showRecommended(list);
+        Haptics.vibrate(HapticsType.success);
         return;
       }
     }
@@ -103,6 +106,7 @@ Return the 5 best matching careers as a JSON array.
     final fallback = _fallbackRecommendedCareers();
     if (mounted) {
       _showRecommended(fallback);
+      Haptics.vibrate(HapticsType.error);
     }
   }
 
@@ -308,7 +312,7 @@ Return the 5 best matching careers as a JSON array.
     }
 
     final result = await _groq.sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt:
           "You are a career advisor. Give a concise 2-3 sentence overview of a career: what it involves, who it suits, and typical work environment. No headers, no bullet points, plain text only.",
       userPrompt: "Describe the career: $career",
@@ -323,6 +327,7 @@ Return the 5 best matching careers as a JSON array.
         _careerDescription = desc;
         _descriptionLoading = false;
       });
+      Haptics.vibrate(result == null ? HapticsType.error : HapticsType.success);
     }
   }
 
@@ -351,6 +356,7 @@ Return the 5 best matching careers as a JSON array.
     showPlanNotifier.value = false;
     chatResetNotifier.value++;
     selectedNavIndexNotifier.value = 1;
+    HapticFeedback.mediumImpact();
 
     if (!mounted) return;
     setState(() {

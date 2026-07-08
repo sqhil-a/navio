@@ -45,7 +45,7 @@ class _NavButtonState extends State<NavButton> {
           onTapUp: (_) => setState(() => _pressed = false),
           onTapCancel: () => setState(() => _pressed = false),
           child: AnimatedScale(
-            scale: _pressed ? 0.92 : 1.0,
+            scale: _pressed ? 0.94 : 1.0,
             duration: const Duration(milliseconds: 100),
             curve: Curves.easeInOut,
             child: MouseRegion(
@@ -55,37 +55,39 @@ class _NavButtonState extends State<NavButton> {
                 curve: Curves.easeInOut,
                 // Fill the full Expanded width so all buttons are equal size
                 width: double.infinity,
+                constraints: const BoxConstraints(minHeight: 72),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: 10,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? NavioTheme.surfaceColor(active: true, pressed: _pressed)
-                      : NavioTheme.isApple
-                      ? Colors.white.withValues(alpha: 0.012)
+                      ? (_pressed
+                            ? Color.lerp(
+                                NavioTheme.surfacePressed,
+                                NavioTheme.accent,
+                                0.04,
+                              )!
+                            : NavioTheme.surfaceRaised)
                       : Colors.transparent,
-                  boxShadow: NavioTheme.glow(
-                    active: isSelected,
-                    alpha: _pressed ? 0.04 : 0.06,
-                  ),
-                  borderRadius: BorderRadius.circular(
-                    NavioTheme.isApple
-                        ? NavioTheme.radiusLarge + 8
-                        : NavioTheme.radiusLarge,
-                  ),
-                  border: NavioTheme.isApple && isSelected
-                      ? Border.all(
-                          color: NavioTheme.borderColor(active: true),
-                          width: NavioTheme.borderWidth,
-                        )
-                      : null,
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: NavioTheme.accent.withValues(
+                              alpha: _pressed ? 0.04 : 0.06,
+                            ),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : const [],
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     AnimatedScale(
-                      scale: isSelected ? 1.2 : 1.0,
+                      scale: isSelected ? 1.12 : 1.0,
                       duration: const Duration(milliseconds: 150),
                       curve: Curves.easeOut,
                       child: TweenAnimationBuilder(
@@ -101,7 +103,7 @@ class _NavButtonState extends State<NavButton> {
                             isSelected
                                 ? widget.iconSelected
                                 : widget.iconDefault,
-                            size: 35,
+                            size: 32,
                             color: color,
                           );
                         },
@@ -124,7 +126,7 @@ class _NavButtonState extends State<NavButton> {
                           style: TextStyle(
                             fontFamily: "SF-Pro",
                             fontWeight: FontWeight(800),
-                            fontSize: 15,
+                            fontSize: 13.5,
                             color: isSelected ? color : Colors.transparent,
                           ),
                         );

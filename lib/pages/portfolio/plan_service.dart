@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:navio/app_storage.dart';
 import 'package:navio/services/groq_service.dart';
 import 'package:navio/services/plan.dart';
@@ -41,7 +40,6 @@ class PlanService {
     if (result == null) throw Exception("No response received.");
     final steps = _parsePlan(result);
     await AppStorage.saveString(_planCacheKey, result);
-    Haptics.vibrate(HapticsType.success);
     return steps;
   }
 

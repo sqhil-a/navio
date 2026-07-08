@@ -40,7 +40,7 @@ extension CareerTools on GroqService {
     required String style,
   }) {
     return sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt:
           "You are a career advisor. Your only job is to return a career roadmap as a JSON object.\n\n$_jsonRules",
       userPrompt:
@@ -64,7 +64,7 @@ Generate a roadmap based solely on the user_data above.
   }) {
     final sanitised = _sanitise(instruction);
     return sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt:
           """
 You are a career roadmap editor. You have exactly one job: take an existing career roadmap JSON and apply a minor content edit to it.
@@ -105,7 +105,7 @@ If it is not, return the original plan JSON unchanged.
     required String stage,
   }) {
     return sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt: """
 You are a career resource curator. Return exactly 4 real, working resource links relevant to the user's career and stage.
 
@@ -155,7 +155,7 @@ Return 4 curated resources for this person.
     final existing = existingTasks.map(_sanitise).join("\n- ");
 
     return sendChat(
-      model: "llama-3.1-8b-instant",
+      model: "openai/gpt-oss-20b",
       systemPrompt: """
 You are a career task generator. Return exactly 3 fresh, short, practical tasks for the user's next steps.
 
