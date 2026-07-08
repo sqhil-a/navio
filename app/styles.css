@@ -333,6 +333,25 @@ p {
   transform: translateY(-1px) scale(0.985);
 }
 
+.store-button.coming-soon {
+  cursor: default;
+  animation: none;
+  opacity: 0.85;
+}
+
+.store-button.coming-soon:hover {
+  transform: none;
+  border-color: rgba(138, 124, 255, 0.48);
+  box-shadow:
+    0 18px 42px rgba(95, 71, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.store-button.coming-soon:hover::before {
+  opacity: 0;
+  transform: translateX(-60%);
+}
+
 .store-button small,
 .store-button strong {
   display: block;
