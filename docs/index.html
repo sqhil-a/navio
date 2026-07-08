@@ -21,12 +21,27 @@
         <img src="assets/logo.png" alt="Navio Pathways" />
       </a>
 
-      <nav aria-label="Primary">
+      <button class="hamburger" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="desktop-nav" aria-label="Primary">
         <a href="#mission">Mission</a>
         <a href="#founder">Founder</a>
         <a href="#programs">Programs</a>
         <a href="#contact">Contact</a>
       </nav>
+
+      <nav class="mobile-nav" aria-label="Primary" aria-hidden="true">
+        <a href="#mission">Mission</a>
+        <a href="#founder">Founder</a>
+        <a href="#programs">Programs</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="mobile-nav-overlay" aria-hidden="true"></div>
     </header>
 
     <main id="top">

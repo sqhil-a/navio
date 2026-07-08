@@ -7,6 +7,42 @@ const cursorGlow = document.querySelector(".cursor-glow");
 const scrollProgress = document.querySelector(".scroll-progress");
 const scorePanel = document.querySelector(".score-panel");
 
+/* ── Hamburger menu ── */
+const hamburger = document.querySelector(".hamburger");
+const mobileNav = document.querySelector(".mobile-nav");
+const mobileNavOverlay = document.querySelector(".mobile-nav-overlay");
+
+function openNav() {
+  hamburger?.classList.add("open");
+  hamburger?.setAttribute("aria-expanded", "true");
+  mobileNav?.classList.add("open");
+  mobileNav?.setAttribute("aria-hidden", "false");
+  mobileNavOverlay?.classList.add("open");
+  mobileNavOverlay?.setAttribute("aria-hidden", "false");
+  document.body.classList.add("nav-open");
+}
+
+function closeNav() {
+  hamburger?.classList.remove("open");
+  hamburger?.setAttribute("aria-expanded", "false");
+  mobileNav?.classList.remove("open");
+  mobileNav?.setAttribute("aria-hidden", "true");
+  mobileNavOverlay?.classList.remove("open");
+  mobileNavOverlay?.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("nav-open");
+}
+
+hamburger?.addEventListener("click", () => {
+  const isOpen = hamburger.classList.contains("open");
+  isOpen ? closeNav() : openNav();
+});
+
+mobileNavOverlay?.addEventListener("click", closeNav);
+
+mobileNav?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", closeNav);
+});
+
 if (!prefersReducedMotion) {
   let targetX = 0;
   let targetY = 0;

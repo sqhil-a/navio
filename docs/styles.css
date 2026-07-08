@@ -131,7 +131,13 @@ nav {
   font-weight: 720;
 }
 
-nav a {
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.desktop-nav a {
   position: relative;
   padding: 10px 12px;
   border-radius: 999px;
@@ -141,13 +147,13 @@ nav a {
     transform 280ms var(--ease-out);
 }
 
-nav a:hover {
+.desktop-nav a:hover {
   color: var(--text);
   background: rgba(255, 255, 255, 0.06);
   transform: translateY(-1px);
 }
 
-nav a::after {
+.desktop-nav a::after {
   position: absolute;
   left: 14px;
   right: 14px;
@@ -163,9 +169,139 @@ nav a::after {
     transform 280ms var(--ease-out);
 }
 
-nav a:hover::after {
+.desktop-nav a:hover::after {
   opacity: 1;
   transform: scaleX(1);
+}
+
+/* ── Hamburger ── */
+
+.hamburger {
+  display: none;
+  position: relative;
+  z-index: 60;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    border-color 280ms var(--ease-out),
+    background 280ms var(--ease-out);
+}
+
+.hamburger:hover {
+  border-color: var(--active-border);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--text-soft);
+  transition:
+    transform 400ms var(--ease-out),
+    opacity 300ms var(--ease-out),
+    background 300ms var(--ease-out);
+  transform-origin: center;
+}
+
+.hamburger.open span {
+  background: var(--text);
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile Nav ── */
+
+.mobile-nav,
+.mobile-nav-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 55;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 400ms var(--ease-out),
+    transform 400ms var(--ease-out);
+}
+
+.mobile-nav-overlay {
+  inset: 0;
+  z-index: 54;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(280px, 80vw);
+  height: 100vh;
+  padding: 90px 20px 20px;
+  border-left: 1px solid var(--border);
+  background: rgba(7, 7, 10, 0.96);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  transform: translateX(100%);
+}
+
+.mobile-nav.open,
+.mobile-nav-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-nav.open {
+  transform: translateX(0);
+}
+
+.mobile-nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 720;
+  color: var(--text-soft);
+  transition:
+    color 280ms var(--ease-out),
+    background 280ms var(--ease-out),
+    transform 280ms var(--ease-out);
+}
+
+.mobile-nav a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+body.nav-open {
+  overflow: hidden;
 }
 
 main,
@@ -1151,15 +1287,12 @@ footer a:hover {
     width: 86px;
   }
 
-  nav {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 2px;
-    font-size: 13px;
+  .desktop-nav {
+    display: none;
   }
 
-  nav a {
-    padding: 9px 8px;
+  .hamburger {
+    display: flex;
   }
 
   .hero-actions,
