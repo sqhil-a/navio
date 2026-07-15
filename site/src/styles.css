@@ -2652,6 +2652,20 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   gap: clamp(2.5rem, 5vw, 5rem);
 }
 
+/* Keep the layout ready for future photography without showing placeholders. */
+.human-hero .hero-grid,
+.feature-panel,
+.two-up {
+  grid-template-columns: 1fr;
+}
+
+.hero-photo-wrap,
+.photo-story,
+.photo-placeholder,
+.two-up > div:first-child {
+  display: none;
+}
+
 .human-hero .hero-copy h1 {
   max-width: 18ch;
   font-size: clamp(3rem, 4.5vw, 4.25rem);
