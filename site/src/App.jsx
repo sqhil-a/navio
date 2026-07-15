@@ -153,19 +153,19 @@ function LinkPage() {
         </a>
         <h1>Links and applications</h1>
         <p className="links-intro">Everything you need in one place.</p>
-        <a className="links-button links-button-secondary" href="https://naviopathways.com/">
+        <a className="button button-secondary links-button" href="https://naviopathways.com/">
           <span>Main site</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <a className="links-button" href="https://docs.google.com/forms/d/e/1FAIpQLSeKA47m7zWXEM9rh-PJ7cWIdcP07C_sehbzSaaVUtRSE3LwkQ/viewform" target="_blank" rel="noopener noreferrer">
+        <a className="button button-primary links-button" href="https://docs.google.com/forms/d/e/1FAIpQLSeKA47m7zWXEM9rh-PJ7cWIdcP07C_sehbzSaaVUtRSE3LwkQ/viewform" target="_blank" rel="noopener noreferrer">
           <span>Join the executive team</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <a className="links-button links-button-secondary" href="https://docs.google.com/document/d/1tscdBlxL6c1SGuCGV-u_8i-U0jk-Zx34XOODXZoyqYk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <a className="button button-secondary links-button" href="https://docs.google.com/document/d/1tscdBlxL6c1SGuCGV-u_8i-U0jk-Zx34XOODXZoyqYk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
           <span>Executive positions information</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <a className="links-button links-button-secondary" href="https://www.instagram.com/naviopathways/" target="_blank" rel="noopener noreferrer">
+        <a className="button button-secondary links-button" href="https://www.instagram.com/naviopathways/" target="_blank" rel="noopener noreferrer">
           <span>Instagram</span>
           <span aria-hidden="true">↗</span>
         </a>

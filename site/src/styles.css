@@ -3011,38 +3011,13 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   justify-content: space-between;
   gap: 1rem;
   width: 100%;
-  padding: 0.95rem 1.05rem;
-  border: 1px solid rgba(202, 169, 255, 0.35);
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #7c3aed, #9d5eff);
-  color: #fff;
-  font-weight: 760;
+  min-height: 3.5rem;
   text-align: left;
-  text-decoration: none;
-  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.28);
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   margin-top: 0.85rem;
 }
 
-.links-button-secondary {
-  border-color: rgba(202, 169, 255, 0.25);
-  background: rgba(255, 255, 255, 0.045);
-  box-shadow: none;
-}
-
-.links-button-secondary:hover,
-.links-button-secondary:focus-visible {
-  background: rgba(157, 94, 255, 0.14);
-  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.2);
-}
-
-.links-button:hover,
-.links-button:focus-visible {
-  border-color: #fff;
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow: 0 16px 38px rgba(124, 58, 237, 0.42);
-}
+.links-button > span { position: relative; z-index: 1; }
+.links-button > span:last-child { font-size: 1.1rem; line-height: 1; }
 
 .links-note { margin: 1.25rem 0 0; color: #9e91ad; font-size: 0.76rem; }
 
