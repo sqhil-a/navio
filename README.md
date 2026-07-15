@@ -9,6 +9,7 @@ The former Flutter application and unused platform/backend files have been remov
 - React 19 for the shared layout, navigation, forms, analytics hooks, and page rendering
 - Vite 8 for local development and production bundling
 - React server rendering for pre-rendered, search-friendly HTML on every route
+- Dark-first responsive design with an accessible, persistent light/dark theme toggle
 - Generated production files committed at the repository root for the existing GitHub Pages `main`/root deployment
 - Custom domain configured by `CNAME` as `naviopathways.com`
 

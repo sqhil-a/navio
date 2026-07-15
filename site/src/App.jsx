@@ -39,6 +39,44 @@ function Brand({ footer = false }) {
   );
 }
 
+function applyDocumentTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#08070d" : "#fffdf9");
+}
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    try {
+      const savedTheme = window.localStorage.getItem("navio-theme");
+      const initialTheme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "dark";
+      applyDocumentTheme(initialTheme);
+      setTheme(initialTheme);
+    } catch {
+      applyDocumentTheme("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    applyDocumentTheme(nextTheme);
+    setTheme(nextTheme);
+    try {
+      window.localStorage.setItem("navio-theme", nextTheme);
+    } catch {
+      // The selected theme still applies for this page when storage is unavailable.
+    }
+  };
+
+  const nextLabel = theme === "dark" ? "light" : "dark";
+  return (
+    <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextLabel} mode`} title={`Switch to ${nextLabel} mode`}>
+      <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+    </button>
+  );
+}
+
 function Header({ path }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -57,6 +95,7 @@ function Header({ path }) {
             {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
+            <ThemeToggle />
             <a className="button button-small button-primary desktop-cta" href="/get-involved/">Get involved</a>
             <button className="menu-toggle" type="button" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
               <span className="sr-only">{open ? "Close" : "Open"} navigation menu</span>

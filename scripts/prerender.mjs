@@ -10,6 +10,7 @@ const siteUrl = "https://naviopathways.com";
 const catalog = getPageCatalog();
 
 const escapeAttribute = (value) => value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+const normalizeText = (value) => value.replaceAll("\r\n", "\n").replace(/[ \t]+(?=\n)/g, "");
 const outputFor = (path) => path === "/" ? "index.html" : path === "/404.html" ? "404.html" : join(path.slice(1), "index.html");
 const schemaFor = (page) => {
   const graph = [
@@ -46,7 +47,7 @@ for (const page of catalog) {
     .replace("<!--app-html-->", render(page.path));
   const destination = join(dist, outputFor(page.path));
   mkdirSync(dirname(destination), { recursive: true });
-  writeFileSync(destination, html);
+  writeFileSync(destination, normalizeText(html));
 }
 
 const sitemap = catalog
