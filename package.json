@@ -1,0 +1,21 @@
+{
+  "name": "navio-pathways-website",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.js",
+    "build:client": "vite build --config vite.config.js",
+    "build:ssr": "vite build --config vite.ssr.config.js",
+    "build": "npm run build:client && npm run build:ssr && node scripts/prerender.mjs && node scripts/publish-root.mjs && node scripts/check-site.mjs",
+    "check": "npm run build"
+  },
+  "dependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.3",
+    "vite": "8.1.4"
+  }
+}
