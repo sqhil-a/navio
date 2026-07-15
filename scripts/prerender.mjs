@@ -16,7 +16,7 @@ const schemaFor = (page) => {
   const graph = [
     ...(page.path === "/" ? [
       { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: `${siteUrl}/`, name: "Navio Pathways" },
-      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "NAVIO PATHWAYS", url: `${siteUrl}/`, email: "hello@naviopathways.com", areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/"] },
+      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", url: `${siteUrl}/`, email: "hello@naviopathways.com", areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/"] },
     ] : []),
     { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
   ];

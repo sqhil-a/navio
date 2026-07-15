@@ -2172,24 +2172,10 @@ html[data-theme="dark"] .page-hero h1 {
 
 .hero-note { border-left-color: var(--purple); }
 
-.path-visual {
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #100c16 url("/assets/images/navio-star-bg.png") center / cover no-repeat;
+.hero-star {
+  min-height: 30rem;
+  background: url("/assets/images/navio-star-bg.png") center / min(100%, 31rem) no-repeat;
 }
-
-.path-line { background: #9b7cf4; box-shadow: none; }
-
-.path-point {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(9, 7, 12, 0.88);
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  animation: none;
-}
-
-.path-point::after { display: none; }
-.path-point > span { background: #7650c8; box-shadow: none; }
 
 .trust-strip { border-color: rgba(255, 255, 255, 0.14); background-color: #000; }
 .trust-strip p { color: rgba(255, 255, 255, 0.74); }
@@ -2240,6 +2226,14 @@ html[data-theme="dark"] .page-hero h1 {
 input:focus,
 select:focus,
 textarea:focus { box-shadow: 0 0 0 3px rgba(155, 124, 244, 0.24); }
+
+@media (max-width: 48rem) {
+  .hero-star {
+    min-height: 17rem;
+    margin-top: -1rem;
+    background-size: 17rem;
+  }
+}
 
 @media print {
   .site-header,

@@ -125,14 +125,14 @@ function Footer() {
         <div className="footer-intro">
           <Brand footer />
           <p>Helping young people explore careers, build practical skills, connect with community, and take their next step with greater direction.</p>
-          <p className="legal-name"><strong>NAVIO PATHWAYS</strong><br />Ontario incorporated not-for-profit organization</p>
+          <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
         <div><h2>Connect</h2><LinkList links={connectLinks} /><ul><li><a href={`mailto:${email}`}>{email}</a></li></ul></div>
         <div><h2>Policies</h2><LinkList links={policyLinks} /></div>
       </div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} NAVIO PATHWAYS. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Navio Pathways. All rights reserved.</p>
         <p>Navio Pathways is not presented as a registered charity and does not currently advertise tax-deductible donations or charitable receipts.</p>
       </div>
     </footer>
