@@ -217,6 +217,30 @@ function useForms() {
   }, []);
 }
 
+function usePageMotion() {
+  useEffect(() => {
+    const targets = [...document.querySelectorAll(".section-heading, .split-intro, .two-up > *, .info-card, .audience-link, .steps li, .pathway-stack article, .status-panel, .form-panel, .page-hero .container")];
+    if (!targets.length) return undefined;
+
+    const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      showAll();
+      return undefined;
+    }
+
+    targets.forEach((target) => target.classList.add("reveal"));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4%" });
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
+}
+
 function PageContent({ page }) {
   const html = useMemo(() => ({ __html: page.html }), [page.html]);
   return <main id="main-content" tabIndex="-1" dangerouslySetInnerHTML={html} />;
@@ -227,5 +251,6 @@ export function App({ path = "/" }) {
   const page = getPage(normalizedPath);
   useAnalytics();
   useForms();
+  usePageMotion();
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }
