@@ -42,11 +42,11 @@ for (const root of roots) {
     for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
       if (!href.startsWith("/") || href.startsWith("//")) continue;
       const localPath = href.split(/[?#]/, 1)[0];
-      if (!localPath || localPath.startsWith("/assets/") || routePaths.has(localPath)) continue;
+      if (!localPath || localPath.startsWith("/assets/") || localPath === "/navio-favicon.svg" || routePaths.has(localPath)) continue;
       errors.push(`${file} links to missing local route ${localPath}`);
     }
   }
-  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "site-config.js", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
+  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "navio-favicon.svg", "site-config.js", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
     if (!existsSync(join(root, asset))) errors.push(`${join(root, asset)} is missing`);
   }
 }
