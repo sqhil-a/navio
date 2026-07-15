@@ -151,9 +151,9 @@ function LinkPage() {
         <a className="links-brand" href="/" aria-label="Navio Pathways home">
           <span className="brand-wordmark" aria-hidden="true" />
         </a>
-        <p className="eyebrow">Youth development in Ontario</p>
-        <h1>Find your next direction.</h1>
-        <p className="links-intro">Navio Pathways helps young people explore careers, build experience, and connect with community.</p>
+        <p className="eyebrow">Navio Pathways</p>
+        <h1>Links and applications</h1>
+        <p className="links-intro">Everything you need in one place.</p>
         <a className="links-button links-button-secondary" href="https://naviopathways.com/">
           <span>Main site</span>
           <span aria-hidden="true">↗</span>

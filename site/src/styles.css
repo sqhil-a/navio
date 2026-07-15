@@ -2953,10 +2953,10 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 .links-page {
   display: grid;
   min-height: 100svh;
-  padding: 2rem 1.25rem;
+  padding: 3rem 1.25rem;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.22), transparent 42%),
+    radial-gradient(circle at 50% 8%, rgba(124, 58, 237, 0.16), transparent 38%),
     #0a080d;
 }
 
@@ -2964,12 +2964,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: min(100%, 28rem);
-  padding: clamp(1.5rem, 6vw, 2.5rem);
-  border: 1px solid rgba(202, 169, 255, 0.2);
-  border-radius: 1.5rem;
-  background: rgba(17, 12, 24, 0.78);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38), 0 0 52px rgba(126, 60, 232, 0.1);
+  width: min(100%, 25.5rem);
   text-align: center;
 }
 
@@ -2985,18 +2980,19 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 
 .links-brand {
   display: inline-flex;
-  margin-bottom: 2rem;
+  align-self: center;
+  margin-bottom: 1.35rem;
   text-decoration: none;
 }
 
 .links-brand .brand-wordmark {
-  width: 10rem;
-  height: 3rem;
+  width: 9.25rem;
+  height: 2.8rem;
 }
 
-.links-shell .eyebrow { margin-bottom: 0.85rem; }
-.links-shell h1 { margin-bottom: 1rem; font-size: clamp(2.25rem, 9vw, 3.25rem); }
-.links-intro { margin: 0 auto 1.75rem; max-width: 25rem; color: var(--muted); line-height: 1.65; }
+.links-shell .eyebrow { margin-bottom: 0.55rem; color: #d9c3ff; font-size: 0.7rem; }
+.links-shell h1 { margin-bottom: 0.7rem; font-size: clamp(1.85rem, 8vw, 2.5rem); line-height: 1.05; }
+.links-intro { margin: 0 auto 1.65rem; max-width: 22rem; color: var(--muted); line-height: 1.55; }
 
 .links-button {
   display: flex;
@@ -3004,9 +3000,9 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   justify-content: space-between;
   gap: 1rem;
   width: 100%;
-  padding: 1rem 1.15rem;
-  border: 1px solid rgba(202, 169, 255, 0.55);
-  border-radius: 0.85rem;
+  padding: 0.95rem 1.05rem;
+  border: 1px solid rgba(202, 169, 255, 0.35);
+  border-radius: 0.75rem;
   background: linear-gradient(135deg, #7c3aed, #9d5eff);
   color: #fff;
   font-weight: 760;
@@ -3016,7 +3012,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
-.links-button + .links-button { margin-top: 0.7rem; }
+.links-button + .links-button { margin-top: 0.6rem; }
 
 .links-button-secondary {
   border-color: rgba(202, 169, 255, 0.25);
@@ -3038,7 +3034,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   box-shadow: 0 16px 38px rgba(124, 58, 237, 0.42);
 }
 
-.links-note { margin: 1rem 0 0; color: #9e91ad; font-size: 0.78rem; }
+.links-note { margin: 1.25rem 0 0; color: #9e91ad; font-size: 0.76rem; }
 
 @media print {
   .site-header,
