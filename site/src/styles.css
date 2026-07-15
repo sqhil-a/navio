@@ -2961,6 +2961,9 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 }
 
 .links-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: min(100%, 28rem);
   padding: clamp(1.5rem, 6vw, 2.5rem);
   border: 1px solid rgba(202, 169, 255, 0.2);
@@ -2969,6 +2972,16 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38), 0 0 52px rgba(126, 60, 232, 0.1);
   text-align: center;
 }
+
+.links-brand,
+.links-shell > .eyebrow,
+.links-shell > h1,
+.links-intro { order: 0; }
+.links-button[href*="viewform"] { order: 1; }
+.links-button[href*="document"] { order: 2; }
+.links-button[href*="naviopathways.com"] { order: 3; }
+.links-button[href*="instagram.com"] { order: 4; }
+.links-note { order: 5; }
 
 .links-brand {
   display: inline-flex;
