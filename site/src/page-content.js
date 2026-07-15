@@ -113,6 +113,14 @@ export const pageContent = {
     <section class="section"><div class="container narrow policy-copy"><h2>Core expectations</h2><ul class="check-list"><li>Treat every young person with dignity and respect.</li><li>Keep communication transparent and use approved channels.</li><li>Do not request unnecessary personal information or private contact.</li><li>Use clear supervision, consent, privacy, and reporting procedures.</li><li>Act on concerns and prohibit retaliation for good-faith reports.</li></ul><h2>Report a concern</h2><p>Email <a href="mailto:${email}?subject=Youth%20safety%20concern">${email}</a> with “Youth safety concern” in the subject line. If someone is in immediate danger, contact local emergency services.</p><div class="notice notice-important"><strong>Status:</strong> Detailed screening, escalation, recordkeeping, and activity procedures require appropriate professional review before recurring youth programming launches.</div></div></section>`,
   },
 
+  "/links/": {
+    path: "/links/",
+    title: "Navio Pathways links",
+    description: "Connect with Navio Pathways and apply to join the executive team.",
+    noindex: true,
+    html: `<section class="links-placeholder"><h1>Navio Pathways links</h1><p>Connect with Navio Pathways and apply to join the executive team.</p></section>`,
+  },
+
   "/404.html": {
     path: "/404.html",
     title: "Page not found | Navio Pathways",

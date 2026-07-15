@@ -144,10 +144,31 @@ function PageContent({ page }) {
   return <main id="main-content" tabIndex="-1" dangerouslySetInnerHTML={html} />;
 }
 
+function LinkPage() {
+  return (
+    <main className="links-page" id="main-content">
+      <div className="links-shell">
+        <a className="links-brand" href="/" aria-label="Navio Pathways home">
+          <span className="brand-wordmark" aria-hidden="true" />
+        </a>
+        <p className="eyebrow">Youth development in Ontario</p>
+        <h1>Find your next direction.</h1>
+        <p className="links-intro">Navio Pathways helps young people explore careers, build experience, and connect with community.</p>
+        <a className="links-button" href="https://docs.google.com/forms/d/e/1FAIpQLSeKA47m7zWXEM9rh-PJ7cWIdcP07C_sehbzSaaVUtRSE3LwkQ/viewform" target="_blank" rel="noopener noreferrer">
+          <span>Join the executive team</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <p className="links-note">Applications open in Google Forms.</p>
+      </div>
+    </main>
+  );
+}
+
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
   useAnalytics();
   usePageMotion();
+  if (normalizedPath === "/links/") return <LinkPage />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }
