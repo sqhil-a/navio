@@ -2614,7 +2614,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 }
 
 .footer-contact-links { margin-top: 0.55rem !important; }
-.footer-contact-links a[href*="instagram"] { color: #d9c3ff; }
+.footer-contact-links a[href*="instagram"],
+.footer-contact-links a[href*="linkedin"] { color: #d9c3ff; }
 .footer-contact-links a[href*="instagram"] span { display: inline-block; transition: transform 180ms ease; }
 .footer-contact-links a[href*="instagram"]:hover span { transform: translate(2px, -2px); }
 
