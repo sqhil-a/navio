@@ -3003,6 +3003,20 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
+.links-button + .links-button { margin-top: 0.7rem; }
+
+.links-button-secondary {
+  border-color: rgba(202, 169, 255, 0.25);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: none;
+}
+
+.links-button-secondary:hover,
+.links-button-secondary:focus-visible {
+  background: rgba(157, 94, 255, 0.14);
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.2);
+}
+
 .links-button:hover,
 .links-button:focus-visible {
   border-color: #fff;

@@ -154,8 +154,20 @@ function LinkPage() {
         <p className="eyebrow">Youth development in Ontario</p>
         <h1>Find your next direction.</h1>
         <p className="links-intro">Navio Pathways helps young people explore careers, build experience, and connect with community.</p>
+        <a className="links-button links-button-secondary" href="https://naviopathways.com/">
+          <span>Main site</span>
+          <span aria-hidden="true">↗</span>
+        </a>
         <a className="links-button" href="https://docs.google.com/forms/d/e/1FAIpQLSeKA47m7zWXEM9rh-PJ7cWIdcP07C_sehbzSaaVUtRSE3LwkQ/viewform" target="_blank" rel="noopener noreferrer">
           <span>Join the executive team</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a className="links-button links-button-secondary" href="https://docs.google.com/document/d/1tscdBlxL6c1SGuCGV-u_8i-U0jk-Zx34XOODXZoyqYk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+          <span>Executive positions information</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a className="links-button links-button-secondary" href="https://www.instagram.com/naviopathways/" target="_blank" rel="noopener noreferrer">
+          <span>Instagram</span>
           <span aria-hidden="true">↗</span>
         </a>
         <p className="links-note">Applications open in Google Forms.</p>
