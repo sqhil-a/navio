@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { pageContent } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
+const instagram = "https://www.instagram.com/naviopathways/";
 const primaryNav = [
   ["About", "/about/"],
   ["Opportunities", "/opportunities/"],
@@ -38,44 +39,6 @@ function Brand({ footer = false }) {
   );
 }
 
-function applyDocumentTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#08070d" : "#fffdf9");
-}
-
-function ThemeToggle() {
-  const [theme, setTheme] = useState("dark");
-
-  useEffect(() => {
-    try {
-      const savedTheme = window.localStorage.getItem("navio-theme");
-      const initialTheme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "dark";
-      applyDocumentTheme(initialTheme);
-      setTheme(initialTheme);
-    } catch {
-      applyDocumentTheme("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    applyDocumentTheme(nextTheme);
-    setTheme(nextTheme);
-    try {
-      window.localStorage.setItem("navio-theme", nextTheme);
-    } catch {
-      // The selected theme still applies for this page when storage is unavailable.
-    }
-  };
-
-  const nextLabel = theme === "dark" ? "light" : "dark";
-  return (
-    <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextLabel} mode`} title={`Switch to ${nextLabel} mode`}>
-      <span aria-hidden="true">{nextLabel}</span>
-    </button>
-  );
-}
-
 function Header({ path }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -94,7 +57,6 @@ function Header({ path }) {
             {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
-            <ThemeToggle />
             <a className="button button-small button-primary desktop-cta" href="/get-involved/">Get involved</a>
             <button className="menu-toggle" type="button" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
               <span className="sr-only">{open ? "Close" : "Open"} navigation menu</span>
@@ -128,7 +90,7 @@ function Footer() {
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
-        <div><h2>Connect</h2><LinkList links={connectLinks} /><ul><li><a href={`mailto:${email}`}>{email}</a></li></ul></div>
+        <div><h2>Connect</h2><LinkList links={connectLinks} /><ul className="footer-contact-links"><li><a href={instagram} target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li><li><a href={`mailto:${email}`}>{email}</a></li></ul></div>
         <div><h2>Policies</h2><LinkList links={policyLinks} /></div>
       </div>
       <div className="footer-bottom">
