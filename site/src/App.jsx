@@ -33,8 +33,7 @@ const getPage = (path) => pageContent[normalizePath(path)] || pageContent["/404.
 function Brand({ footer = false }) {
   return (
     <a className={`brand${footer ? " brand-footer" : ""}`} href="/" aria-label="Navio Pathways home">
-      <span className="brand-mark" aria-hidden="true">✦</span>
-      <span><strong>Navio</strong><small>Pathways</small></span>
+      <span className="brand-wordmark" aria-hidden="true" />
     </a>
   );
 }
@@ -72,7 +71,7 @@ function ThemeToggle() {
   const nextLabel = theme === "dark" ? "light" : "dark";
   return (
     <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextLabel} mode`} title={`Switch to ${nextLabel} mode`}>
-      <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+      <span aria-hidden="true">{nextLabel}</span>
     </button>
   );
 }

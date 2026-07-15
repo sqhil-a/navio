@@ -49,7 +49,7 @@ for (const root of roots) {
       errors.push(`${file} links to missing local route ${localPath}`);
     }
   }
-  for (const asset of ["assets/icon/icon.png", "assets/images/Star.png", "site-config.js", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
+  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "site-config.js", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
     if (!existsSync(join(root, asset))) errors.push(`${join(root, asset)} is missing`);
   }
 }
