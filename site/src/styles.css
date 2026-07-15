@@ -2846,6 +2846,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   width: min(calc(100% - 2.5rem), 42rem);
   max-width: 42rem;
   margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr);
   padding: clamp(2rem, 5vw, 3.5rem);
   border: 1px solid rgba(202, 169, 255, 0.18);
   border-radius: 1.5rem;
