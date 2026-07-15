@@ -1,11 +1,4 @@
-// Configure real services here before enabling forms or analytics.
-// Never place API secrets in this browser-visible file.
+// Public analytics configuration. Never place API secrets in this file.
 window.NAVIO_CONFIG = Object.freeze({
-  formEndpoints: Object.freeze({
-    contact: "",
-    volunteer: "",
-    partner: "",
-    newsletter: "",
-  }),
   analyticsMeasurementId: "",
 });

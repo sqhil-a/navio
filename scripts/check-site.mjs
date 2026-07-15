@@ -3,13 +3,9 @@ import { join } from "node:path";
 
 const roots = ["dist", "."];
 const routes = [
-  "index.html", "about/index.html", "opportunities/index.html", "volunteer/index.html",
-  "get-involved/index.html", "partner/index.html", "updates/index.html", "resources/index.html",
-  "contact/index.html", "privacy/index.html", "terms/index.html", "accessibility/index.html",
-  "youth-safety/index.html", "career-exploration/index.html", "leadership-opportunities/index.html",
-  "mentorship/index.html", "thank-you/contact/index.html", "thank-you/volunteer/index.html",
-  "thank-you/partner/index.html", "thank-you/application/index.html", "thank-you/newsletter/index.html",
-  "404.html",
+  "index.html", "about/index.html", "opportunities/index.html", "get-involved/index.html",
+  "resources/index.html", "contact/index.html", "privacy/index.html", "terms/index.html",
+  "accessibility/index.html", "youth-safety/index.html", "404.html",
 ];
 const errors = [];
 const routePaths = new Set(routes.map((route) => route === "index.html" ? "/" : route === "404.html" ? "/404.html" : `/${route.replace(/index\.html$/, "")}`));
@@ -30,6 +26,7 @@ for (const root of roots) {
     if ((html.match(/<h1(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one h1`);
     if ((html.match(/<main(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one main landmark`);
     if (/target="_blank"(?![^>]*rel="[^"]*noopener)/.test(html)) errors.push(`${file} has an unsafe new-tab link`);
+    if (/<form(?:\s|>)/.test(html)) errors.push(`${file} contains a form even though the site uses direct contact links`);
 
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];

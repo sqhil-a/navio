@@ -20,16 +20,12 @@ const schemaFor = (page) => {
     ] : []),
     { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
   ];
-  if (page.path !== "/" && page.path !== "/404.html" && !page.path.startsWith("/thank-you/")) {
-    const parent = ["/career-exploration/", "/leadership-opportunities/", "/mentorship/"].includes(page.path)
-      ? [{ "@type": "ListItem", position: 2, name: "Opportunities", item: `${siteUrl}/opportunities/` }]
-      : [];
+  if (page.path !== "/" && page.path !== "/404.html") {
     graph.push({
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
-        ...parent,
-        { "@type": "ListItem", position: parent.length + 2, name: page.title.replace(" | Navio Pathways", ""), item: `${siteUrl}${page.path}` },
+        { "@type": "ListItem", position: 2, name: page.title.replace(" | Navio Pathways", ""), item: `${siteUrl}${page.path}` },
       ],
     });
   }
@@ -51,9 +47,9 @@ for (const page of catalog) {
 }
 
 const sitemap = catalog
-  .filter((page) => !page.noindex && !page.path.startsWith("/thank-you/") && page.path !== "/404.html")
+  .filter((page) => !page.noindex && page.path !== "/404.html")
   .map((page) => `  <url><loc>${siteUrl}${page.path}</loc><lastmod>2026-07-14</lastmod></url>`)
   .join("\n");
 writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap}\n</urlset>\n`);
-writeFileSync(join(dist, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /thank-you/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+writeFileSync(join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 console.log(`Pre-rendered ${catalog.length} React routes.`);

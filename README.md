@@ -1,76 +1,49 @@
 # Navio Pathways website
 
-This repository contains the public website for **NAVIO PATHWAYS**, an Ontario incorporated not-for-profit organization supporting youth development through career exploration, mentorship, leadership development, volunteering, and community experience.
-
-The former Flutter application and unused platform/backend files have been removed. Everything committed here now supports the website or its release review.
+This repository contains the public website for Navio Pathways, an Ontario incorporated not-for-profit organization focused on youth career exploration, volunteering, leadership, and community experience.
 
 ## Stack and deployment
 
-- React 19 for the shared layout, navigation, forms, analytics hooks, and page rendering
-- Vite 8 for local development and production bundling
-- React server rendering for pre-rendered, search-friendly HTML on every route
-- Dark-first responsive design with an accessible, persistent light/dark theme toggle
-- Generated production files committed at the repository root for the existing GitHub Pages `main`/root deployment
-- Custom domain configured by `CNAME` as `naviopathways.com`
+- React 19 and Vite 8
+- Pre-rendered HTML for search engines and fast GitHub Pages delivery
+- Permanent dark design using the Navio purple, white, and black brand palette
+- Custom domain configured as `naviopathways.com`
 
-The editable React source lives in `site/src/`. `site/src/page-content.js` contains the reviewed route content rendered by the React shell. The build scripts in `scripts/` pre-render the site, generate metadata/sitemap files, and copy the production artifact to the repository root.
+The editable source lives in `site/src/`. Route content is stored in `site/src/page-content.js`. The build scripts pre-render every route, generate the sitemap, validate links and metadata, and publish the final files to the repository root.
+
+## Site structure
+
+The public site intentionally uses a small route set:
+
+- Home
+- About
+- Opportunities
+- Get involved
+- Resources
+- Contact
+- Privacy, terms, accessibility, and youth safety
+
+Older campaign, volunteer, partnership, update, and form-confirmation pages were consolidated into these core routes.
+
+## Contact and applications
+
+The static site does not submit inquiry forms. Visitors contact Navio Pathways directly by email or Instagram. The executive-team application opens an external Google Form.
 
 ## Local development
-
-Requirements: Node.js 20.19+ or 22.12+ and npm.
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Vite prints the local preview URL. Navigation uses real directory URLs so production behavior remains compatible with GitHub Pages.
-
-## Production build and checks
+## Production build
 
 ```powershell
 npm run build
 ```
 
-That single command:
+The build creates the browser and server-rendering bundles, pre-renders 11 routes, publishes the GitHub Pages files, and checks route integrity, metadata, external-link safety, and the absence of on-site forms.
 
-1. builds the browser bundle;
-2. builds the React server-rendering entry;
-3. pre-renders all 22 routes with unique metadata and structured data;
-4. generates `sitemap.xml` and `robots.txt`;
-5. publishes the artifact to the repository root; and
-6. validates both `dist/` and the committed Pages output.
+## Content notes
 
-Commit the React source, scripts, lockfile, and regenerated root files together. `dist/`, `.ssr/`, and `node_modules/` are local-only.
-
-## Forms
-
-The contact, volunteer-interest, partnership, and newsletter forms are accessible and preserve visitor entries after a recoverable error. No fake endpoint is configured, so the current production behavior directs visitors to `hello@naviopathways.com` instead of claiming that an unsent form succeeded.
-
-Set public HTTPS endpoints in `site/public/site-config.js` under `formEndpoints`. The receiving service must perform server-side validation, spam protection, rate limiting, safe storage, and origin checks. Never put secrets in this file: it is visible to every browser.
-
-A successful response redirects to the matching `/thank-you/` route and only then records the appropriate analytics event.
-
-## Analytics
-
-Analytics is disabled by default. After privacy and consent review, set a real Google Analytics measurement ID in `site/public/site-config.js`. The integration accepts only the `G-...` format and does not send form values.
-
-Implemented submission events include:
-
-- `contact_form_submit`
-- `volunteer_application_submit`
-- `partner_inquiry_submit`
-- `newsletter_signup`
-
-## Content and release review
-
-Core routes include `/`, `/about/`, `/opportunities/`, `/volunteer/`, `/get-involved/`, `/partner/`, `/updates/`, `/resources/`, `/contact/`, and the policy pages. Campaign-ready guidance pages cover career exploration, leadership opportunities, and mentorship. Confirmation pages are marked `noindex`.
-
-Before a public release, review:
-
-- `CONTENT_CHECKLIST.md`
-- `ACCESSIBILITY_CHECKLIST.md`
-- `DEPLOYMENT_CHECKLIST.md`
-- `GOOGLE_AD_GRANTS_READINESS.md`
-
-Policy and youth-safety pages are intentionally labelled as drafts requiring organizational and professional review. Website quality supports—but does not guarantee—Google for Nonprofits or Ad Grants eligibility or approval.
+Photo areas are intentionally marked as placeholders until real Navio Pathways photography is available with appropriate participant consent. Impact statistics and additional leadership or board biographies should be added only after they are verified.
