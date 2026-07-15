@@ -151,7 +151,6 @@ function LinkPage() {
         <a className="links-brand" href="/" aria-label="Navio Pathways home">
           <span className="brand-wordmark" aria-hidden="true" />
         </a>
-        <p className="eyebrow">Navio Pathways</p>
         <h1>Links and applications</h1>
         <p className="links-intro">Everything you need in one place.</p>
         <a className="links-button links-button-secondary" href="https://naviopathways.com/">
