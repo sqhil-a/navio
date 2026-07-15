@@ -2842,8 +2842,9 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 .opportunity-grid .info-card { min-height: 19rem; }
 .opportunity-grid .info-card h2 { font-size: clamp(1.65rem, 2.4vw, 2.35rem); }
 
-.feature-panel {
-  max-width: 46rem;
+.container.feature-panel {
+  width: min(calc(100% - 2.5rem), 42rem);
+  max-width: 42rem;
   margin-inline: auto;
   padding: clamp(2rem, 5vw, 3.5rem);
   border: 1px solid rgba(202, 169, 255, 0.18);
