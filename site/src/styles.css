@@ -2133,6 +2133,23 @@ h1, h2, h3 {
 .section-dark,
 .final-cta { background-color: #09070c; }
 
+.hero,
+.page-hero,
+.section-dark,
+.final-cta { color: #ded7ea; }
+
+.hero h1,
+.page-hero h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark strong,
+.final-cta h2 { color: #fff; }
+
+.hero .lead,
+.page-hero .lead { color: #ded7ea; }
+
+.hero .button-secondary { border-color: #cfbaff; color: #e3d6ff; }
+
 .hero::before,
 .hero::after,
 .page-hero::after { display: none; }
