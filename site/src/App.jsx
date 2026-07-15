@@ -119,7 +119,7 @@ function useAnalytics() {
 
 function usePageMotion() {
   useEffect(() => {
-    const targets = [...document.querySelectorAll(".section-heading, .split-intro, .two-up > *, .benefit-card, .info-card, .contact-card, .photo-placeholder, .trust-panel, .page-hero .container")];
+    const targets = [...document.querySelectorAll(".section-heading, .split-intro, .two-up > *, .benefit-card, .info-card, .contact-card, .trust-panel, .page-hero .container")];
     if (!targets.length) return undefined;
     const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
