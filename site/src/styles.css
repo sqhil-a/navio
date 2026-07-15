@@ -3017,9 +3017,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   text-decoration: none;
   box-shadow: 0 12px 30px rgba(124, 58, 237, 0.28);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  margin-top: 0.85rem;
 }
-
-.links-button + .links-button { margin-top: 0.85rem; }
 
 .links-button-secondary {
   border-color: rgba(202, 169, 255, 0.25);
