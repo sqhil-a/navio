@@ -7,6 +7,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 const template = readFileSync(join(dist, "index.html"), "utf8");
 const siteUrl = "https://naviopathways.com";
+const buildDate = new Date().toISOString().slice(0, 10);
 const catalog = getPageCatalog();
 
 const escapeAttribute = (value) => value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -48,7 +49,7 @@ for (const page of catalog) {
 
 const sitemap = catalog
   .filter((page) => !page.noindex && page.path !== "/404.html")
-  .map((page) => `  <url><loc>${siteUrl}${page.path}</loc><lastmod>2026-07-14</lastmod></url>`)
+  .map((page) => `  <url><loc>${siteUrl}${page.path}</loc><lastmod>${buildDate}</lastmod></url>`)
   .join("\n");
 writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap}\n</urlset>\n`);
 writeFileSync(join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);

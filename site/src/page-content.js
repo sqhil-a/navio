@@ -115,7 +115,7 @@ export const pageContent = {
     title: "Navio Pathways links",
     description: "Connect with Navio Pathways and apply to join the executive team.",
     noindex: true,
-    html: `<section class="links-placeholder"><h1>Navio Pathways links</h1><p>Connect with Navio Pathways and apply to join the executive team.</p></section>`,
+    html: `<section><h1>Navio Pathways links</h1><p>Connect with Navio Pathways and apply to join the executive team.</p></section>`,
   },
 
   "/404.html": {

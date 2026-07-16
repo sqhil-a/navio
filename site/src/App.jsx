@@ -41,16 +41,27 @@ function Brand({ footer = false }) {
 
 function Header({ path }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const close = (event) => event.key === "Escape" && setOpen(false);
     document.addEventListener("keydown", close);
     return () => document.removeEventListener("keydown", close);
   }, []);
+  useEffect(() => {
+    document.body.classList.toggle("menu-open", open);
+    return () => document.body.classList.remove("menu-open");
+  }, [open]);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 16);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
   const activeHref = primaryNav.find(([, href]) => path.startsWith(href))?.[1];
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <header className="site-header">
+      <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Primary navigation">
@@ -58,13 +69,13 @@ function Header({ path }) {
           </nav>
           <div className="header-actions">
             <a className="button button-small button-primary desktop-cta" href="/contact/">Contact us</a>
-            <button className="menu-toggle" type="button" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
+            <button className={`menu-toggle${open ? " is-open" : ""}`} type="button" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
               <span className="sr-only">{open ? "Close" : "Open"} navigation menu</span>
               <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
             </button>
           </div>
         </div>
-        <div className="mobile-menu" id="mobile-menu" hidden={!open}>
+        <div className={`mobile-menu${open ? " is-open" : ""}`} id="mobile-menu" aria-hidden={!open}>
           <nav aria-label="Mobile navigation">
             {[...primaryNav, ["Contact", "/contact/"]].map(([label, href]) => (
               <a key={`${label}-${href}`} href={href} onClick={() => setOpen(false)}>{label}</a>
@@ -119,23 +130,55 @@ function useAnalytics() {
 
 function usePageMotion() {
   useEffect(() => {
-    const targets = [...document.querySelectorAll(".section-heading, .split-intro, .two-up > *, .benefit-card, .info-card, .contact-card, .trust-panel, .page-hero .container")];
+    const selector = [
+      ".breadcrumbs",
+      ".hero-copy > *",
+      ".page-hero .container > *",
+      ".section-heading",
+      ".split-intro > *",
+      ".benefit-card",
+      ".info-card",
+      ".contact-card",
+      ".trust-panel",
+      ".feature-panel",
+      ".resource-card",
+      ".notice",
+      ".contact-note > *",
+      ".policy-copy > *",
+      ".final-cta .container > *",
+      ".standalone-state .container > *",
+      ".footer-grid > *",
+      ".footer-bottom > *",
+      ".links-shell > *",
+    ].join(", ");
+    const targets = [...document.querySelectorAll(selector)];
     if (!targets.length) return undefined;
+    document.documentElement.classList.add("motion-enabled");
+    const siblingOrder = new Map();
+    targets.forEach((target) => {
+      const parent = target.parentElement;
+      const order = siblingOrder.get(parent) || 0;
+      target.style.setProperty("--motion-delay", `${Math.min(order, 5) * 55}ms`);
+      target.classList.add("motion-item");
+      siblingOrder.set(parent, order + 1);
+    });
     const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
       showAll();
       return undefined;
     }
-    targets.forEach((target) => target.classList.add("reveal"));
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-visible");
         observer.unobserve(entry.target);
       });
-    }, { threshold: 0.1, rootMargin: "0px 0px -3%" });
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
+    }, { threshold: 0.08, rootMargin: "0px 0px -5%" });
+    const frame = window.requestAnimationFrame(() => targets.forEach((target) => observer.observe(target)));
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
 }
 
