@@ -147,6 +147,8 @@ function usePageMotion() {
       ".policy-copy > *",
       ".final-cta .container > *",
       ".standalone-state .container > *",
+      "main h1",
+      "main h2",
       ".footer-grid > *",
       ".footer-bottom > *",
       ".links-shell > *",
