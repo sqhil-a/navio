@@ -3022,10 +3022,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 
 .motion-enabled .motion-item {
   opacity: 0;
-  transform: translate3d(0, 1.35rem, 0) scale(0.992);
-  filter: blur(5px);
-  transition: opacity 500ms ease, transform 620ms cubic-bezier(.16, 1, .3, 1), filter 560ms ease;
-  transition-delay: var(--motion-delay, 0ms);
+  transform: translate3d(0, 1.7rem, 0) scale(0.986);
+  filter: blur(7px);
   will-change: opacity, transform, filter;
 }
 
@@ -3034,6 +3032,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   transform: translate3d(0, 0, 0) scale(1);
   filter: blur(0);
   will-change: auto;
+  animation: motion-enter 720ms cubic-bezier(.16, 1, .3, 1) both;
+  animation-delay: var(--motion-delay, 0ms);
 }
 
 .word-rise-clip {
@@ -3206,6 +3206,19 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 @keyframes word-rise {
   from { opacity: 0; transform: translateY(112%); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes motion-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.7rem, 0) scale(0.986);
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
 }
 
 @media (max-width: 68rem) {

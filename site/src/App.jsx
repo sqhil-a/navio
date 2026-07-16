@@ -194,7 +194,9 @@ function usePageMotion() {
         observer.unobserve(entry.target);
       });
     }, { threshold: 0.08, rootMargin: "0px 0px -5%" });
-    const frame = window.requestAnimationFrame(() => targets.forEach((target) => observer.observe(target)));
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => targets.forEach((target) => observer.observe(target)));
+    });
     return () => {
       window.cancelAnimationFrame(frame);
       observer.disconnect();
