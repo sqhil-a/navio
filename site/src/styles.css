@@ -2844,6 +2844,20 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   .contact-card { min-height: 14rem; }
 }
 
+/* Give mobile titles a clear entrance before their individual words settle in. */
+@media (max-width: 48rem) {
+  .motion-enabled .hero-copy > h1.motion-item.is-visible,
+  .motion-enabled .page-hero h1.motion-item.is-visible {
+    animation: mobile-title-enter 780ms cubic-bezier(.16, 1, .3, 1) both;
+    animation-delay: var(--motion-delay, 0ms);
+  }
+
+  .motion-enabled .hero-copy > h1.motion-item.is-visible .word-rise-word,
+  .motion-enabled .page-hero h1.motion-item.is-visible .word-rise-word {
+    animation-delay: calc(var(--word-delay) + 150ms);
+  }
+}
+
 @media (max-width: 23rem) {
   .container { width: min(calc(100% - 2.5rem), var(--container)); }
   .human-hero .hero-copy h1 { font-size: 2rem; }
@@ -3223,6 +3237,19 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
     opacity: 0;
     transform: translate3d(0, 1.7rem, 0) scale(0.986);
     filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes mobile-title-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2.1rem, 0) scale(0.98);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
