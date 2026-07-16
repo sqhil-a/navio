@@ -162,6 +162,26 @@ function usePageMotion() {
       target.classList.add("motion-item");
       siblingOrder.set(parent, order + 1);
     });
+    document.querySelectorAll("main h1, main h2").forEach((heading) => {
+      if (heading.dataset.wordRiseReady === "true") return;
+      const title = heading.textContent.trim();
+      if (!title) return;
+      heading.dataset.wordRiseReady = "true";
+      heading.classList.add("word-rise");
+      heading.setAttribute("aria-label", title);
+      heading.replaceChildren();
+      title.split(/\s+/).forEach((word, index) => {
+        const clip = document.createElement("span");
+        const wordElement = document.createElement("span");
+        clip.className = "word-rise-clip";
+        wordElement.className = "word-rise-word";
+        wordElement.style.setProperty("--word-delay", `${Math.min(index, 14) * 32}ms`);
+        wordElement.setAttribute("aria-hidden", "true");
+        wordElement.textContent = word;
+        clip.append(wordElement);
+        heading.append(clip, document.createTextNode(" "));
+      });
+    });
     const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
       showAll();
