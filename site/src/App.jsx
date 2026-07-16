@@ -165,11 +165,14 @@ function usePageMotion() {
     document.querySelectorAll("main h1, main h2").forEach((heading) => {
       if (heading.dataset.wordRiseReady === "true") return;
       const title = heading.textContent.trim();
+      const originalLink = heading.querySelector(":scope > a");
       if (!title) return;
       heading.dataset.wordRiseReady = "true";
       heading.classList.add("word-rise");
       heading.setAttribute("aria-label", title);
       heading.replaceChildren();
+      const wordTarget = originalLink ? originalLink.cloneNode(false) : heading;
+      if (originalLink) wordTarget.setAttribute("aria-label", title);
       title.split(/\s+/).forEach((word, index) => {
         const clip = document.createElement("span");
         const wordElement = document.createElement("span");
@@ -179,8 +182,9 @@ function usePageMotion() {
         wordElement.setAttribute("aria-hidden", "true");
         wordElement.textContent = word;
         clip.append(wordElement);
-        heading.append(clip, document.createTextNode(" "));
+        wordTarget.append(clip, document.createTextNode(" "));
       });
+      if (originalLink) heading.append(wordTarget);
     });
     const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {

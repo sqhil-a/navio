@@ -3049,6 +3049,16 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   transform: translateY(0);
 }
 
+.title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.title-link:hover,
+.title-link:focus-visible {
+  color: #dcc8ff;
+}
+
 .motion-enabled .word-rise-word {
   transform: translateY(112%);
   opacity: 0;
