@@ -2381,6 +2381,9 @@ body::before {
   transition: filter 280ms ease, transform 280ms ease;
 }
 
+/* The supplied logo artwork reaches its canvas edge, so leave a small safe area around it. */
+.brand-wordmark { background-size: 96% auto; }
+
 .brand:hover .brand-wordmark {
   filter: drop-shadow(0 0 20px rgba(196, 159, 255, 0.35));
   transform: translateY(-1px);
@@ -3036,8 +3039,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 .word-rise-clip {
   display: inline-block;
   overflow: hidden;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
+  padding: 0.13em 0.025em 0.1em;
+  margin: -0.13em -0.025em -0.1em;
   vertical-align: bottom;
 }
 
@@ -3224,7 +3227,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
     filter: none;
     transition: none;
   }
-  .word-rise-clip { padding-bottom: 0; margin-bottom: 0; }
+  .word-rise-clip { padding: 0; margin: 0; }
   .motion-enabled .word-rise-word,
   .motion-enabled .motion-item.is-visible .word-rise-word {
     opacity: 1;
