@@ -14,6 +14,7 @@ const exploreLinks = [
   ["About", "/about/"],
   ["Opportunities", "/opportunities/"],
   ["Resources", "/resources/"],
+  ["Navio Journal", "https://journal.naviopathways.com/"],
   ["Get involved", "/get-involved/"],
 ];
 const policyLinks = [
@@ -98,7 +99,7 @@ function Footer() {
         <div className="footer-intro">
           <Brand footer />
           <p>Practical career, volunteer, and leadership guidance for young people in Ontario.</p>
-          <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization</p>
+          <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
         <div><h2>Contact</h2><ul className="footer-contact-links"><li><a href={`mailto:${email}`}>{email}</a></li><li><a href={instagram} target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li><li><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></li></ul></div>
@@ -246,11 +247,28 @@ function LinkPage() {
   );
 }
 
+function JournalRedirect() {
+  useEffect(() => {
+    window.location.replace("https://journal.naviopathways.com/");
+  }, []);
+  return (
+    <main className="standalone-state" id="main-content">
+      <div className="container narrow">
+        <p className="eyebrow">Navio Journal</p>
+        <h1>Continue to the Journal.</h1>
+        <p className="lead">Practical career exploration for students, families, and educators.</p>
+        <a className="button button-primary" href="https://journal.naviopathways.com/">Open Navio Journal</a>
+      </div>
+    </main>
+  );
+}
+
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
   useAnalytics();
   usePageMotion();
   if (normalizedPath === "/links/") return <LinkPage />;
+  if (normalizedPath === "/journal/") return <JournalRedirect />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }

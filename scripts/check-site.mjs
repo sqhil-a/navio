@@ -4,7 +4,7 @@ import { join } from "node:path";
 const roots = ["dist", "."];
 const routes = [
   "index.html", "about/index.html", "opportunities/index.html", "get-involved/index.html",
-  "resources/index.html", "contact/index.html", "links/index.html", "privacy/index.html", "terms/index.html",
+  "resources/index.html", "contact/index.html", "links/index.html", "journal/index.html", "privacy/index.html", "terms/index.html",
   "accessibility/index.html", "youth-safety/index.html", "404.html",
 ];
 const errors = [];
