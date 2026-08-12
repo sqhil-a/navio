@@ -13,6 +13,15 @@ if (existsSync(emailSignature)) {
   cpSync(emailSignature, join(dist, "assets/email-signature.png"));
 }
 
+// Preserve manually uploaded public icons that live beside the generated bundles.
+for (const filename of ["instagram.png", "linkedin.png", "website.png"]) {
+  const source = join(root, "assets", filename);
+  if (existsSync(source)) {
+    mkdirSync(join(dist, "assets"), { recursive: true });
+    cpSync(source, join(dist, "assets", filename));
+  }
+}
+
 const assertInsideRoot = (target) => {
   const rel = relative(root, resolve(target));
   if (!rel || rel.startsWith("..") || rel.includes(":")) throw new Error(`Refusing to modify path outside the repository: ${target}`);
