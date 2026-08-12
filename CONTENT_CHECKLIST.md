@@ -42,7 +42,7 @@ The website intentionally publishes no additional team members until their infor
 
 ## Programs and opportunities
 
-The website now documents the career-awareness workshop model in detail. Registration remains closed until confirmed session data and a privacy-reviewed endpoint are configured.
+The website now publishes a substantial six-module self-guided career toolkit and three companion guides that are available immediately without registration. Guided use for a school or community group is described only as an inquiry-based option.
 
 For every program that becomes real, provide and approve:
 
@@ -111,7 +111,7 @@ Do not invent partner logos, participant totals, outcomes, awards, testimonials,
 - [ ] **[ORGANIZATION TO PROVIDE: form providers, analytics providers, cookies/storage, retention periods, and processors]**
 - [ ] **[ORGANIZATION TO PROVIDE: consent and unsubscribe process for email updates]**
 
-Policy pages now describe the implemented website and workshop-registration safeguards. Authorized organizational review is still required before live registration opens.
+Policy pages now describe the active website, toolkit, direct-contact, accessibility, and youth-safety practices. Authorized organizational review is still required before any new application-based activity is launched.
 
 ## Content publishing rule
 

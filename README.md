@@ -16,16 +16,16 @@ The editable source lives in `site/src/`. Route content is stored in `site/src/p
 The public site uses 16 pre-rendered routes, including:
 
 - Home and About
-- Career workshops and workshop registration
+- A free self-guided career toolkit
 - Opportunities, Resources, Updates, and Get involved
 - Contact
 - Privacy, Terms, Accessibility, and Youth safety
 
 Older campaign and form-confirmation pages remain consolidated into these current routes. The journal URL redirects visitors to Resources and Updates.
 
-## Contact and registration
+## Contact and participation
 
-Visitors contact Navio Pathways directly through the monitored domain email or its public social profiles. Workshop registration uses a first-party page and remains closed until confirmed sessions, a reviewed HTTPS submission endpoint, and the required privacy and youth-safety controls are configured in `site/public/site-config.js`.
+Visitors contact Navio Pathways directly through the monitored domain email or its public social profiles. The career toolkit and original guides are available immediately without an account, registration form, or collection of student responses. Schools and community groups may inquire separately about guided use.
 
 ## Local development
 
@@ -40,8 +40,8 @@ npm run dev
 npm run build
 ```
 
-The build creates the browser and server-rendering bundles, pre-renders 16 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, content depth, registration safety, and external-link safety.
+The build creates the browser and server-rendering bundles, pre-renders 15 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, content depth, active-toolkit content, and external-link safety.
 
 ## Content notes
 
-Workshop dates, speakers, impact statistics, partnerships, and additional leadership or board biographies should be published only after they are verified and approved. The production build rejects placeholder language and unsafe registration configuration.
+Event dates, speakers, impact statistics, partnerships, and additional leadership or board biographies should be published only after they are verified and approved. The production build rejects placeholder, closed-registration, and deprecated form language.

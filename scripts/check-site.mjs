@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 const roots = ["dist", "."];
 const routes = [
-  "index.html", "about/index.html", "career-workshops/index.html", "career-workshops/register/index.html", "opportunities/index.html", "get-involved/index.html",
+  "index.html", "about/index.html", "career-workshops/index.html", "opportunities/index.html", "get-involved/index.html",
   "resources/index.html", "updates/index.html", "contact/index.html", "links/index.html", "journal/index.html", "privacy/index.html", "terms/index.html",
   "accessibility/index.html", "youth-safety/index.html", "404.html",
 ];
@@ -41,17 +41,11 @@ for (const root of roots) {
     if ((html.match(/<h1(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one h1`);
     if ((html.match(/<main(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one main landmark`);
     if (/target="_blank"(?![^>]*rel="[^"]*noopener)/.test(html)) errors.push(`${file} has an unsafe new-tab link`);
-    if (/<form(?:\s|>)/.test(html) && route !== "career-workshops/register/index.html") errors.push(`${file} contains an unexpected form`);
-    if (/docs\.google\.com\/forms|closedform|coming soon|under construction/i.test(html)) errors.push(`${file} contains a closed, placeholder, or deprecated destination`);
+    if (/<form(?:\s|>)/.test(html)) errors.push(`${file} contains an unexpected form`);
+    if (/docs\.google\.com\/forms|closedform|coming soon|under construction|registration is not open|confirmed dates will/i.test(html)) errors.push(`${file} contains a closed, placeholder, or deprecated destination`);
     const minimumWords = minimumMainWords.get(route);
     const mainHtml = html.match(/<main(?:\s[^>]*)?>([\s\S]*?)<\/main>/i)?.[1] || "";
     if (minimumWords && visibleWordCount(mainHtml) < minimumWords) errors.push(`${file} has ${visibleWordCount(mainHtml)} main-content words; expected at least ${minimumWords}`);
-    if (route === "career-workshops/register/index.html") {
-      for (const expected of ["Workshop registration", "privacy notice", "youth-safety approach", "registration-pending"]) {
-        if (!html.includes(expected)) errors.push(`${file} is missing registration requirement: ${expected}`);
-      }
-    }
-
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];
     if (title) {
@@ -81,12 +75,11 @@ for (const root of roots) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing trust or navigation content: ${expected}`);
   }
   const workshop = readFileSync(join(root, "career-workshops/index.html"), "utf8");
-  for (const expected of ["Grades 9–12", "Live online session", "No cost", "Eastern Time", "Professional perspectives", "Changes and cancellation"]) {
-    if (!workshop.includes(expected)) errors.push(`${join(root, "career-workshops/index.html")} is missing workshop detail: ${expected}`);
+  for (const expected of ["Grades 9–12", "Self-guided HTML toolkit", "No cost", "Not required", "Module 1", "Module 6", "Start module one"]) {
+    if (!workshop.includes(expected)) errors.push(`${join(root, "career-workshops/index.html")} is missing active toolkit detail: ${expected}`);
   }
-  const sourceConfig = readFileSync(join(root, "site-config.js"), "utf8");
-  if (/registrationOpen:\s*true/.test(sourceConfig) && (!/registrationEndpoint:\s*"https:\/\//.test(sourceConfig) || /sessions:\s*Object\.freeze\(\[\s*\]\)/.test(sourceConfig))) {
-    errors.push(`${join(root, "site-config.js")} opens registration without an HTTPS endpoint and published sessions`);
+  for (const forbidden of ["/career-workshops/register/", "registrationOpen", "registrationEndpoint"]) {
+    if (home.includes(forbidden) || workshop.includes(forbidden)) errors.push(`${root} still exposes deprecated registration content: ${forbidden}`);
   }
 }
 
