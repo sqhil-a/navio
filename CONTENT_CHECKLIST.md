@@ -1,6 +1,6 @@
 # Navio Pathways content checklist
 
-Last reviewed: July 14, 2026
+Last reviewed: August 12, 2026
 
 This file is the source-of-truth checklist for facts that must come from NAVIO PATHWAYS. Items marked **ORGANIZATION TO PROVIDE** must not be guessed, inferred from social media, or published as fact without approval.
 
@@ -12,7 +12,7 @@ This file is the source-of-truth checklist for facts that must come from NAVIO P
 - [x] Primary category: Youth Services; subcategory: Youth Development
 - [ ] **[ORGANIZATION TO PROVIDE: exact approved Ontario incorporation wording]**
 - [ ] **[ORGANIZATION TO PROVIDE: Ontario corporation number, and approval on whether it should be public]**
-- [ ] **[ORGANIZATION TO PROVIDE: registered office or public mailing address, if appropriate for publication]**
+- [x] Registered/public address approved for publication: 3140 Polo Place, Mississauga, Ontario
 - [ ] **[ORGANIZATION TO PROVIDE: confirmation of charitable/tax status]** — until confirmed, do not describe the organization as a registered charity, promise tax deductions, or mention charitable receipts.
 - [ ] **[ORGANIZATION TO PROVIDE: domain ownership and administrative-control evidence]**
 
@@ -21,7 +21,7 @@ This file is the source-of-truth checklist for facts that must come from NAVIO P
 - [x] Existing domain email used by the prior website: `hello@naviopathways.com`
 - [ ] **[ORGANIZATION TO PROVIDE: written confirmation that hello@naviopathways.com is the official monitored public contact email]**
 - [ ] **[ORGANIZATION TO PROVIDE: expected response-time wording, if the organization can consistently meet it]**
-- [ ] **[ORGANIZATION TO PROVIDE: public mailing address, if safe and appropriate]**
+- [x] Public address: 3140 Polo Place, Mississauga, Ontario
 - [ ] **[ORGANIZATION TO PROVIDE: public phone number, only if intended for publication]**
 - [ ] **[ORGANIZATION TO PROVIDE: dedicated privacy contact]**
 - [ ] **[ORGANIZATION TO PROVIDE: trained youth-safety contact and escalation route]**
@@ -42,7 +42,7 @@ The website intentionally publishes no additional team members until their infor
 
 ## Programs and opportunities
 
-The current website labels program areas as planned, in development, or interest-only. It does not claim an active intake.
+The website now documents the career-awareness workshop model in detail. Registration remains closed until confirmed session data and a privacy-reviewed endpoint are configured.
 
 For every program that becomes real, provide and approve:
 
@@ -111,7 +111,7 @@ Do not invent partner logos, participant totals, outcomes, awards, testimonials,
 - [ ] **[ORGANIZATION TO PROVIDE: form providers, analytics providers, cookies/storage, retention periods, and processors]**
 - [ ] **[ORGANIZATION TO PROVIDE: consent and unsubscribe process for email updates]**
 
-All four policy pages remain explicitly labelled drafts until review is complete.
+Policy pages now describe the implemented website and workshop-registration safeguards. Authorized organizational review is still required before live registration opens.
 
 ## Content publishing rule
 

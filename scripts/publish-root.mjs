@@ -1,10 +1,17 @@
-import { cpSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(join(fileURLToPath(new URL("..", import.meta.url))));
 const dist = resolve(join(root, "dist"));
 if (!existsSync(join(dist, "index.html"))) throw new Error("Build output is missing dist/index.html");
+
+// Keep the published email-signature URL stable alongside the public root copy.
+const emailSignature = join(root, "site/public/email-signature.png");
+if (existsSync(emailSignature)) {
+  mkdirSync(join(dist, "assets"), { recursive: true });
+  cpSync(emailSignature, join(dist, "assets/email-signature.png"));
+}
 
 const assertInsideRoot = (target) => {
   const rel = relative(root, resolve(target));
