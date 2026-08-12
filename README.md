@@ -13,21 +13,19 @@ The editable source lives in `site/src/`. Route content is stored in `site/src/p
 
 ## Site structure
 
-The public site intentionally uses a small route set:
+The public site uses 16 pre-rendered routes, including:
 
-- Home
-- About
-- Opportunities
-- Get involved
-- Resources
+- Home and About
+- Career workshops and workshop registration
+- Opportunities, Resources, Updates, and Get involved
 - Contact
-- Privacy, terms, accessibility, and youth safety
+- Privacy, Terms, Accessibility, and Youth safety
 
-Older campaign, volunteer, partnership, update, and form-confirmation pages were consolidated into these core routes.
+Older campaign and form-confirmation pages remain consolidated into these current routes. The journal URL redirects visitors to Resources and Updates.
 
-## Contact and applications
+## Contact and registration
 
-The static site does not submit inquiry forms. Visitors contact Navio Pathways directly by email or Instagram. The executive-team application opens an external Google Form.
+Visitors contact Navio Pathways directly through the monitored domain email or its public social profiles. Workshop registration uses a first-party page and remains closed until confirmed sessions, a reviewed HTTPS submission endpoint, and the required privacy and youth-safety controls are configured in `site/public/site-config.js`.
 
 ## Local development
 
@@ -42,8 +40,8 @@ npm run dev
 npm run build
 ```
 
-The build creates the browser and server-rendering bundles, pre-renders 11 routes, publishes the GitHub Pages files, and checks route integrity, metadata, external-link safety, and the absence of on-site forms.
+The build creates the browser and server-rendering bundles, pre-renders 16 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, content depth, registration safety, and external-link safety.
 
 ## Content notes
 
-Photo areas are intentionally marked as placeholders until real Navio Pathways photography is available with appropriate participant consent. Impact statistics and additional leadership or board biographies should be added only after they are verified.
+Workshop dates, speakers, impact statistics, partnerships, and additional leadership or board biographies should be published only after they are verified and approved. The production build rejects placeholder language and unsafe registration configuration.
