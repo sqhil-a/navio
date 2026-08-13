@@ -2703,6 +2703,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 }
 
 .benefit-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.benefit-grid-five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
 .benefit-card {
   position: relative;
@@ -3539,6 +3540,34 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 .program-strip dt { margin-bottom: 0.35rem; color: var(--muted); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .program-strip dd { margin: 0; color: var(--ink); font-weight: 750; }
 
+.program-stage-nav {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.program-stage-nav a {
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-right: 1px solid var(--line);
+  gap: 0.7rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.program-stage-nav a:last-child { border-right: 0; }
+.program-stage-nav a:hover,
+.program-stage-nav a:focus-visible { background: var(--purple-soft); color: var(--purple-dark); }
+.program-stage-nav span { color: var(--purple-dark); font-size: 0.75rem; font-weight: 900; }
+
 .program-stage {
   display: grid;
   grid-template-columns: 7rem minmax(0, 1fr);
@@ -3553,6 +3582,7 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
 .program-stage h2 { max-width: 34ch; }
 .program-stage > div:last-child > p:not(.eyebrow, .stage-output) { max-width: 54rem; }
 .stage-output { margin: 1.5rem 0 0; padding: 1rem 1.2rem; border-left: 3px solid var(--purple); background: var(--purple-soft); }
+.stage-action { margin-top: 1rem; }
 .small-print { color: var(--muted); font-size: 0.86rem; }
 
 .resource-links { display: grid; margin: 1.5rem 0 0; padding: 0; list-style: none; }
@@ -3579,5 +3609,8 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   .program-strip div:nth-child(2) { border-right: 0; }
   .program-strip div:nth-child(n + 3) { border-bottom: 0; }
   .program-stage { grid-template-columns: 1fr; gap: 0.75rem; }
+  .program-stage-nav { grid-template-columns: 1fr; }
+  .program-stage-nav a { min-height: 3.4rem; border-right: 0; border-bottom: 1px solid var(--line); }
+  .program-stage-nav a:last-child { border-bottom: 0; }
   .worksheet-grid { grid-template-columns: 1fr; }
 }

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const roots = ["dist", "."];
@@ -32,7 +32,7 @@ for (const root of roots) {
       if (!html.includes(expected)) errors.push(`${file} is missing ${expected}`);
     }
     if (/__PAGE_|__CANONICAL_|__STRUCTURED_/.test(html)) errors.push(`${file} contains an unreplaced build token`);
-    if (html.includes("/src/main.jsx")) errors.push(`${file} still references development source`);
+    if (/\/src\/(?:main\.jsx|client\.js)/.test(html)) errors.push(`${file} still references development source`);
     if (!/<html[^>]*lang="en-CA"/.test(html)) errors.push(`${file} is missing the Canadian English language declaration`);
     if ((html.match(/<h1(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one h1`);
     if ((html.match(/<main(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one main landmark`);
@@ -57,7 +57,7 @@ for (const root of roots) {
       errors.push(`${file} links to missing local route ${localPath}`);
     }
   }
-  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "navio-favicon.svg", "site-config.js", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
+  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "navio-favicon.svg", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
     if (!existsSync(join(root, asset))) errors.push(`${join(root, asset)} is missing`);
   }
 
@@ -66,12 +66,19 @@ for (const root of roots) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing program or trust content: ${expected}`);
   }
   const program = readFileSync(join(root, "programs/career-clarity/index.html"), "utf8");
-  for (const expected of ["Navio Career Clarity Program", "Enrollment", "Open access", "Total time", "Career Clarity Portfolio", "Stage 1", "Stage 5", "30-Day Exploration Plan", '"@type":"Course"']) {
+  for (const expected of ["Navio Career Clarity Program", "Status", "Open now", "Total time", "Career Clarity Portfolio", "Stage 1", "Stage 5", "Complete worksheet 1", "Complete worksheet 5", "30-Day Exploration Plan", "Published August 13, 2026", '"@type":"Course"']) {
     if (!program.includes(expected)) errors.push(`${join(root, "programs/career-clarity/index.html")} is missing required program detail: ${expected}`);
   }
   const workbook = readFileSync(join(root, "programs/career-clarity/workbook/index.html"), "utf8");
   for (const expected of ["Career Clarity Program Workbook", "Worksheet 1", "Worksheet 5", "Completion checklist", '"learningResourceType":"Workbook"']) {
     if (!workbook.includes(expected)) errors.push(`${join(root, "programs/career-clarity/workbook/index.html")} is missing required workbook detail: ${expected}`);
+  }
+
+  const scripts = readdirSync(join(root, "assets")).filter((asset) => asset.endsWith(".js"));
+  if (scripts.length !== 1) errors.push(`${join(root, "assets")} should contain exactly one client JavaScript bundle; found ${scripts.length}`);
+  for (const script of scripts) {
+    const bytes = statSync(join(root, "assets", script)).size;
+    if (bytes > 10000) errors.push(`${join(root, "assets", script)} is ${bytes} bytes; client JavaScript must stay below 10 KB`);
   }
 }
 
