@@ -3,15 +3,21 @@ import { join } from "node:path";
 
 const roots = ["dist", "."];
 const routes = [
-  "index.html", "programs/career-clarity/index.html", "programs/career-clarity/workbook/index.html", "resources/index.html",
-  "about/index.html", "contact/index.html", "privacy/index.html", "terms/index.html", "accessibility/index.html",
+  "index.html", "programs/career-clarity/index.html", "programs/career-clarity/workbook/index.html",
+  "programs/career-clarity/sample-portfolio/index.html", "resources/index.html",
+  "resources/evaluating-career-sources/index.html", "resources/professional-conversations/index.html",
+  "resources/experience-tests/index.html", "educators/index.html", "about/index.html", "contact/index.html",
+  "privacy/index.html", "terms/index.html", "accessibility/index.html",
   "youth-safety/index.html", "links/index.html", "404.html",
 ];
 const errors = [];
 const routePaths = new Set(routes.map((route) => route === "index.html" ? "/" : route === "404.html" ? "/404.html" : `/${route.replace(/index\.html$/, "")}`));
 const minimumMainWords = new Map([
-  ["index.html", 275], ["programs/career-clarity/index.html", 750], ["programs/career-clarity/workbook/index.html", 350],
-  ["resources/index.html", 325], ["about/index.html", 240], ["contact/index.html", 120], ["privacy/index.html", 200],
+  ["index.html", 360], ["programs/career-clarity/index.html", 775], ["programs/career-clarity/workbook/index.html", 350],
+  ["programs/career-clarity/sample-portfolio/index.html", 700], ["resources/index.html", 350],
+  ["resources/evaluating-career-sources/index.html", 625], ["resources/professional-conversations/index.html", 625],
+  ["resources/experience-tests/index.html", 575], ["educators/index.html", 650], ["about/index.html", 500],
+  ["contact/index.html", 120], ["privacy/index.html", 200],
   ["terms/index.html", 160], ["accessibility/index.html", 120], ["youth-safety/index.html", 200],
 ]);
 const visibleWordCount = (html) => html
@@ -72,6 +78,18 @@ for (const root of roots) {
   const workbook = readFileSync(join(root, "programs/career-clarity/workbook/index.html"), "utf8");
   for (const expected of ["Career Clarity Program Workbook", "Worksheet 1", "Worksheet 5", "Completion checklist", '"learningResourceType":"Workbook"']) {
     if (!workbook.includes(expected)) errors.push(`${join(root, "programs/career-clarity/workbook/index.html")} is missing required workbook detail: ${expected}`);
+  }
+  const sample = readFileSync(join(root, "programs/career-clarity/sample-portfolio/index.html"), "utf8");
+  for (const expected of ["fictional example", "Career Criteria Card", "Career Evidence Brief", "Pathway Comparison", "Experience Test", "30-Day Exploration Plan", '"learningResourceType":"Worked example"']) {
+    if (!sample.includes(expected)) errors.push(`${join(root, "programs/career-clarity/sample-portfolio/index.html")} is missing worked-example detail: ${expected}`);
+  }
+  const resources = readFileSync(join(root, "resources/index.html"), "utf8");
+  for (const expected of ["/resources/evaluating-career-sources/", "/resources/professional-conversations/", "/resources/experience-tests/", "Last reviewed August 13, 2026"]) {
+    if (!resources.includes(expected)) errors.push(`${join(root, "resources/index.html")} is missing resource-library detail: ${expected}`);
+  }
+  const educators = readFileSync(join(root, "educators/index.html"), "utf8");
+  for (const expected of ["60-minute starter session", "Learning goals", "Review rubric", "Youth-safety boundaries", '"learningResourceType":"Facilitator guide"']) {
+    if (!educators.includes(expected)) errors.push(`${join(root, "educators/index.html")} is missing facilitator detail: ${expected}`);
   }
 
   const scripts = readdirSync(join(root, "assets")).filter((asset) => asset.endsWith(".js"));

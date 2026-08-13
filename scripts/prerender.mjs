@@ -19,7 +19,7 @@ const schemaFor = (page) => {
       { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: `${siteUrl}/`, name: "Navio Pathways" },
       { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", identifier: "Ontario Corporation Number 1001662092", description: "Ontario incorporated not-for-profit operating the free Navio Career Clarity Program for secondary students.", url: `${siteUrl}/`, email: "hello@naviopathways.com", address: { "@type": "PostalAddress", streetAddress: "3140 Polo Place", addressLocality: "Mississauga", addressRegion: "Ontario", addressCountry: "CA" }, founder: { "@type": "Person", name: "Sahil Ambegaonkar", jobTitle: "Founder and President", url: "https://sqhil-a.github.io/portfolio/" }, areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/", "https://www.linkedin.com/company/navio-pathways/"] },
     ] : []),
-    { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
+    { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, datePublished: "2026-08-13", dateModified: buildDate, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
   ];
   if (page.path === "/programs/career-clarity/") {
     graph.push({
@@ -45,6 +45,29 @@ const schemaFor = (page) => {
       isAccessibleForFree: true,
       educationalLevel: "Grades 9–12",
       learningResourceType: "Workbook",
+    });
+  }
+  const learningResources = new Map([
+    ["/programs/career-clarity/sample-portfolio/", ["Sample Career Clarity Portfolio", "Worked example"]],
+    ["/resources/evaluating-career-sources/", ["Evaluate career information before you act", "Student guide"]],
+    ["/resources/professional-conversations/", ["Plan a professional career conversation", "Student guide"]],
+    ["/resources/experience-tests/", ["Design a safe career experience test", "Student guide"]],
+    ["/educators/", ["Career Clarity guide for educators and families", "Facilitator guide"]],
+  ]);
+  if (learningResources.has(page.path)) {
+    const [name, learningResourceType] = learningResources.get(page.path);
+    graph.push({
+      "@type": "LearningResource",
+      "@id": `${siteUrl}${page.path}#resource`,
+      name,
+      author: { "@id": `${siteUrl}/#organization` },
+      provider: { "@id": `${siteUrl}/#organization` },
+      isAccessibleForFree: true,
+      educationalLevel: "Grades 9–12",
+      inLanguage: "en-CA",
+      learningResourceType,
+      datePublished: "2026-08-13",
+      dateModified: buildDate,
     });
   }
   if (page.path !== "/" && page.path !== "/404.html") {

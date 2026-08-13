@@ -1,5 +1,5 @@
 import React from "react";
-import { pageContent, programPath, workbookPath } from "./page-content.js";
+import { educatorPath, pageContent, programPath, samplePath, workbookPath } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
@@ -8,6 +8,7 @@ const primaryNav = [
   ["Career Program", programPath],
   ["Workbook", workbookPath],
   ["Resources", "/resources/"],
+  ["Educators", educatorPath],
   ["About", "/about/"],
   ["Contact", "/contact/"],
 ];
@@ -15,6 +16,8 @@ const exploreLinks = [
   ["Career Clarity Program", programPath],
   ["Program workbook", workbookPath],
   ["Resources", "/resources/"],
+  ["Sample portfolio", samplePath],
+  ["Educator guide", educatorPath],
   ["About", "/about/"],
   ["Contact", "/contact/"],
 ];
