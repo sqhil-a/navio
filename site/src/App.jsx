@@ -103,72 +103,8 @@ function PageContent({ page }) {
   return <main id="main-content" tabIndex="-1" dangerouslySetInnerHTML={{ __html: page.html }} />;
 }
 
-function LinkPage() {
-  return (
-    <main className="links-page" id="main-content">
-      <div className="links-shell">
-        <a className="links-brand" href="/" aria-label="Navio Pathways home">
-          <span className="brand-wordmark" aria-hidden="true" />
-        </a>
-        <h1>Navio Pathways links</h1>
-        <p className="links-intro">The Career Clarity Program, workbook, resources, and ways to connect.</p>
-        <a className="button button-primary links-button" href={programPath}>
-          <span>Career Clarity Program</span>
-          <span aria-hidden="true">→</span>
-        </a>
-        <a className="button button-secondary links-button" href={workbookPath}>
-          <span>Program workbook</span>
-          <span aria-hidden="true">→</span>
-        </a>
-        <a className="button button-secondary links-button" href="/resources/">
-          <span>Career resources</span>
-          <span aria-hidden="true">→</span>
-        </a>
-        <a className="button button-secondary links-button" href="/contact/">
-          <span>Contact Navio</span>
-          <span aria-hidden="true">→</span>
-        </a>
-        <a className="button button-secondary links-button" href="https://www.instagram.com/naviopathways/" target="_blank" rel="noopener noreferrer">
-          <span>Instagram</span>
-          <span aria-hidden="true">↗</span>
-        </a>
-        <p className="links-note">Official links from Navio Pathways.</p>
-      </div>
-    </main>
-  );
-}
-
-function JournalRedirect() {
-  return (
-    <main className="standalone-state" id="main-content">
-      <div className="container narrow">
-        <p className="eyebrow">Navio Journal</p>
-        <h1>Continue to the Journal.</h1>
-        <p className="lead">Practical career exploration for students, families, and educators.</p>
-        <a className="button button-primary" href="https://journal.naviopathways.com/">Open Navio Journal</a>
-      </div>
-    </main>
-  );
-}
-
-function LegacyProgramRedirect() {
-  return (
-    <main className="standalone-state" id="main-content">
-      <div className="container narrow">
-        <p className="eyebrow">Program moved</p>
-        <h1>The career toolkit is now the Career Clarity Program.</h1>
-        <p className="lead">Continue to the named five-stage program and workbook.</p>
-        <a className="button button-primary" href={programPath}>Open the Career Clarity Program</a>
-      </div>
-    </main>
-  );
-}
-
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
-  if (normalizedPath === "/links/") return <LinkPage />;
-  if (normalizedPath === "/journal/") return <JournalRedirect />;
-  if (normalizedPath === "/career-workshops/") return <LegacyProgramRedirect />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }

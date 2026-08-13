@@ -127,23 +127,8 @@ export const pageContent = {
     title: "Official Navio Pathways links",
     description: "Open official Navio Pathways program, workbook, resource, contact, and social links.",
     noindex: true,
-    html: `<section><h1>Official Navio Pathways links</h1><p>Career Clarity Program, workbook, resources, and contact information.</p></section>`,
-  },
-
-  "/career-workshops/": {
-    path: "/career-workshops/",
-    title: "Career Clarity Program | Navio Pathways",
-    description: "Continue to the Navio Career Clarity Program.",
-    noindex: true,
-    html: `<section class="standalone-state"><div class="container narrow"><p class="eyebrow">Program moved</p><h1>The career toolkit is now the Career Clarity Program.</h1><p class="lead">Continue to the named five-stage program and workbook.</p><a class="button button-primary" href="${programPath}">Open the Career Clarity Program</a></div></section>`,
-  },
-
-  "/journal/": {
-    path: "/journal/",
-    title: "Navio Journal | Navio Pathways",
-    description: "Continue to the Navio Journal website.",
-    noindex: true,
-    html: `<section><h1>Navio Journal</h1><p>Continue to the Navio Journal website.</p></section>`,
+    html: `${breadcrumb([{ label: "Official links" }])}${internalHero("Navio Pathways", "Official program and organization links.", "Use these links to open Navio's active Career Clarity Program, workbook, public resources, organization information, and contact routes.", `<div class="button-row"><a class="button button-primary" href="${programPath}#stage-1">Start the Career Clarity Program</a><a class="button button-secondary" href="${workbookPath}">Open the workbook</a></div>`)}
+    <section class="section"><div class="container two-up"><div><p class="eyebrow">Program</p><h2>Free career exploration for Ontario students.</h2><p>The Career Clarity Program gives students in Grades 9–12 five structured assignments: define career criteria, research a field, compare two pathways, plan an experience test, and create a 30-day action plan.</p><a class="text-link" href="/resources/">Use the supporting career resources <span aria-hidden="true">→</span></a></div><div><p class="eyebrow">Organization</p><h2>Navio Pathways</h2><p>Ontario incorporated not-for-profit organization, Corporation Number 1001662092. Registered address: 3140 Polo Place, Mississauga, Ontario.</p><p><a href="/about/">About Navio Pathways</a><br /><a href="/contact/">Contact the organization</a><br /><a href="${instagram}" target="_blank" rel="noopener noreferrer">Official Instagram <span aria-hidden="true">↗</span></a><br /><a href="${linkedin}" target="_blank" rel="noopener noreferrer">Official LinkedIn <span aria-hidden="true">↗</span></a></p></div></div></section>`,
   },
 
   "/404.html": {

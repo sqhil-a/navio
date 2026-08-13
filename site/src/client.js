@@ -1,14 +1,5 @@
 import "./styles.css";
 
-const programPath = "/programs/career-clarity/";
-const path = window.location.pathname;
-
-if (path === "/career-workshops/") {
-  window.location.replace(programPath);
-} else if (path === "/journal/") {
-  window.location.replace("https://journal.naviopathways.com/");
-}
-
 const header = document.querySelector(".site-header");
 const toggle = document.querySelector(".menu-toggle");
 const menu = document.getElementById("mobile-menu");

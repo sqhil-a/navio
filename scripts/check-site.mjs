@@ -5,7 +5,7 @@ const roots = ["dist", "."];
 const routes = [
   "index.html", "programs/career-clarity/index.html", "programs/career-clarity/workbook/index.html", "resources/index.html",
   "about/index.html", "contact/index.html", "privacy/index.html", "terms/index.html", "accessibility/index.html",
-  "youth-safety/index.html", "links/index.html", "career-workshops/index.html", "journal/index.html", "404.html",
+  "youth-safety/index.html", "links/index.html", "404.html",
 ];
 const errors = [];
 const routePaths = new Set(routes.map((route) => route === "index.html" ? "/" : route === "404.html" ? "/404.html" : `/${route.replace(/index\.html$/, "")}`));
