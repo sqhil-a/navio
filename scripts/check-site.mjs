@@ -57,7 +57,7 @@ for (const root of roots) {
       errors.push(`${file} links to missing local route ${localPath}`);
     }
   }
-  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "navio-favicon.svg", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
+  for (const asset of ["assets/icon/navio-icon.png", "assets/images/navio-logo.png", "assets/images/navio-star-bg.png", "navio-favicon.svg", "google679ac1915f24aeb4.html", "sitemap.xml", "robots.txt", "CNAME", ".nojekyll"]) {
     if (!existsSync(join(root, asset))) errors.push(`${join(root, asset)} is missing`);
   }
 
