@@ -1,23 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { pageContent } from "./page-content.js";
+import { pageContent, programPath, workbookPath } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
 const linkedin = "https://www.linkedin.com/company/navio-pathways/";
 const primaryNav = [
-  ["About", "/about/"],
-  ["Career toolkit", "/career-workshops/"],
+  ["Program", programPath],
+  ["Workbook", workbookPath],
   ["Resources", "/resources/"],
-  ["Updates", "/updates/"],
-  ["Get involved", "/get-involved/"],
+  ["About", "/about/"],
 ];
 const exploreLinks = [
-  ["About", "/about/"],
-  ["Career toolkit", "/career-workshops/"],
-  ["Opportunities", "/opportunities/"],
+  ["Career Clarity Program", programPath],
+  ["Program workbook", workbookPath],
   ["Resources", "/resources/"],
-  ["Updates", "/updates/"],
-  ["Get involved", "/get-involved/"],
+  ["About", "/about/"],
+  ["Contact", "/contact/"],
 ];
 const policyLinks = [
   ["Privacy", "/privacy/"],
@@ -60,7 +58,9 @@ function Header({ path }) {
     window.addEventListener("scroll", update, { passive: true });
     return () => window.removeEventListener("scroll", update);
   }, []);
-  const activeHref = primaryNav.find(([, href]) => path.startsWith(href))?.[1];
+  const activeHref = primaryNav
+    .filter(([, href]) => path.startsWith(href))
+    .sort(([, left], [, right]) => right.length - left.length)[0]?.[1];
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -100,7 +100,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Free career-exploration tools and practical guidance for Ontario secondary students.</p>
+          <p>Home of the free Navio Career Clarity Program for Ontario secondary students.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
@@ -144,17 +144,17 @@ function LinkPage() {
           <span className="brand-wordmark" aria-hidden="true" />
         </a>
         <h1>Navio Pathways links</h1>
-        <p className="links-intro">Free career tools, resources, updates, and ways to connect.</p>
-        <a className="button button-primary links-button" href="/career-workshops/">
-          <span>Self-guided career toolkit</span>
+        <p className="links-intro">The Career Clarity Program, workbook, resources, and ways to connect.</p>
+        <a className="button button-primary links-button" href={programPath}>
+          <span>Career Clarity Program</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a className="button button-secondary links-button" href={workbookPath}>
+          <span>Program workbook</span>
           <span aria-hidden="true">→</span>
         </a>
         <a className="button button-secondary links-button" href="/resources/">
           <span>Career resources</span>
-          <span aria-hidden="true">→</span>
-        </a>
-        <a className="button button-secondary links-button" href="/updates/">
-          <span>Latest updates</span>
           <span aria-hidden="true">→</span>
         </a>
         <a className="button button-secondary links-button" href="/contact/">
@@ -187,11 +187,28 @@ function JournalRedirect() {
   );
 }
 
+function LegacyProgramRedirect() {
+  useEffect(() => {
+    window.location.replace(programPath);
+  }, []);
+  return (
+    <main className="standalone-state" id="main-content">
+      <div className="container narrow">
+        <p className="eyebrow">Program moved</p>
+        <h1>The career toolkit is now the Career Clarity Program.</h1>
+        <p className="lead">Continue to the named five-stage program and workbook.</p>
+        <a className="button button-primary" href={programPath}>Open the Career Clarity Program</a>
+      </div>
+    </main>
+  );
+}
+
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
   useAnalytics();
   if (normalizedPath === "/links/") return <LinkPage />;
   if (normalizedPath === "/journal/") return <JournalRedirect />;
+  if (normalizedPath === "/career-workshops/") return <LegacyProgramRedirect />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }

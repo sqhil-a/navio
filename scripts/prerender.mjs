@@ -17,10 +17,36 @@ const schemaFor = (page) => {
   const graph = [
     ...(page.path === "/" ? [
       { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: `${siteUrl}/`, name: "Navio Pathways" },
-      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", identifier: "Ontario Corporation Number 1001662092", description: "Ontario incorporated not-for-profit publishing free career-exploration tools and practical guidance for secondary students.", url: `${siteUrl}/`, email: "hello@naviopathways.com", address: { "@type": "PostalAddress", streetAddress: "3140 Polo Place", addressLocality: "Mississauga", addressRegion: "Ontario", addressCountry: "CA" }, founder: { "@type": "Person", name: "Sahil Ambegaonkar", jobTitle: "Founder and President", url: "https://sqhil-a.github.io/portfolio/" }, areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/", "https://www.linkedin.com/company/navio-pathways/", "https://journal.naviopathways.com/"] },
+      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", identifier: "Ontario Corporation Number 1001662092", description: "Ontario incorporated not-for-profit operating the free Navio Career Clarity Program for secondary students.", url: `${siteUrl}/`, email: "hello@naviopathways.com", address: { "@type": "PostalAddress", streetAddress: "3140 Polo Place", addressLocality: "Mississauga", addressRegion: "Ontario", addressCountry: "CA" }, founder: { "@type": "Person", name: "Sahil Ambegaonkar", jobTitle: "Founder and President", url: "https://sqhil-a.github.io/portfolio/" }, areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/", "https://www.linkedin.com/company/navio-pathways/", "https://journal.naviopathways.com/"] },
     ] : []),
     { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
   ];
+  if (page.path === "/programs/career-clarity/") {
+    graph.push({
+      "@type": "Course",
+      "@id": `${siteUrl}/programs/career-clarity/#course`,
+      name: "Navio Career Clarity Program",
+      description: "A free five-stage, self-paced career exploration program for Ontario secondary students in Grades 9–12.",
+      provider: { "@id": `${siteUrl}/#organization` },
+      educationalLevel: "Grades 9–12",
+      timeRequired: "PT2H30M",
+      isAccessibleForFree: true,
+      audience: { "@type": "EducationalAudience", educationalRole: "student", geographicArea: { "@type": "AdministrativeArea", name: "Ontario" } },
+      offers: { "@type": "Offer", price: 0, priceCurrency: "CAD", availability: "https://schema.org/InStock", url: `${siteUrl}/programs/career-clarity/` },
+      hasCourseInstance: { "@type": "CourseInstance", courseMode: "online", name: "Self-paced online program" },
+    });
+  }
+  if (page.path === "/programs/career-clarity/workbook/") {
+    graph.push({
+      "@type": "CreativeWork",
+      "@id": `${siteUrl}/programs/career-clarity/workbook/#workbook`,
+      name: "Navio Career Clarity Program Workbook",
+      author: { "@id": `${siteUrl}/#organization` },
+      isAccessibleForFree: true,
+      educationalLevel: "Grades 9–12",
+      learningResourceType: "Workbook",
+    });
+  }
   if (page.path !== "/" && page.path !== "/404.html") {
     graph.push({
       "@type": "BreadcrumbList",

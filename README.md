@@ -16,16 +16,16 @@ The editable source lives in `site/src/`. Route content is stored in `site/src/p
 The public site uses 16 pre-rendered routes, including:
 
 - Home and About
-- A free self-guided career toolkit
-- Opportunities, Resources, Updates, and Get involved
+- The Navio Career Clarity Program and workbook
+- Resources, About, and Contact
 - Contact
 - Privacy, Terms, Accessibility, and Youth safety
 
-Older campaign and form-confirmation pages remain consolidated into these current routes. The journal URL redirects visitors to Resources and Updates.
+The former career-workshop URL redirects to the Career Clarity Program. Unavailable opportunity, update, and recruitment routes are no longer published.
 
 ## Contact and participation
 
-Visitors contact Navio Pathways directly through the monitored domain email or its public social profiles. The career toolkit and original guides are available immediately without an account, registration form, or collection of student responses. Schools and community groups may inquire separately about guided use.
+Visitors contact Navio Pathways directly through the monitored domain email or its public social profiles. The Career Clarity Program, workbook, and supporting resources are available immediately without an account, registration form, or collection of student responses.
 
 ## Local development
 
@@ -40,7 +40,7 @@ npm run dev
 npm run build
 ```
 
-The build creates the browser and server-rendering bundles, pre-renders 15 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, content depth, active-toolkit content, and external-link safety.
+The build creates the browser and server-rendering bundles, pre-renders 14 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, program completeness, workbook content, and external-link safety.
 
 ## Content notes
 

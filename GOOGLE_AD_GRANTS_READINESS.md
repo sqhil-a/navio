@@ -1,46 +1,38 @@
-# Google Ad Grants review readiness
+# Google Ad Grants website readiness
 
-Last reviewed: August 12, 2026
+Last reviewed: August 13, 2026
 
-This checklist reduces known website-policy risks; Google retains discretion over approval.
+Approval remains Google's decision. This document records the site-side remediation.
 
-## Implemented website remediation
+## Implemented
 
-- [x] The homepage prominently identifies Navio Pathways as an Ontario incorporated not-for-profit.
-- [x] Legal identity is consistent: Corporation Number 1001662092 and 3140 Polo Place, Mississauga, Ontario.
-- [x] The homepage explains the mission, Ontario secondary-student audience, active work, and public benefit.
-- [x] The primary service is a substantial six-module self-guided career toolkit that is available immediately.
-- [x] The toolkit and three companion guides require no account, application, registration, or collection of student responses.
-- [x] Closed and contingent registration pages, forms, CTAs, configuration, and sitemap entries were removed.
-- [x] Guided group use is accurately presented as an inquiry for schools and community organizations, not an open public event.
-- [x] Navigation includes About, Career Toolkit, Resources, Updates, Get Involved, and Contact.
-- [x] A dated Updates page records meaningful program, resource, and organization changes.
-- [x] About, Contact, Privacy, Terms, Accessibility, and Youth Safety describe the active resource-based operating model.
-- [x] Structured data includes the verified organization address, email, service area, founder, and corporation identifier.
-- [x] Build checks enforce route integrity, unique metadata, safe links, minimum content, organization facts, and active-toolkit content.
-- [x] HTTPS, apex-domain canonicalization, `www` redirect, sitemap, robots file, and GitHub Pages delivery were previously verified.
-- [x] Production dependencies reported zero known vulnerabilities at the prior production review.
+- The site prominently identifies Navio Pathways as an Ontario incorporated not-for-profit.
+- The legal name, corporation number, registered address, leadership, service area, and public email are consistent.
+- The public site is centred on one named, active program: the Navio Career Clarity Program.
+- The program has a defined audience, format, cost, time commitment, five stages, assignments, completion criteria, and participant output.
+- A separate Career Clarity Workbook contains every required worksheet and completion checklist.
+- The program and workbook are open access and require no account, application, or personal-information submission.
+- Three concise supporting resources address source evaluation, professional conversations, and experience testing.
+- Filler, future initiatives, unavailable opportunities, closed registration, placeholder calls-to-action, and padded update content were removed.
+- Primary navigation now leads directly to Program, Workbook, Resources, About, and Contact.
+- Privacy, Terms, Accessibility, and Youth Safety describe the program that actually exists.
+- Program structured data identifies the course provider, audience, duration, online format, and no-cost offer.
+- Build checks enforce substantive program fields and reject placeholder or unavailable-program language.
 
-## Verification before resubmission
+## Before another resubmission
 
-- [ ] Run mobile and desktop Lighthouse on production for Home, Career Toolkit, Resources, About, and Contact.
-- [ ] Meet the release gates: Performance at least 90; Accessibility, Best Practices, and SEO at least 95; lab LCP at most 2.5 s; CLS at most 0.1; TBT at most 200 ms.
-- [ ] Crawl production and verify no broken links, console errors, mixed content, or horizontal overflow at 320 px.
-- [ ] Verify Search Console ownership, submit `sitemap.xml`, and request indexing for the revised core routes.
-- [ ] Save the final build output, Lighthouse and crawl reports, organization documents, domain-control evidence, and screenshots in the application review packet.
-- [ ] Compare the exact new Google rejection wording with the live fixes before resubmitting.
+- Confirm the exact rejection message still concerns website quality rather than eligibility or account configuration.
+- Run current Lighthouse mobile and desktop reports for Home, Program, Workbook, Resources, and Contact.
+- Verify Search Console ownership, submit the sitemap, and request indexing for the new program URLs.
+- Save screenshots, build results, organization documents, and the public program/workbook URLs in the review packet.
 
-## Resubmission explanation
+## Suggested review note
 
-Use only after the revised pages are live and verified:
+> We rebuilt naviopathways.com around a single named and active service: the free Navio Career Clarity Program for Ontario secondary students in Grades 9–12. The program is available immediately, has five defined stages, takes approximately 2.5 hours, and produces a Career Clarity Portfolio with required assignments and completion criteria. We also published a separate workbook and three supporting resources. No application, account, or personal-information submission is required. We removed unavailable opportunities, future initiatives, closed registration, placeholder calls-to-action, and filler update sections. The site prominently displays our Ontario not-for-profit status, Corporation Number 1001662092, registered address, leadership, mission, and monitored domain email.
 
-> We revised naviopathways.com to address the website-quality feedback. The homepage prominently identifies Navio Pathways as an Ontario incorporated not-for-profit and explains our mission, audience, active work, and public benefit. Our primary program is now a substantial six-module career-exploration toolkit that students can use immediately without an account, application, or submission of personal information. We also publish three original companion guides, dated updates, complete organization and contact details, and current privacy, accessibility, terms, and youth-safety information. We removed the closed registration workflow and every contingent or placeholder call-to-action, then verified production navigation, HTTPS, responsive behavior, metadata, sitemap inclusion, and internal links.
+Use the note only after the new pages are live and verified.
 
-Edit this note only to reflect facts verified on the resubmission date.
+## Official guidance
 
-## Current official guidance
-
-- [Canadian eligibility requirements](https://support.google.com/nonprofits/answer/3215869?co=GENIE.CountryCode%3DCA&hl=en)
 - [Ad Grants website policy](https://support.google.com/nonprofits/answer/1657899?hl=en)
-- [Ad Grants policy compliance guide](https://support.google.com/nonprofits/answer/9314402?hl=en)
-- [Core Web Vitals](https://web.dev/articles/vitals)
+- [Canadian eligibility requirements](https://support.google.com/nonprofits/answer/3215869?co=GENIE.CountryCode%3DCA&hl=en)

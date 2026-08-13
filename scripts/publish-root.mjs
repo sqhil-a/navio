@@ -27,6 +27,13 @@ const assertInsideRoot = (target) => {
   if (!rel || rel.startsWith("..") || rel.includes(":")) throw new Error(`Refusing to modify path outside the repository: ${target}`);
 };
 
+// Remove generated routes that no longer belong to the public site.
+for (const staleEntry of ["opportunities", "updates", "get-involved"]) {
+  const target = join(root, staleEntry);
+  assertInsideRoot(target);
+  rmSync(target, { recursive: true, force: true });
+}
+
 for (const entry of readdirSync(dist, { withFileTypes: true })) {
   const destination = join(root, entry.name);
   assertInsideRoot(destination);
