@@ -28,7 +28,7 @@ const assertInsideRoot = (target) => {
 };
 
 // Remove generated routes that no longer belong to the public site.
-for (const staleEntry of ["opportunities", "updates", "get-involved", "career-workshops", "journal"]) {
+for (const staleEntry of ["opportunities", "updates", "get-involved", "career-workshops", "journal", "resources", "educators"]) {
   const target = join(root, staleEntry);
   assertInsideRoot(target);
   rmSync(target, { recursive: true, force: true });

@@ -17,42 +17,29 @@ const schemaFor = (page) => {
   const graph = [
     ...(page.path === "/" ? [
       { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: `${siteUrl}/`, name: "Navio Pathways" },
-      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", identifier: "Ontario Corporation Number 1001662092", description: "Ontario incorporated not-for-profit operating the free Navio Career Clarity Program for secondary students.", url: `${siteUrl}/`, email: "hello@naviopathways.com", address: { "@type": "PostalAddress", streetAddress: "3140 Polo Place", addressLocality: "Mississauga", addressRegion: "Ontario", addressCountry: "CA" }, founder: { "@type": "Person", name: "Sahil Ambegaonkar", jobTitle: "Founder and President", url: "https://sqhil-a.github.io/portfolio/" }, areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/", "https://www.linkedin.com/company/navio-pathways/"] },
+      { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Navio Pathways", legalName: "Navio Pathways", identifier: "Ontario Corporation Number 1001662092", description: "Ontario incorporated not-for-profit operating the annual Navio Pathways Case Competition for secondary students.", url: `${siteUrl}/`, email: "hello@naviopathways.com", address: { "@type": "PostalAddress", streetAddress: "3140 Polo Place", addressLocality: "Mississauga", addressRegion: "Ontario", addressCountry: "CA" }, founder: { "@type": "Person", name: "Sahil Ambegaonkar", jobTitle: "Founder and President", url: "https://sqhil-a.github.io/portfolio/" }, areaServed: { "@type": "AdministrativeArea", name: "Ontario" }, sameAs: ["https://www.instagram.com/naviopathways/", "https://www.linkedin.com/company/navio-pathways/"] },
     ] : []),
-    { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, datePublished: "2026-08-13", dateModified: buildDate, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
+    { "@type": "WebPage", "@id": `${siteUrl}${page.path}#page`, url: `${siteUrl}${page.path}`, name: page.title, description: page.description, datePublished: "2026-08-14", dateModified: buildDate, isPartOf: { "@id": `${siteUrl}/#website` }, about: { "@id": `${siteUrl}/#organization` } },
   ];
-  if (page.path === "/programs/career-clarity/") {
+  if (page.path === "/programs/npcc/") {
     graph.push({
-      "@type": "Course",
-      "@id": `${siteUrl}/programs/career-clarity/#course`,
-      name: "Navio Career Clarity Program",
-      description: "A free five-stage, self-paced career exploration program for Ontario secondary students in Grades 9–12.",
-      provider: { "@id": `${siteUrl}/#organization` },
-      educationalLevel: "Grades 9–12",
-      timeRequired: "PT2H30M",
-      isAccessibleForFree: true,
+      "@type": "Event",
+      "@id": `${siteUrl}/programs/npcc/#event`,
+      name: "Navio Pathways Case Competition 2026",
+      description: "A free online case competition for Ontario secondary students in Grades 9–12.",
+      startDate: "2026-11-15T10:00:00-05:00",
+      endDate: "2026-11-15T16:15:00-05:00",
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: { "@type": "VirtualLocation", url: `${siteUrl}/programs/npcc/` },
+      organizer: { "@id": `${siteUrl}/#organization` },
       audience: { "@type": "EducationalAudience", educationalRole: "student", geographicArea: { "@type": "AdministrativeArea", name: "Ontario" } },
-      offers: { "@type": "Offer", price: 0, priceCurrency: "CAD", availability: "https://schema.org/InStock", url: `${siteUrl}/programs/career-clarity/` },
-      hasCourseInstance: { "@type": "CourseInstance", courseMode: "online", name: "Self-paced online program" },
-    });
-  }
-  if (page.path === "/programs/career-clarity/workbook/") {
-    graph.push({
-      "@type": "CreativeWork",
-      "@id": `${siteUrl}/programs/career-clarity/workbook/#workbook`,
-      name: "Navio Career Clarity Program Workbook",
-      author: { "@id": `${siteUrl}/#organization` },
-      isAccessibleForFree: true,
-      educationalLevel: "Grades 9–12",
-      learningResourceType: "Workbook",
+      offers: { "@type": "Offer", price: 0, priceCurrency: "CAD", availability: "https://schema.org/InStock", url: `${siteUrl}/programs/npcc/register/`, validFrom: "2026-08-14" },
     });
   }
   const learningResources = new Map([
-    ["/programs/career-clarity/sample-portfolio/", ["Sample Career Clarity Portfolio", "Worked example"]],
-    ["/resources/evaluating-career-sources/", ["Evaluate career information before you act", "Student guide"]],
-    ["/resources/professional-conversations/", ["Plan a professional career conversation", "Student guide"]],
-    ["/resources/experience-tests/", ["Design a safe career experience test", "Student guide"]],
-    ["/educators/", ["Career Clarity guide for educators and families", "Facilitator guide"]],
+    ["/programs/npcc/rules/", ["NPCC 2026 official rules and judging rubric", "Competition rules"]],
+    ["/programs/npcc/prepare/", ["NPCC 2026 preparation guide", "Participant guide"]],
   ]);
   if (learningResources.has(page.path)) {
     const [name, learningResourceType] = learningResources.get(page.path);
@@ -66,7 +53,7 @@ const schemaFor = (page) => {
       educationalLevel: "Grades 9–12",
       inLanguage: "en-CA",
       learningResourceType,
-      datePublished: "2026-08-13",
+      datePublished: "2026-08-14",
       dateModified: buildDate,
     });
   }

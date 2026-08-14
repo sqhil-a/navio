@@ -1,23 +1,21 @@
 import React from "react";
-import { educatorPath, pageContent, programPath, samplePath, workbookPath } from "./page-content.js";
+import { pageContent, preparePath, programPath, registerPath, rulesPath } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
 const linkedin = "https://www.linkedin.com/company/navio-pathways/";
 const primaryNav = [
-  ["Career Program", programPath],
-  ["Workbook", workbookPath],
-  ["Resources", "/resources/"],
-  ["Educators", educatorPath],
+  ["NPCC 2026", programPath],
+  ["Rules", rulesPath],
+  ["Prepare", preparePath],
   ["About", "/about/"],
   ["Contact", "/contact/"],
 ];
 const exploreLinks = [
-  ["Career Clarity Program", programPath],
-  ["Program workbook", workbookPath],
-  ["Resources", "/resources/"],
-  ["Sample portfolio", samplePath],
-  ["Educator guide", educatorPath],
+  ["NPCC 2026", programPath],
+  ["Register a team", registerPath],
+  ["Official rules", rulesPath],
+  ["Preparation guide", preparePath],
   ["About", "/about/"],
   ["Contact", "/contact/"],
 ];
@@ -58,7 +56,7 @@ function Header({ path }) {
             {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
-            <a className="button button-small button-primary desktop-cta" href={`${programPath}#stage-1`}>Start program</a>
+            <a className="button button-small button-primary desktop-cta" href={registerPath}>Register team</a>
             <button className="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
               <span className="sr-only">Open navigation menu</span>
               <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
@@ -87,7 +85,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Home of the free Navio Career Clarity Program for Ontario secondary students.</p>
+          <p>Home of the annual Navio Pathways Case Competition for Ontario secondary students.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
