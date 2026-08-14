@@ -3532,11 +3532,11 @@ button.button:hover::before { transform: translateX(125%) skewX(-18deg); }
   border-bottom: 1px solid var(--line);
 }
 
-.program-strip div { padding: 0 1.25rem; border-right: 1px solid var(--line); }
+.program-strip div { min-width: 0; padding: 0 1.25rem; border-right: 1px solid var(--line); }
 .program-strip div:first-child { padding-left: 0; }
 .program-strip div:last-child { padding-right: 0; border-right: 0; }
 .program-strip dt { margin-bottom: 0.35rem; color: var(--muted); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
-.program-strip dd { margin: 0; color: var(--ink); font-weight: 750; }
+.program-strip dd { margin: 0; color: var(--ink); font-weight: 750; overflow-wrap: anywhere; }
 
 .program-stage-nav {
   display: grid;
