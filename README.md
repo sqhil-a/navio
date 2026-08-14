@@ -1,6 +1,6 @@
 # Navio Pathways website
 
-This repository contains the public website for Navio Pathways, an Ontario incorporated not-for-profit organization operating the annual Navio Pathways Case Competition (NPCC) for Ontario secondary students.
+This repository contains the public website for Navio Pathways, an Ontario incorporated not-for-profit organization focused on youth career exploration, volunteering, leadership, and community experience.
 
 ## Stack and deployment
 
@@ -13,20 +13,21 @@ The editable source lives in `site/src/`. Route content is stored in `site/src/p
 
 ## Site structure
 
-The public site uses 13 pre-rendered routes, including:
+The public site intentionally uses a small route set:
 
-- Home and About
-- NPCC 2026 details and team registration
-- Official competition rules and judging rubric
-- Participant preparation guide
+- Home
+- About
+- Opportunities
+- Get involved
+- Resources
 - Contact
-- Privacy, Terms, Accessibility, and Youth safety
+- Privacy, terms, accessibility, and youth safety
 
-Superseded career-program, resource, educator, opportunity, update, and recruitment routes are no longer published.
+Older campaign, volunteer, partnership, update, and form-confirmation pages were consolidated into these core routes.
 
-## Contact and participation
+## Contact and organization links
 
-Teams register for NPCC through the monitored organization inbox. The public site collects no visitor information and documents the exact registration fields, eligibility requirements, dates, event schedule, submission limits, judging rubric, conduct rules, privacy practices, and youth-safety boundaries.
+The static site does not submit inquiry forms. Visitors contact Navio Pathways directly through its organization email or official social profiles.
 
 ## Local development
 
@@ -41,8 +42,8 @@ npm run dev
 npm run build
 ```
 
-The build creates the browser and server-rendering bundles, pre-renders 13 routes, publishes the GitHub Pages files, and checks route integrity, metadata, nonprofit facts, program completeness, registration instructions, competition rules, preparation guidance, and external-link safety.
+The build creates the browser and server-rendering bundles, pre-renders 11 routes, publishes the GitHub Pages files, and checks route integrity, metadata, external-link safety, and the absence of on-site forms.
 
 ## Content notes
 
-Prizes, judges, sponsors, participant totals, impact statistics, partnerships, and additional leadership or board biographies should be published only after they are verified and approved. The production build rejects placeholder, closed-registration, deprecated-program, and workbook language.
+Impact statistics, partnerships, program claims, and additional leadership or board biographies should be added only after they are verified and approved for publication.

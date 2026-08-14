@@ -1,23 +1,21 @@
-import React from "react";
-import { pageContent, preparePath, programPath, registerPath, rulesPath } from "./page-content.js";
+import React, { useEffect, useMemo, useState } from "react";
+import { pageContent } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
 const linkedin = "https://www.linkedin.com/company/navio-pathways/";
 const primaryNav = [
-  ["NPCC 2026", programPath],
-  ["Rules", rulesPath],
-  ["Prepare", preparePath],
   ["About", "/about/"],
-  ["Contact", "/contact/"],
+  ["Opportunities", "/opportunities/"],
+  ["Resources", "/resources/"],
+  ["Get involved", "/get-involved/"],
 ];
 const exploreLinks = [
-  ["NPCC 2026", programPath],
-  ["Register a team", registerPath],
-  ["Official rules", rulesPath],
-  ["Preparation guide", preparePath],
   ["About", "/about/"],
-  ["Contact", "/contact/"],
+  ["Opportunities", "/opportunities/"],
+  ["Resources", "/resources/"],
+  ["Navio Journal", "https://journal.naviopathways.com/"],
+  ["Get involved", "/get-involved/"],
 ];
 const policyLinks = [
   ["Privacy", "/privacy/"],
@@ -43,30 +41,45 @@ function Brand({ footer = false }) {
 }
 
 function Header({ path }) {
-  const activeHref = primaryNav
-    .filter(([, href]) => path.startsWith(href))
-    .sort(([, left], [, right]) => right.length - left.length)[0]?.[1];
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const close = (event) => event.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, []);
+  useEffect(() => {
+    document.body.classList.toggle("menu-open", open);
+    return () => document.body.classList.remove("menu-open");
+  }, [open]);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 16);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+  const activeHref = primaryNav.find(([, href]) => path.startsWith(href))?.[1];
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <header className="site-header">
+      <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
-            <a className="button button-small button-primary desktop-cta" href={registerPath}>Register team</a>
-            <button className="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
-              <span className="sr-only">Open navigation menu</span>
+            <a className="button button-small button-primary desktop-cta" href="/contact/">Contact us</a>
+            <button className={`menu-toggle${open ? " is-open" : ""}`} type="button" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
+              <span className="sr-only">{open ? "Close" : "Open"} navigation menu</span>
               <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
             </button>
           </div>
         </div>
-        <div className="mobile-menu" id="mobile-menu" aria-hidden="true">
+        <div className={`mobile-menu${open ? " is-open" : ""}`} id="mobile-menu" aria-hidden={!open}>
           <nav aria-label="Mobile navigation">
-            {primaryNav.map(([label, href]) => (
-              <a key={`${label}-${href}`} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>
+            {[...primaryNav, ["Contact", "/contact/"]].map(([label, href]) => (
+              <a key={`${label}-${href}`} href={href} onClick={() => setOpen(false)}>{label}</a>
             ))}
           </nav>
         </div>
@@ -85,7 +98,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Home of the annual Navio Pathways Case Competition for Ontario secondary students.</p>
+          <p>Practical career, volunteer, and leadership guidance for young people in Ontario.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
@@ -100,12 +113,158 @@ function Footer() {
   );
 }
 
+function useAnalytics() {
+  useEffect(() => {
+    const id = window.NAVIO_CONFIG?.analyticsMeasurementId?.trim();
+    if (!/^G-[A-Z0-9]+$/.test(id || "")) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = (...args) => window.dataLayer.push(args);
+    window.gtag("js", new Date());
+    window.gtag("config", id, { anonymize_ip: true });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+    document.head.append(script);
+    return () => script.remove();
+  }, []);
+}
+
+function usePageMotion() {
+  useEffect(() => {
+    const selector = [
+      ".breadcrumbs",
+      ".hero-copy > *",
+      ".page-hero .container > *",
+      ".section-heading",
+      ".split-intro > *",
+      ".benefit-card",
+      ".info-card",
+      ".contact-card",
+      ".trust-panel",
+      ".feature-panel",
+      ".resource-card",
+      ".notice",
+      ".contact-note > *",
+      ".policy-copy > *",
+      ".final-cta .container > *",
+      ".standalone-state .container > *",
+      "main h1",
+      "main h2",
+      ".footer-grid > *",
+      ".footer-bottom > *",
+      ".links-shell > *",
+    ].join(", ");
+    const targets = [...document.querySelectorAll(selector)];
+    if (!targets.length) return undefined;
+    document.documentElement.classList.add("motion-enabled");
+    const siblingOrder = new Map();
+    targets.forEach((target) => {
+      const parent = target.parentElement;
+      const order = siblingOrder.get(parent) || 0;
+      target.style.setProperty("--motion-delay", `${Math.min(order, 5) * 55}ms`);
+      target.classList.add("motion-item");
+      siblingOrder.set(parent, order + 1);
+    });
+    document.querySelectorAll("main h1, main h2").forEach((heading) => {
+      if (heading.dataset.wordRiseReady === "true") return;
+      const title = heading.textContent.trim();
+      const originalLink = heading.querySelector(":scope > a");
+      if (!title) return;
+      heading.dataset.wordRiseReady = "true";
+      heading.classList.add("word-rise");
+      heading.setAttribute("aria-label", title);
+      heading.replaceChildren();
+      const wordTarget = originalLink ? originalLink.cloneNode(false) : heading;
+      if (originalLink) wordTarget.setAttribute("aria-label", title);
+      title.split(/\s+/).forEach((word, index) => {
+        const clip = document.createElement("span");
+        const wordElement = document.createElement("span");
+        clip.className = "word-rise-clip";
+        wordElement.className = "word-rise-word";
+        wordElement.style.setProperty("--word-delay", `${Math.min(index, 14) * 32}ms`);
+        wordElement.setAttribute("aria-hidden", "true");
+        wordElement.textContent = word;
+        clip.append(wordElement);
+        wordTarget.append(clip, document.createTextNode(" "));
+      });
+      if (originalLink) heading.append(wordTarget);
+    });
+    const showAll = () => targets.forEach((target) => target.classList.add("is-visible"));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      showAll();
+      return undefined;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -5%" });
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => targets.forEach((target) => observer.observe(target)));
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, []);
+}
+
 function PageContent({ page }) {
-  return <main id="main-content" tabIndex="-1" dangerouslySetInnerHTML={{ __html: page.html }} />;
+  const html = useMemo(() => ({ __html: page.html }), [page.html]);
+  return <main id="main-content" tabIndex="-1" dangerouslySetInnerHTML={html} />;
+}
+
+function LinkPage() {
+  return (
+    <main className="links-page" id="main-content">
+      <div className="links-shell">
+        <a className="links-brand" href="/" aria-label="Navio Pathways home">
+          <span className="brand-wordmark" aria-hidden="true" />
+        </a>
+        <h1>Official Navio Pathways links</h1>
+        <p className="links-intro">Learn about the organization and contact us directly.</p>
+        <a className="button button-secondary links-button" href="https://naviopathways.com/">
+          <span>Main site</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a className="button button-primary links-button" href="mailto:hello@naviopathways.com">
+          <span>Contact Navio Pathways</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a className="button button-secondary links-button" href="https://www.instagram.com/naviopathways/" target="_blank" rel="noopener noreferrer">
+          <span>Instagram</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <p className="links-note">Official organization contact: hello@naviopathways.com</p>
+      </div>
+    </main>
+  );
+}
+
+function JournalRedirect() {
+  useEffect(() => {
+    window.location.replace("https://journal.naviopathways.com/");
+  }, []);
+  return (
+    <main className="standalone-state" id="main-content">
+      <div className="container narrow">
+        <p className="eyebrow">Navio Journal</p>
+        <h1>Continue to the Journal.</h1>
+        <p className="lead">Practical career exploration for students, families, and educators.</p>
+        <a className="button button-primary" href="https://journal.naviopathways.com/">Open Navio Journal</a>
+      </div>
+    </main>
+  );
 }
 
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
+  useAnalytics();
+  usePageMotion();
+  if (normalizedPath === "/links/") return <LinkPage />;
+  if (normalizedPath === "/journal/") return <JournalRedirect />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }
