@@ -32,9 +32,22 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") setMenuOpen(false);
 });
 
-const updateHeader = () => header?.classList.toggle("is-scrolled", window.scrollY > 16);
+let headerFrame = 0;
+const updateHeader = () => {
+  headerFrame = 0;
+  if (!header) return;
+  header.classList.toggle("is-scrolled", window.scrollY > 16);
+  const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  const progress = Math.min(100, Math.max(0, (window.scrollY / scrollRange) * 100));
+  header.style.setProperty("--scroll-progress", `${progress}%`);
+};
+const requestHeaderUpdate = () => {
+  if (headerFrame) return;
+  headerFrame = window.requestAnimationFrame(updateHeader);
+};
 updateHeader();
-window.addEventListener("scroll", updateHeader, { passive: true });
+window.addEventListener("scroll", requestHeaderUpdate, { passive: true });
+window.addEventListener("resize", requestHeaderUpdate, { passive: true });
 
 const revealSelector = [
   ".signal-sequence li",
@@ -86,6 +99,10 @@ if (futureSignal && !reducedMotion.matches) {
     const y = ((event.clientY - bounds.top) / bounds.height) * 100;
     futureSignal.style.setProperty("--signal-x", `${Math.max(0, Math.min(100, x))}%`);
     futureSignal.style.setProperty("--signal-y", `${Math.max(0, Math.min(100, y))}%`);
+  });
+  futureSignal.addEventListener("pointerleave", () => {
+    futureSignal.style.setProperty("--signal-x", "75%");
+    futureSignal.style.setProperty("--signal-y", "25%");
   });
 }
 
