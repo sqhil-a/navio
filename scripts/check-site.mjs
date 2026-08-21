@@ -29,6 +29,7 @@ for (const root of roots) {
     if (/<form(?:\s|>)/.test(html)) errors.push(`${file} contains a form even though the site uses direct contact links`);
     if (/3140 Polo Place|streetAddress|Registered address/i.test(html)) errors.push(`${file} exposes a physical street address`);
     if (/Navio Journal|journal\.naviopathways\.com|\/opportunities\//i.test(html)) errors.push(`${file} contains superseded navigation or Journal content`);
+    if (/PATHWAY MAP|Founder signal|class="founder-portrait"/i.test(html)) errors.push(`${file} contains a superseded decorative graphic`);
 
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];
@@ -53,10 +54,13 @@ for (const root of roots) {
   }
 
   const home = readFileSync(join(root, "index.html"), "utf8");
-  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Futures aren’t", "Our mission", "What Navio does", "Most popular program", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
+  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Futures aren’t", "PATHWAY SEQUENCE", "Direction builds one useful step at a time", "Our mission", "What Navio does", "Most popular program", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing organization identity content: ${expected}`);
   }
   if (/workbook|Career Clarity/i.test(home)) errors.push(`${join(root, "index.html")} contains superseded program content`);
+
+  const about = readFileSync(join(root, "about/index.html"), "utf8");
+  if (!about.includes("Direction should come from experience—not guesswork.")) errors.push(`${join(root, "about/index.html")} is missing the founder perspective`);
 
   const programs = readFileSync(join(root, "programs/index.html"), "utf8");
   for (const expected of ["Navio Pathways Case Competition", "November 15, 2026", "Finance", "Accounting", "Marketing", "Entrepreneurship", "Prizes", "Request participant updates"]) {

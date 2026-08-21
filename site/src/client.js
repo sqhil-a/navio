@@ -45,39 +45,87 @@ updateHeader();
 window.addEventListener("scroll", requestHeaderUpdate, { passive: true });
 window.addEventListener("resize", requestHeaderUpdate, { passive: true });
 
+let letterOffset = 0;
+document.querySelectorAll("[data-letter-reveal]").forEach((element) => {
+  const label = element.textContent.trim();
+  element.setAttribute("aria-label", label);
+  element.textContent = "";
+  label.split(" ").forEach((word, wordIndex, words) => {
+    const wordWrap = document.createElement("span");
+    wordWrap.className = "letter-word";
+    wordWrap.setAttribute("aria-hidden", "true");
+    [...word].forEach((character, index) => {
+      const letter = document.createElement("span");
+      letter.className = "letter-reveal";
+      letter.style.setProperty("--letter-index", letterOffset + index);
+      letter.textContent = character;
+      wordWrap.appendChild(letter);
+    });
+    element.appendChild(wordWrap);
+    if (wordIndex < words.length - 1) element.append(" ");
+    letterOffset += word.length + 1;
+  });
+  letterOffset += 1;
+});
+
 const revealSelector = [
   ".mission-route li",
   ".identity-strip p",
   ".section-heading",
   ".program-feature > *",
+  ".program-facts div",
   ".outcome-grid article",
   ".support-grid > *",
   ".operating-model article",
+  ".organization-facts div",
   ".organization-grid > *",
   ".story-grid > *",
   ".founder-grid > *",
   ".program-definition > .container > *",
+  ".program-status-grid > *",
   ".format-path > li",
   ".business-lenses article",
   ".skills-layout > *",
+  ".skill-cloud li",
   ".prize-grid > *",
   ".involvement-card",
   ".collaboration-grid > *",
+  ".message-recipe p",
   ".boundary-grid > *",
   ".resource-tool",
+  ".resource-steps li",
+  ".resource-checks li",
+  ".pitch-sequence p",
   ".resource-next-grid > *",
   ".contact-primary",
   ".contact-topic-grid > a",
   ".social-layout > *",
+  ".social-links a",
   ".policy-copy > *",
   ".contact-cta-grid > *",
+  ".footer-grid > div",
+  ".footer-bottom",
 ].join(",");
 
 const revealItems = [...document.querySelectorAll(revealSelector)];
-const revealAll = () => revealItems.forEach((item) => item.classList.add("is-visible"));
+const revealVariants = ["reveal-rise", "reveal-left", "reveal-right", "reveal-bloom"];
+const finishReveal = (item) => {
+  item.classList.remove("reveal-item", "is-visible", ...revealVariants);
+  item.style.removeProperty("--reveal-delay");
+};
+const showReveal = (item, immediate = false) => {
+  item.classList.add("is-visible");
+  if (immediate) {
+    finishReveal(item);
+    return;
+  }
+  const delay = Number.parseInt(item.style.getPropertyValue("--reveal-delay"), 10) || 0;
+  window.setTimeout(() => finishReveal(item), 1450 + delay);
+};
+const revealAll = () => revealItems.forEach((item) => showReveal(item, true));
 
 revealItems.forEach((item, index) => {
-  item.classList.add("reveal-item");
+  item.classList.add("reveal-item", revealVariants[index % revealVariants.length]);
   item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 85}ms`);
 });
 
@@ -87,7 +135,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("Intersec
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-visible");
+      showReveal(entry.target);
       revealObserver.unobserve(entry.target);
     });
   }, { threshold: 0.1, rootMargin: "0px 0px -7%" });
