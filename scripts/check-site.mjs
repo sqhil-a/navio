@@ -53,13 +53,13 @@ for (const root of roots) {
   }
 
   const home = readFileSync(join(root, "index.html"), "utf8");
-  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
+  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Futures aren’t", "Our mission", "What Navio does", "Most popular program", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing organization identity content: ${expected}`);
   }
   if (/workbook|Career Clarity/i.test(home)) errors.push(`${join(root, "index.html")} contains superseded program content`);
 
   const programs = readFileSync(join(root, "programs/index.html"), "utf8");
-  for (const expected of ["Navio Pathways Case Competition", "November 15, 2026", "Finance", "Accounting", "Marketing", "Entrepreneurship", "Prizes", "Get NPCC updates"]) {
+  for (const expected of ["Navio Pathways Case Competition", "November 15, 2026", "Finance", "Accounting", "Marketing", "Entrepreneurship", "Prizes", "Request participant updates"]) {
     if (!programs.includes(expected)) errors.push(`${join(root, "programs/index.html")} is missing substantive NPCC content: ${expected}`);
   }
   const programWords = programs.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").trim().split(/\s+/).length;

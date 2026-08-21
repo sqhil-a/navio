@@ -8,7 +8,8 @@ Approval remains Google's decision. This document records the site-side remediat
 
 - The site prominently identifies Navio Pathways as an Ontario incorporated not-for-profit.
 - The legal name, corporation number, leadership, Ontario service area, and monitored organization email are consistent.
-- The public site is centred on one named flagship program: the Navio Pathways Case Competition (NPCC).
+- The public site is centred on Navio Pathways' organization-wide mission: helping Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps.
+- Programs are the primary way Navio delivers that mission. The Navio Pathways Case Competition (NPCC) is clearly identified as the organization's most popular named program without replacing the wider mission.
 - NPCC has a confirmed competition date of November 15, 2026, a defined youth audience, a four-part competition format, business-career focus areas, participant skills, and prizes.
 - The homepage and Programs page explain what participants do: analyze a case, make a recommendation, work as a team, pitch a solution, and respond to questions.
 - Working calls-to-action route participant, judge, professional, school, partner, sponsor, accessibility, and organization questions to the monitored domain email.
@@ -28,7 +29,7 @@ Approval remains Google's decision. This document records the site-side remediat
 
 ## Suggested review note
 
-> We rebuilt naviopathways.com around our named flagship program, the Navio Pathways Case Competition (NPCC), taking place November 15, 2026. The site now explains the competition purpose, youth audience, business-career focus, case-analysis and presentation format, participant skills, prizes, and ways to take part. We reorganized the navigation into About, Programs, Resources, Get involved, and Contact; made programs the primary focus; moved resources into a supporting role; removed Journal and superseded content; and added working contact routes for participants, judges, professionals, schools, partners, and sponsors. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
+> We rebuilt naviopathways.com around Navio Pathways' mission to help Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps. Programs are now the site's primary service, with the Navio Pathways Case Competition (NPCC)—taking place November 15, 2026—identified as our most popular program. The Programs page explains NPCC's purpose, youth audience, business-career focus, case-analysis and presentation format, participant skills, prizes, and ways to take part. Navigation leads directly to About, Programs, Resources, Get involved, and Contact; resources are supporting material; Journal and superseded content have been removed; and working contact routes are available for participants, contributors, schools, partners, and sponsors. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
 
 Use the note only after the new pages are live and verified.
 

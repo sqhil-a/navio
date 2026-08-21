@@ -50,7 +50,7 @@ function Header({ path }) {
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Primary navigation">
-            {primaryNav.map(([label, href]) => <a className={href === "/programs/" ? "nav-program" : ""} key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
+            {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
             <button className="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -81,7 +81,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Building practical programs where young people can explore careers, solve real problems, and show what they can do.</p>
+          <p>Helping young people explore careers, contribute meaningfully, build leadership, and move forward with more context.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Navigate</h2><LinkList links={exploreLinks} /></div>
@@ -109,9 +109,9 @@ function LinkPage() {
           <span className="brand-wordmark" aria-hidden="true" />
         </a>
         <h1>Official Navio Pathways links</h1>
-        <p className="links-intro">Explore our flagship youth program and contact the organization directly.</p>
+        <p className="links-intro">Learn about the organization, explore its programs, and connect directly.</p>
         <a className="button button-primary links-button" href="/programs/">
-          <span>Explore NPCC</span>
+          <span>Explore programs</span>
           <span aria-hidden="true">→</span>
         </a>
         <a className="button button-secondary links-button" href="https://naviopathways.com/">

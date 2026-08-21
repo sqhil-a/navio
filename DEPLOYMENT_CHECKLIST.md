@@ -72,7 +72,7 @@ Also verify compression, cache headers, MIME types, and that HTML is revalidated
 
 ## Privacy and contact
 
-- [ ] Confirm the public program and workbook do not collect or transmit student answers.
+- [ ] Confirm the public site does not collect or transmit student work or answers.
 - [ ] Confirm no personal information is placed in URLs, browser logs, or error text.
 - [ ] Test the public email route, ownership, response, privacy request, accessibility request, and youth-safety escalation.
 

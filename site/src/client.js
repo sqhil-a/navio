@@ -46,7 +46,7 @@ window.addEventListener("scroll", requestHeaderUpdate, { passive: true });
 window.addEventListener("resize", requestHeaderUpdate, { passive: true });
 
 const revealSelector = [
-  ".case-route li",
+  ".mission-route li",
   ".identity-strip p",
   ".section-heading",
   ".program-feature > *",

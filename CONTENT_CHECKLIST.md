@@ -12,9 +12,9 @@ Last reviewed: August 21, 2026
 - Service area: Ontario
 - Primary audience: young people exploring careers and practical skills
 
-## Flagship program
+## Most popular program
 
-The Navio Pathways Case Competition (NPCC) is the organization's annual youth business case competition. The 2026 competition takes place November 15, 2026. It is designed for young people interested in business careers, including finance, accounting, marketing, entrepreneurship, and strategy.
+The Navio Pathways Case Competition (NPCC) is currently the organization's most popular named program. The annual youth business case competition takes place November 15, 2026. It is designed for young people interested in business careers, including finance, accounting, marketing, entrepreneurship, and strategy.
 
 Participants work through a realistic business case, identify the central decision, build and test a recommendation, and present their solution. The program develops analysis, teamwork, communication, time management, presentation, and professional confidence. Prizes recognize strong analysis, feasible recommendations, effective teamwork, and persuasive communication.
 
