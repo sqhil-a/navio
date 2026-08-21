@@ -25,7 +25,7 @@ const assertInsideRoot = (target) => {
   if (!rel || rel.startsWith("..") || rel.includes(":")) throw new Error(`Refusing to modify path outside the repository: ${target}`);
 };
 
-for (const staleEntry of ["programs", "career-workshops", "updates", "educators"]) {
+for (const staleEntry of ["opportunities", "journal", "career-workshops", "updates", "educators"]) {
   const target = join(root, staleEntry);
   assertInsideRoot(target);
   rmSync(target, { recursive: true, force: true });

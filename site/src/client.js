@@ -1,9 +1,5 @@
 import "./styles.css";
 
-if (window.location.pathname === "/journal/") {
-  window.location.replace("https://journal.naviopathways.com/");
-}
-
 document.documentElement.classList.add("js");
 
 const header = document.querySelector(".site-header");
@@ -50,22 +46,30 @@ window.addEventListener("scroll", requestHeaderUpdate, { passive: true });
 window.addEventListener("resize", requestHeaderUpdate, { passive: true });
 
 const revealSelector = [
-  ".signal-sequence li",
+  ".case-route li",
   ".identity-strip p",
   ".section-heading",
-  ".direction-card",
-  ".reason-grid > *",
-  ".journal-panel > *",
+  ".program-feature > *",
+  ".outcome-grid article",
+  ".support-grid > *",
+  ".operating-model article",
   ".organization-grid > *",
   ".story-grid > *",
   ".founder-grid > *",
-  ".principle-list article",
-  ".route-list > a",
-  ".involvement-grid > a",
-  ".resource-card",
-  ".contact-route",
+  ".program-definition > .container > *",
+  ".format-path > li",
+  ".business-lenses article",
+  ".skills-layout > *",
+  ".prize-grid > *",
+  ".involvement-card",
+  ".collaboration-grid > *",
+  ".boundary-grid > *",
+  ".resource-tool",
+  ".resource-next-grid > *",
+  ".contact-primary",
+  ".contact-topic-grid > a",
+  ".social-layout > *",
   ".policy-copy > *",
-  ".contact-details-grid > *",
   ".contact-cta-grid > *",
 ].join(",");
 
@@ -74,7 +78,7 @@ const revealAll = () => revealItems.forEach((item) => item.classList.add("is-vis
 
 revealItems.forEach((item, index) => {
   item.classList.add("reveal-item");
-  item.style.setProperty("--reveal-delay", `${Math.min(index % 3, 2) * 70}ms`);
+  item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 85}ms`);
 });
 
 if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
@@ -90,19 +94,45 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("Intersec
   revealItems.forEach((item) => revealObserver.observe(item));
 }
 
-const futureSignal = document.querySelector(".future-signal");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-if (futureSignal && !reducedMotion.matches) {
-  futureSignal.addEventListener("pointermove", (event) => {
-    const bounds = futureSignal.getBoundingClientRect();
-    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
-    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-    futureSignal.style.setProperty("--signal-x", `${Math.max(0, Math.min(100, x))}%`);
-    futureSignal.style.setProperty("--signal-y", `${Math.max(0, Math.min(100, y))}%`);
+const caseVisual = document.querySelector(".case-visual");
+if (caseVisual && !reducedMotion.matches) {
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let animationFrame = 0;
+
+  const renderCaseMotion = () => {
+    currentX += (targetX - currentX) * 0.075;
+    currentY += (targetY - currentY) * 0.075;
+    caseVisual.style.setProperty("--tilt-x", `${currentX * 3.2}deg`);
+    caseVisual.style.setProperty("--tilt-y", `${currentY * -2.6}deg`);
+    caseVisual.style.setProperty("--glow-x", `${68 + currentX * 19}%`);
+    caseVisual.style.setProperty("--glow-y", `${28 + currentY * 17}%`);
+
+    if (Math.abs(targetX - currentX) > 0.002 || Math.abs(targetY - currentY) > 0.002) {
+      animationFrame = window.requestAnimationFrame(renderCaseMotion);
+    } else {
+      animationFrame = 0;
+    }
+  };
+
+  const requestCaseMotion = () => {
+    if (!animationFrame) animationFrame = window.requestAnimationFrame(renderCaseMotion);
+  };
+
+  caseVisual.addEventListener("pointermove", (event) => {
+    const bounds = caseVisual.getBoundingClientRect();
+    targetX = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2));
+    targetY = Math.max(-1, Math.min(1, ((event.clientY - bounds.top) / bounds.height - 0.5) * 2));
+    requestCaseMotion();
   });
-  futureSignal.addEventListener("pointerleave", () => {
-    futureSignal.style.setProperty("--signal-x", "75%");
-    futureSignal.style.setProperty("--signal-y", "25%");
+
+  caseVisual.addEventListener("pointerleave", () => {
+    targetX = 0;
+    targetY = 0;
+    requestCaseMotion();
   });
 }
 

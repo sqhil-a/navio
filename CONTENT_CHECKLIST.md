@@ -1,6 +1,6 @@
 # Navio public content checklist
 
-Last reviewed: August 13, 2026
+Last reviewed: August 21, 2026
 
 ## Verified public facts
 
@@ -10,24 +10,20 @@ Last reviewed: August 13, 2026
 - Public email: hello@naviopathways.com
 - Founder and President: Sahil Ambegaonkar
 - Service area: Ontario
-- Primary audience: secondary students in Grades 9–12
+- Primary audience: young people exploring careers and practical skills
 
-## Active program
+## Flagship program
 
-The Navio Career Clarity Program is the organization's current public program. It is free, self-paced, open access, and takes approximately 2.5 hours across five stages. Students complete a Career Clarity Portfolio containing:
+The Navio Pathways Case Competition (NPCC) is the organization's annual youth business case competition. The 2026 competition takes place November 15, 2026. It is designed for young people interested in business careers, including finance, accounting, marketing, entrepreneurship, and strategy.
 
-1. Career Criteria Card
-2. Career Evidence Brief using three current sources
-3. Two-route Pathway Comparison
-4. Experience Test and five professional questions
-5. 30-Day Exploration Plan
+Participants work through a realistic business case, identify the central decision, build and test a recommendation, and present their solution. The program develops analysis, teamwork, communication, time management, presentation, and professional confidence. Prizes recognize strong analysis, feasible recommendations, effective teamwork, and persuasive communication.
 
-The program does not require an account or collect workbook answers. It does not issue school credit, a credential, or volunteer hours.
+The public site provides a monitored email route for participant updates, professional contributors, judges, schools, partners, and sponsors. It does not describe registration as open or publish prize values that have not been confirmed.
 
 ## Publishing rules
 
-- Do not publish a program, event, partnership, speaker, testimonial, statistic, or outcome before it is verified and approved.
-- Do not use “coming soon,” “in development,” closed registration, sample dates, or placeholder calls-to-action on the public site.
+- Do not publish a date, eligibility rule, format detail, venue, partnership, judge, sponsor, prize value, testimonial, statistic, or outcome before it is verified and approved.
+- Do not use “coming soon,” “in development,” closed forms, sample dates, or placeholder calls-to-action on the public site.
 - Link only to working destinations that accurately describe the action.
 - Record meaningful changes with a real review date.
 - Keep legal identity, program details, and public contact information consistent with organization records.

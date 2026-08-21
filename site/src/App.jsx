@@ -6,16 +6,17 @@ const instagram = "https://www.instagram.com/naviopathways/";
 const linkedin = "https://www.linkedin.com/company/navio-pathways/";
 const primaryNav = [
   ["About", "/about/"],
-  ["Explore", "/opportunities/"],
+  ["Programs", "/programs/"],
   ["Resources", "/resources/"],
   ["Get involved", "/get-involved/"],
+  ["Contact", "/contact/"],
 ];
 const exploreLinks = [
   ["About", "/about/"],
-  ["Ways to explore", "/opportunities/"],
+  ["Programs", "/programs/"],
   ["Resources", "/resources/"],
-  ["Navio Journal", "https://journal.naviopathways.com/"],
   ["Get involved", "/get-involved/"],
+  ["Contact", "/contact/"],
 ];
 const policyLinks = [
   ["Privacy", "/privacy/"],
@@ -49,10 +50,9 @@ function Header({ path }) {
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Primary navigation">
-            {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
+            {primaryNav.map(([label, href]) => <a className={href === "/programs/" ? "nav-program" : ""} key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
-            <a className="header-contact desktop-cta" href="/contact/">Contact <span aria-hidden="true">↗</span></a>
             <button className="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
               <span className="sr-only">Open navigation menu</span>
               <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
@@ -61,7 +61,7 @@ function Header({ path }) {
         </div>
         <div className="mobile-menu" id="mobile-menu" aria-hidden="true">
           <nav aria-label="Mobile navigation">
-            {[...primaryNav, ["Contact", "/contact/"]].map(([label, href]) => (
+            {primaryNav.map(([label, href]) => (
               <a key={`${label}-${href}`} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>
             ))}
           </nav>
@@ -81,10 +81,10 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Helping young people explore direction, contribution, and leadership with more context and less guesswork.</p>
+          <p>Building practical programs where young people can explore careers, solve real problems, and show what they can do.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
-        <div><h2>Explore</h2><LinkList links={exploreLinks} /></div>
+        <div><h2>Navigate</h2><LinkList links={exploreLinks} /></div>
         <div><h2>Contact</h2><ul className="footer-contact-links"><li><a href={`mailto:${email}`}>{email}</a></li><li><a href={instagram} target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li><li><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></li></ul></div>
         <div><h2>Policies</h2><LinkList links={policyLinks} /></div>
       </div>
@@ -109,12 +109,16 @@ function LinkPage() {
           <span className="brand-wordmark" aria-hidden="true" />
         </a>
         <h1>Official Navio Pathways links</h1>
-        <p className="links-intro">Learn about the organization and contact us directly.</p>
+        <p className="links-intro">Explore our flagship youth program and contact the organization directly.</p>
+        <a className="button button-primary links-button" href="/programs/">
+          <span>Explore NPCC</span>
+          <span aria-hidden="true">→</span>
+        </a>
         <a className="button button-secondary links-button" href="https://naviopathways.com/">
           <span>Main site</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <a className="button button-primary links-button" href="mailto:hello@naviopathways.com">
+        <a className="button button-secondary links-button" href="mailto:hello@naviopathways.com">
           <span>Contact Navio Pathways</span>
           <span aria-hidden="true">→</span>
         </a>
@@ -128,23 +132,9 @@ function LinkPage() {
   );
 }
 
-function JournalRedirect() {
-  return (
-    <main className="standalone-state" id="main-content">
-      <div className="container narrow">
-        <p className="eyebrow">Navio Journal</p>
-        <h1>Continue to the Journal.</h1>
-        <p className="lead">Practical career exploration for students, families, and educators.</p>
-        <a className="button button-primary" href="https://journal.naviopathways.com/">Open Navio Journal</a>
-      </div>
-    </main>
-  );
-}
-
 export function App({ path = "/" }) {
   const normalizedPath = normalizePath(path);
   const page = getPage(normalizedPath);
   if (normalizedPath === "/links/") return <LinkPage />;
-  if (normalizedPath === "/journal/") return <JournalRedirect />;
   return <><Header path={normalizedPath} /><PageContent page={page} /><Footer /></>;
 }

@@ -3,8 +3,8 @@ import { join } from "node:path";
 
 const roots = ["dist", "."];
 const routes = [
-  "index.html", "about/index.html", "opportunities/index.html", "get-involved/index.html",
-  "resources/index.html", "contact/index.html", "links/index.html", "journal/index.html", "privacy/index.html", "terms/index.html",
+  "index.html", "about/index.html", "programs/index.html", "get-involved/index.html",
+  "resources/index.html", "contact/index.html", "links/index.html", "privacy/index.html", "terms/index.html",
   "accessibility/index.html", "youth-safety/index.html", "404.html",
 ];
 const errors = [];
@@ -28,6 +28,7 @@ for (const root of roots) {
     if (/target="_blank"(?![^>]*rel="[^"]*noopener)/.test(html)) errors.push(`${file} has an unsafe new-tab link`);
     if (/<form(?:\s|>)/.test(html)) errors.push(`${file} contains a form even though the site uses direct contact links`);
     if (/3140 Polo Place|streetAddress|Registered address/i.test(html)) errors.push(`${file} exposes a physical street address`);
+    if (/Navio Journal|journal\.naviopathways\.com|\/opportunities\//i.test(html)) errors.push(`${file} contains superseded navigation or Journal content`);
 
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];
@@ -52,10 +53,17 @@ for (const root of roots) {
   }
 
   const home = readFileSync(join(root, "index.html"), "utf8");
-  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Mississauga, Ontario", "/about/", "/contact/"]) {
+  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing organization identity content: ${expected}`);
   }
-  if (/workbook|Career Clarity|NPCC|case competition/i.test(home)) errors.push(`${join(root, "index.html")} contains superseded program content`);
+  if (/workbook|Career Clarity/i.test(home)) errors.push(`${join(root, "index.html")} contains superseded program content`);
+
+  const programs = readFileSync(join(root, "programs/index.html"), "utf8");
+  for (const expected of ["Navio Pathways Case Competition", "November 15, 2026", "Finance", "Accounting", "Marketing", "Entrepreneurship", "Prizes", "Get NPCC updates"]) {
+    if (!programs.includes(expected)) errors.push(`${join(root, "programs/index.html")} is missing substantive NPCC content: ${expected}`);
+  }
+  const programWords = programs.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").trim().split(/\s+/).length;
+  if (programWords < 350) errors.push(`${join(root, "programs/index.html")} is too thin at ${programWords} rendered words`);
 }
 
 if (errors.length) {
