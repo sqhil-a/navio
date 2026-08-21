@@ -808,8 +808,6 @@ button.button:hover::before { transform: rotate(18deg) translateX(620%); }
 .site-footer li { margin-bottom: 0.55rem; }
 .site-footer a { color: var(--ink-2); text-decoration-color: rgba(200, 184, 255, 0.28); }
 .site-footer a:hover { color: var(--white); }
-.footer-address { margin-top: 1.7rem; color: var(--ink-2); font-size: 0.84rem; font-style: normal; }
-.footer-address span { display: block; margin-bottom: 0.4rem; color: var(--cyan); font-family: var(--mono); font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .footer-bottom { display: grid; width: min(calc(100% - 3rem), var(--container)); grid-template-columns: 0.6fr 1.4fr; margin: 4rem auto 0; padding-top: 1.4rem; border-top: 1px solid var(--line); gap: 2rem; font-size: 0.72rem; }
 .footer-bottom p { margin: 0; }
 .footer-bottom p:last-child { max-width: 48rem; justify-self: end; text-align: right; }

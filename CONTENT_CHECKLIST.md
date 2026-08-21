@@ -7,7 +7,6 @@ Last reviewed: August 13, 2026
 - Legal name: Navio Pathways
 - Status: Ontario incorporated not-for-profit organization
 - Corporation Number: 1001662092
-- Registered address: 3140 Polo Place, Mississauga, Ontario
 - Public email: hello@naviopathways.com
 - Founder and President: Sahil Ambegaonkar
 - Service area: Ontario
