@@ -30,6 +30,7 @@ for (const root of roots) {
     if (/3140 Polo Place|streetAddress|Registered address/i.test(html)) errors.push(`${file} exposes a physical street address`);
     if (/Navio Journal|journal\.naviopathways\.com|\/opportunities\//i.test(html)) errors.push(`${file} contains superseded navigation or Journal content`);
     if (/PATHWAY MAP|Founder signal|class="founder-portrait"/i.test(html)) errors.push(`${file} contains a superseded decorative graphic`);
+    if (/NPCC|Navio Pathways Case Competition|case competition|2026-11-15|November 15, 2026|Most popular program/i.test(html)) errors.push(`${file} contains superseded case-competition content`);
 
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];
@@ -54,17 +55,18 @@ for (const root of roots) {
   }
 
   const home = readFileSync(join(root, "index.html"), "utf8");
-  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Futures aren’t", "PATHWAY SEQUENCE", "Direction builds one useful step at a time", "Our mission", "What Navio does", "Most popular program", "Navio Pathways Case Competition", "November 15, 2026", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
+  for (const expected of ["Navio Pathways", "Ontario incorporated not-for-profit", "1001662092", "Futures aren’t", "PATHWAY SEQUENCE", "Direction builds one useful step at a time", "Our mission", "What Navio does", "/programs/", "/about/", "/resources/", "/get-involved/", "/contact/"]) {
     if (!home.includes(expected)) errors.push(`${join(root, "index.html")} is missing organization identity content: ${expected}`);
   }
   if (/workbook|Career Clarity/i.test(home)) errors.push(`${join(root, "index.html")} contains superseded program content`);
+  if (/Navio NEXT|Networking, Exploration, eXposure/i.test(home)) errors.push(`${join(root, "index.html")} promotes the annual conference instead of keeping the homepage mission-led`);
 
   const about = readFileSync(join(root, "about/index.html"), "utf8");
   if (!about.includes("Direction should come from experience—not guesswork.")) errors.push(`${join(root, "about/index.html")} is missing the founder perspective`);
 
   const programs = readFileSync(join(root, "programs/index.html"), "utf8");
-  for (const expected of ["Navio Pathways Case Competition", "November 15, 2026", "Finance", "Accounting", "Marketing", "Entrepreneurship", "Prizes", "Request participant updates"]) {
-    if (!programs.includes(expected)) errors.push(`${join(root, "programs/index.html")} is missing substantive NPCC content: ${expected}`);
+  for (const expected of ["Navio NEXT", "Networking", "Exploration", "eXposure", "Transformation", "November 21, 2026", "10:00 AM", "4:00 PM", "Mississauga, Ontario", "To be announced", "Attendance", "Free", "Ontario secondary students", "Panels", "Q&amp;A", "Workshops", "university information", "Finance", "Entrepreneurship", "Hospitality", "Marketing", "Management", "Professionals", "Professors", "University students", "Request conference updates"]) {
+    if (!programs.includes(expected)) errors.push(`${join(root, "programs/index.html")} is missing substantive Navio NEXT content: ${expected}`);
   }
   const programWords = programs.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").trim().split(/\s+/).length;
   if (programWords < 350) errors.push(`${join(root, "programs/index.html")} is too thin at ${programWords} rendered words`);

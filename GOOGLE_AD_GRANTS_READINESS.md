@@ -1,6 +1,6 @@
 # Google Ad Grants website readiness
 
-Last reviewed: August 21, 2026
+Last reviewed: August 22, 2026
 
 Approval remains Google's decision. This document records the site-side remediation and does not promise approval.
 
@@ -9,15 +9,15 @@ Approval remains Google's decision. This document records the site-side remediat
 - The site prominently identifies Navio Pathways as an Ontario incorporated not-for-profit.
 - The legal name, corporation number, leadership, Ontario service area, and monitored organization email are consistent.
 - The public site is centred on Navio Pathways' organization-wide mission: helping Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps.
-- Programs are the primary way Navio delivers that mission. The Navio Pathways Case Competition (NPCC) is clearly identified as the organization's most popular named program without replacing the wider mission.
-- NPCC has a confirmed competition date of November 15, 2026, a defined youth audience, a four-part competition format, business-career focus areas, participant skills, and prizes.
-- The homepage and Programs page explain what participants do: analyze a case, make a recommendation, work as a team, pitch a solution, and respond to questions.
-- Working calls-to-action route participant, judge, professional, school, partner, sponsor, accessibility, and organization questions to the monitored domain email.
+- The homepage remains centred on the organization-wide mission. Navio NEXT is described on the Programs page as Navio Pathways' annual conference without replacing or overshadowing that wider mission.
+- NEXT has a confirmed date and time of November 21, 2026, from 10:00 AM to 4:00 PM; a Mississauga location with venue clearly marked as to be announced; free attendance; and a defined Ontario secondary-school and high-school-aged audience.
+- The Programs page explains the conference's panels, Q&A sessions, networking, workshops, university information, speaker perspectives, and five business career areas.
+- Working calls-to-action route conference-update, participant, professional, school, partner, supporter, accessibility, and organization questions to the monitored domain email.
 - Resources are presented as secondary preparation material supporting the program, not as a substitute for program delivery.
 - Journal, workbook, unavailable-opportunity, placeholder, and superseded program content has been removed.
 - Primary navigation now leads directly to About, Programs, Resources, Get involved, and Contact.
 - Privacy, Terms, Accessibility, and Youth Safety describe the current program and contact workflow.
-- Build checks require substantive NPCC content and reject superseded program, Journal, old-route, and physical-address content.
+- Build checks require substantive Navio NEXT content and reject the superseded case competition, Journal, old-route, placeholder, and physical-address content.
 
 ## Before another resubmission
 
@@ -25,11 +25,11 @@ Approval remains Google's decision. This document records the site-side remediat
 - Run current mobile and desktop performance and accessibility reports for Home, Programs, Resources, Get involved, and Contact.
 - Verify Search Console ownership, submit the revised sitemap, and request indexing for the Programs page.
 - Test every email call-to-action on mobile and desktop.
-- Save screenshots, build results, organization documents, the confirmed competition date, and current program information in the review packet.
+- Save screenshots, build results, organization documents, the confirmed conference schedule, and current program information in the review packet.
 
 ## Suggested review note
 
-> We rebuilt naviopathways.com around Navio Pathways' mission to help Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps. Programs are now the site's primary service, with the Navio Pathways Case Competition (NPCC)—taking place November 15, 2026—identified as our most popular program. The Programs page explains NPCC's purpose, youth audience, business-career focus, case-analysis and presentation format, participant skills, prizes, and ways to take part. Navigation leads directly to About, Programs, Resources, Get involved, and Contact; resources are supporting material; Journal and superseded content have been removed; and working contact routes are available for participants, contributors, schools, partners, and sponsors. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
+> We rebuilt naviopathways.com around Navio Pathways' mission to help Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps. The homepage remains focused on the organization and routes visitors clearly to About, Programs, Resources, Get involved, and Contact. The Programs page documents Navio NEXT, our free annual in-person career exploration conference for Ontario secondary students and high-school-aged youth. It includes the confirmed November 21, 2026 date, 10:00 AM–4:00 PM schedule, Mississauga location, clearly labelled venue status, panels, Q&A sessions, networking, workshops, university information, speaker groups, and business career areas. Resources remain supporting material; Journal and superseded content have been removed; and working contact routes are available for participants, contributors, schools, partners, and supporters. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
 
 Use the note only after the new pages are live and verified.
 
