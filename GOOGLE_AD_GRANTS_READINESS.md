@@ -1,6 +1,6 @@
 # Google Ad Grants website readiness
 
-Last reviewed: August 22, 2026
+Last reviewed: August 23, 2026
 
 Approval remains Google's decision. This document records the site-side remediation and does not promise approval.
 
@@ -29,7 +29,7 @@ Approval remains Google's decision. This document records the site-side remediat
 
 ## Suggested review note
 
-> We rebuilt naviopathways.com around Navio Pathways' mission to help Ontario youth explore careers, contribute meaningfully, build leadership, and make informed next steps. The homepage remains focused on the organization and routes visitors clearly to About, Programs, Resources, Get involved, and Contact. The Programs page documents Navio NEXT, our free annual in-person career exploration conference for Ontario secondary students and high-school-aged youth. It includes the confirmed November 21, 2026 date, 10:00 AM–4:00 PM schedule, Mississauga location, clearly labelled venue status, panels, Q&A sessions, networking, workshops, university information, speaker groups, and business career areas. Resources remain supporting material; Journal and superseded content have been removed; and working contact routes are available for participants, contributors, schools, partners, and supporters. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
+> We rebuilt naviopathways.com around Navio Pathways' mission to help Ontario high school students explore careers, opportunities, experiences, and informed next steps. The homepage remains focused on the organization and routes visitors clearly to About, Programs, Resources, Get involved, and Contact. The Programs page documents Navio NEXT, our free annual in-person career exploration conference for Ontario secondary students and high-school-aged youth. It includes the confirmed November 21, 2026 date, 10:00 AM - 4:00 PM schedule, Mississauga location, clearly labelled venue status, panels, Q&A sessions, networking, workshops, university information, speaker groups, and business career areas. Resources remain supporting material; Journal and superseded content have been removed; and working contact routes are available for participants, contributors, schools, partners, and supporters. The site also prominently identifies our Ontario not-for-profit status, Corporation Number 1001662092, leadership, service area, and monitored domain email.
 
 Use the note only after the new pages are live and verified.
 

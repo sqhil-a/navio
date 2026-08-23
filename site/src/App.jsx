@@ -81,7 +81,7 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-intro">
           <Brand footer />
-          <p>Helping young people explore careers, contribute meaningfully, build leadership, and move forward with more context.</p>
+          <p>Helping high school students explore careers, opportunities, experiences, and informed next steps.</p>
           <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
         </div>
         <div><h2>Navigate</h2><LinkList links={exploreLinks} /></div>

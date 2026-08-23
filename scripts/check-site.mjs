@@ -31,6 +31,7 @@ for (const root of roots) {
     if (/Navio Journal|journal\.naviopathways\.com|\/opportunities\//i.test(html)) errors.push(`${file} contains superseded navigation or Journal content`);
     if (/PATHWAY MAP|Founder signal|class="founder-portrait"/i.test(html)) errors.push(`${file} contains a superseded decorative graphic`);
     if (/NPCC|Navio Pathways Case Competition|case competition|2026-11-15|November 15, 2026|Most popular program/i.test(html)) errors.push(`${file} contains superseded case-competition content`);
+    if (/[\u2012-\u2015\u2212]/u.test(html)) errors.push(`${file} contains a non-ASCII dash; use a standard hyphen instead`);
 
     const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([\s\S]*?)"/i)?.[1];
@@ -62,7 +63,7 @@ for (const root of roots) {
   if (/Navio NEXT|Networking, Exploration, eXposure/i.test(home)) errors.push(`${join(root, "index.html")} promotes the annual conference instead of keeping the homepage mission-led`);
 
   const about = readFileSync(join(root, "about/index.html"), "utf8");
-  if (!about.includes("Direction should come from experience—not guesswork.")) errors.push(`${join(root, "about/index.html")} is missing the founder perspective`);
+  if (!about.includes("Direction should come from experience, not guesswork.")) errors.push(`${join(root, "about/index.html")} is missing the founder perspective`);
 
   const programs = readFileSync(join(root, "programs/index.html"), "utf8");
   for (const expected of ["Navio NEXT", "Networking", "Exploration", "eXposure", "Transformation", "November 21, 2026", "10:00 AM", "4:00 PM", "Mississauga, Ontario", "To be announced", "Attendance", "Free", "Ontario secondary students", "Panels", "Q&amp;A", "Workshops", "university information", "Finance", "Entrepreneurship", "Hospitality", "Marketing", "Management", "Professionals", "Professors", "University students", "Request conference updates"]) {

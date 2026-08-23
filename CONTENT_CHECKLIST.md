@@ -1,6 +1,6 @@
 # Navio public content checklist
 
-Last reviewed: August 22, 2026
+Last reviewed: August 23, 2026
 
 ## Verified public facts
 
@@ -10,7 +10,15 @@ Last reviewed: August 22, 2026
 - Public email: hello@naviopathways.com
 - Founder and President: Sahil Ambegaonkar
 - Service area: Ontario
-- Primary audience: young people exploring careers and practical skills
+- Primary audience: Ontario high school students, Grades 9 - 12
+
+## Brand standards
+
+- Use Inter across the site, with bold headlines, medium interface text, and regular or light body copy.
+- Use only the approved palette: Magenta `#8C3880`, Fuchsia `#AD4794`, Orchid `#BF66AD`, Plum `#523D57`, Charcoal `#3D3B47`, and Midnight `#383842`.
+- Sound encouraging without being cheesy, professional without sounding corporate, and exciting without sounding desperate.
+- Use direct, specific language. Remove corporate buzzwords, generic inspiration, and AI-sounding filler.
+- Use only the standard ASCII hyphen for dash punctuation. The build must fail if an em dash, en dash, figure dash, horizontal bar, or minus-sign character appears in public HTML.
 
 ## Annual conference
 
