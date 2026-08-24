@@ -27,7 +27,7 @@ for (const root of roots) {
     if ((html.match(/<main(?:\s|>)/g) || []).length !== 1) errors.push(`${file} must contain exactly one main landmark`);
     if (/target="_blank"(?![^>]*rel="[^"]*noopener)/.test(html)) errors.push(`${file} has an unsafe new-tab link`);
     if (/<form(?:\s|>)/.test(html)) errors.push(`${file} contains a form even though the site uses direct contact links`);
-    if (/3140 Polo Place|streetAddress|Registered address/i.test(html)) errors.push(`${file} exposes a physical street address`);
+    if (!/3140 Polo Place/i.test(html)) errors.push(`${file} must display the organization physical street address`);
     if (/Navio Journal|journal\.naviopathways\.com|\/opportunities\//i.test(html)) errors.push(`${file} contains superseded navigation or Journal content`);
     if (/PATHWAY MAP|Founder signal|class="founder-portrait"/i.test(html)) errors.push(`${file} contains a superseded decorative graphic`);
     if (/NPCC|Navio Pathways Case Competition|case competition|2026-11-15|November 15, 2026|Most popular program/i.test(html)) errors.push(`${file} contains superseded case-competition content`);

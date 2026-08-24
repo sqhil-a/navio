@@ -3,7 +3,6 @@ import { pageContent } from "./page-content.js";
 
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
-const linkedin = "https://www.linkedin.com/company/navio-pathways/";
 const primaryNav = [
   ["About", "/about/"],
   ["Programs", "/programs/"],
@@ -82,10 +81,10 @@ function Footer() {
         <div className="footer-intro">
           <Brand footer />
           <p>Helping high school students explore careers, opportunities, experiences, and informed next steps.</p>
-          <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092</p>
+          <p className="legal-name"><strong>Navio Pathways</strong><br />Ontario incorporated not-for-profit organization<br />Corporation Number 1001662092<br />3140 Polo Place<br />Mississauga, Ontario, Canada</p>
         </div>
         <div><h2>Navigate</h2><LinkList links={exploreLinks} /></div>
-        <div><h2>Contact</h2><ul className="footer-contact-links"><li><a href={`mailto:${email}`}>{email}</a></li><li><a href={instagram} target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li><li><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></li></ul></div>
+        <div><h2>Contact</h2><ul className="footer-contact-links"><li><a href={`mailto:${email}`}>{email}</a></li><li><a href={instagram} target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a></li></ul></div>
         <div><h2>Policies</h2><LinkList links={policyLinks} /></div>
       </div>
       <div className="footer-bottom">
@@ -126,7 +125,7 @@ function LinkPage() {
           <span>Instagram</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <p className="links-note">Official organization contact: hello@naviopathways.com</p>
+        <p className="links-note">Official organization contact: hello@naviopathways.com<br />3140 Polo Place, Mississauga, Ontario, Canada</p>
       </div>
     </main>
   );

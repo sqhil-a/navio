@@ -614,6 +614,12 @@ img, svg { display: block; max-width: 100%; }
 .contact-topic-grid > a:nth-child(even) { border-radius: 3.5rem 1.4rem 1.4rem 1.4rem; }
 .contact-topic-grid > a:hover { transform: translateY(-.6rem) scale(1.006); border-color: rgba(191,102,173,.42); background: var(--panel-raised); color: var(--ink-soft); box-shadow: 0 28px 60px rgba(0,0,0,.25); }
 .contact-topic-grid span { margin-top: auto; color: var(--aqua); font-size: .8rem; font-weight: 720; }
+.organization-contact-band { padding: clamp(2rem, 4vw, 3rem) 0; border-top: 1px solid rgba(191,102,173,.26); border-bottom: 1px solid rgba(191,102,173,.26); background: var(--plum); }
+.organization-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 8vw, 8rem); }
+.organization-contact-grid > div { padding-left: 1.25rem; border-left: 1px solid rgba(191,102,173,.45); }
+.organization-contact-grid .eyebrow { margin-bottom: .75rem; }
+.organization-contact-grid address { color: var(--ink); font-style: normal; line-height: 1.7; }
+.organization-contact-grid p:last-child { max-width: 38rem; margin: 0; color: var(--ink-soft); }
 .social-section { border-top: 1px solid var(--line); background: var(--night-soft); }
 .social-layout { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1fr); align-items: center; gap: clamp(3rem, 9vw, 8rem); }
 .social-layout > div:first-child p:last-child { max-width: 39rem; color: var(--muted); }
@@ -736,7 +742,7 @@ img, svg { display: block; max-width: 100%; }
   .identity-strip-grid { grid-template-columns: repeat(2, 1fr); }
   .identity-strip p:nth-child(3), .identity-strip p:nth-child(4) { border-top: 1px solid var(--line); }
   .section { padding: 4.5rem 0; }
-  .heading-with-note, .support-grid, .story-grid, .organization-grid, .founder-grid, .program-hero-layout, .definition-grid, .conference-details-grid, .collaboration-grid, .boundary-grid, .resource-tool, .resource-next-grid, .social-layout, .contact-cta-grid { grid-template-columns: 1fr; }
+  .heading-with-note, .support-grid, .story-grid, .organization-grid, .founder-grid, .program-hero-layout, .definition-grid, .conference-details-grid, .collaboration-grid, .boundary-grid, .resource-tool, .resource-next-grid, .social-layout, .organization-contact-grid, .contact-cta-grid { grid-template-columns: 1fr; }
   .heading-with-note { align-items: start; }
   .outcome-grid, .operating-model, .speaker-grid, .involvement-paths { grid-template-columns: 1fr; }
   .outcome-grid article, .operating-model article, .speaker-card, .involvement-card { min-height: 0; }
