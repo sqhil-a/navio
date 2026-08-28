@@ -66,6 +66,8 @@ button, select { cursor: pointer; }
 ::selection { background: var(--fuchsia); color: var(--white); }
 :focus-visible { outline: 3px solid var(--orchid); outline-offset: 4px; }
 
+.access-gate[hidden], .utility-shell[hidden] { display: none !important; }
+
 .access-gate {
   display: grid;
   min-height: 100vh;

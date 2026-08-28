@@ -33,7 +33,9 @@ const hashValue = async (value) => {
 const openGenerator = () => {
   accessGate.hidden = true;
   generatorShell.hidden = false;
-  nameInput.focus();
+  generatorShell.focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+  window.requestAnimationFrame(() => window.scrollTo(0, 0));
 };
 
 accessForm.addEventListener("submit", async (event) => {
