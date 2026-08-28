@@ -91,12 +91,9 @@ button, select { cursor: pointer; }
 .access-gate-panel .eyebrow { margin: 0 0 .75rem; color: var(--orchid); font-size: .68rem; font-weight: 780; letter-spacing: .16em; text-transform: uppercase; }
 .access-gate-panel h1 { margin: 0 0 1rem; color: var(--white); font-size: clamp(2.25rem, 7vw, 3.8rem); font-weight: 780; letter-spacing: -.065em; line-height: .95; }
 .access-gate-panel > p:not(.eyebrow, .access-note) { margin: 0; color: var(--ink-soft); line-height: 1.6; }
-.access-gate-panel form { display: grid; gap: .55rem; margin-top: 2rem; }
-.access-gate-panel label { color: var(--ink-soft); font-size: .77rem; font-weight: 720; }
-.access-gate-panel input { min-height: 3.35rem; padding: 0 1rem; border: 1px solid var(--line-strong); border-radius: .85rem; outline: 0; background: rgba(56, 56, 66, .9); color: var(--white); transition: border-color 500ms var(--ease-soft), box-shadow 600ms var(--ease-soft), transform 650ms var(--ease-bloom); }
-.access-gate-panel input:focus { border-color: var(--orchid); box-shadow: 0 0 0 4px rgba(191, 102, 173, .13); transform: translateY(-1px); }
-.access-gate-panel button { display: flex; min-height: 3.4rem; align-items: center; justify-content: space-between; margin-top: .65rem; padding: 0 1.1rem 0 1.2rem; border: 1px solid transparent; border-radius: .85rem; background: linear-gradient(135deg, var(--magenta), var(--fuchsia)); box-shadow: 0 1rem 2.4rem rgba(140, 56, 128, .26); color: var(--white); font-weight: 740; transition: transform 680ms var(--ease-bloom), box-shadow 720ms var(--ease-silk); }
-.access-gate-panel button:hover { box-shadow: 0 1.3rem 3rem rgba(140, 56, 128, .34); transform: translateY(-3px) scale(1.008); }
+.google-auth { display: grid; min-height: 4.7rem; align-content: start; justify-items: start; gap: .55rem; margin-top: 2rem; }
+#google-signin-button { min-height: 2.75rem; overflow: hidden; border-radius: 999px; box-shadow: 0 1rem 2.4rem rgba(18, 15, 22, .22); transition: transform 680ms var(--ease-bloom), box-shadow 720ms var(--ease-silk); }
+#google-signin-button:hover { box-shadow: 0 1.3rem 3rem rgba(18, 15, 22, .32); transform: translateY(-2px) scale(1.006); }
 .access-error { min-height: 1.15rem; margin: .15rem 0 0; color: #ffb0c3; font-size: .75rem; }
 .access-note { margin: 1.4rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .76rem; line-height: 1.55; }
 

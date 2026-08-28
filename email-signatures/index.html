@@ -17,14 +17,12 @@
         <span class="utility-wordmark" aria-hidden="true"></span>
         <p class="eyebrow">Restricted utility</p>
         <h1 id="access-title">Email signature access</h1>
-        <p>Enter the shared password to open the Navio Pathways email signature generator.</p>
-        <form id="access-form" novalidate>
-          <label for="access-password">Password</label>
-          <input id="access-password" name="accessPassword" type="password" autocomplete="current-password" required />
-          <button type="submit">Continue <span aria-hidden="true">↗</span></button>
+        <p>Sign in with your Navio Pathways Google account to open the email signature generator.</p>
+        <div class="google-auth" id="google-auth">
+          <div id="google-signin-button" aria-label="Sign in with Google"></div>
           <p class="access-error" id="access-error" role="alert" aria-live="polite"></p>
-        </form>
-        <p class="access-note">Access is checked only in this browser. Nothing is saved or sent.</p>
+        </div>
+        <p class="access-note">Only Google Workspace accounts managed by naviopathways.com can continue.</p>
       </div>
     </section>
 
@@ -111,6 +109,7 @@
       </section>
     </main>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="./script.js" defer></script>
   </body>
 </html>
