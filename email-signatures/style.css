@@ -103,6 +103,8 @@ button, select { cursor: pointer; }
   padding: 0 0 clamp(4rem, 8vw, 7rem);
 }
 
+.utility-shell:focus { outline: none; }
+
 .utility-header {
   display: flex;
   min-height: 5.4rem;
