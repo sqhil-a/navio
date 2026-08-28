@@ -224,12 +224,12 @@ const signatureMarkup = (fullName, role) => `
 <table cellpadding="0" cellspacing="0" border="0"
        style="font-family: Arial, Helvetica, sans-serif; color:#111111;">
   <tr>
-    <td style="vertical-align:middle; padding-right:12px;">
+    <td style="vertical-align:middle; padding-right:14px;">
       <img
         src="https://sqhil-a.github.io/navio/assets/email-signature.png"
         alt="Navio Pathways"
-        width="88"
-        style="display:block; width:88px; height:auto; border:0;"
+        width="100"
+        style="display:block; width:100px; height:auto; border:0;"
       >
     </td>
     <td
@@ -238,31 +238,31 @@ const signatureMarkup = (fullName, role) => `
     >
       &nbsp;
     </td>
-    <td style="vertical-align:middle; padding-left:12px;">
+    <td style="vertical-align:middle; padding-left:14px;">
       <div style="
-        font-size:17px;
-        line-height:20px;
+        font-size:19px;
+        line-height:22px;
         font-weight:700;
         color:#111111;
       ">${fullName}</div>
       <div style="
         margin-top:1px;
-        font-size:11.5px;
-        line-height:15px;
+        font-size:12px;
+        line-height:16px;
         font-weight:600;
         color:#6257ff;
       ">${role}</div>
       <div style="
         margin-top:3px;
-        font-size:13.5px;
-        line-height:16px;
+        font-size:14.5px;
+        line-height:17px;
         font-weight:700;
         color:#111111;
       ">Navio Pathways</div>
       <div style="
         margin-top:1px;
-        font-size:8px;
-        line-height:10.5px;
+        font-size:8.5px;
+        line-height:11.5px;
         font-weight:600;
         letter-spacing:0.9px;
         color:#777777;
@@ -275,9 +275,9 @@ const signatureMarkup = (fullName, role) => `
               <img
                 src="https://sqhil-a.github.io/navio/assets/website.png"
                 alt="Website"
-                width="28"
-                height="28"
-                style="display:block; width:28px; height:28px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
@@ -286,9 +286,9 @@ const signatureMarkup = (fullName, role) => `
               <img
                 src="https://sqhil-a.github.io/navio/assets/linkedin.png"
                 alt="LinkedIn"
-                width="28"
-                height="28"
-                style="display:block; width:28px; height:28px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
@@ -297,9 +297,9 @@ const signatureMarkup = (fullName, role) => `
               <img
                 src="https://sqhil-a.github.io/navio/assets/instagram.png"
                 alt="Instagram"
-                width="28"
-                height="28"
-                style="display:block; width:28px; height:28px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
