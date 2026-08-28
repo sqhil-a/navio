@@ -275,9 +275,8 @@ img, svg { display: block; max-width: 100%; }
 .mobile-menu.is-open a:nth-child(5) { transition-delay: 500ms; }
 .mobile-menu nav a:hover, .mobile-menu nav a:focus-visible { padding-inline: 1rem; background: rgba(255, 255, 255, .045); color: var(--white); }
 .mobile-menu-index { color: var(--lilac); font-size: .68rem; font-weight: 760; letter-spacing: .12em; }
-.mobile-menu-copy { display: grid; gap: .22rem; }
+.mobile-menu-copy { display: block; }
 .mobile-menu-copy strong { font-size: clamp(1.9rem, 5vw, 4rem); font-weight: 730; letter-spacing: -.055em; line-height: 1; }
-.mobile-menu-copy small { color: var(--muted); font-size: clamp(.7rem, 1.4vw, .86rem); font-weight: 520; letter-spacing: 0; }
 .mobile-menu-arrow {
   display: grid;
   width: clamp(2.3rem, 4vw, 3.2rem);
@@ -830,7 +829,6 @@ img, svg { display: block; max-width: 100%; }
   .mobile-menu-inner { width: min(calc(100% - 2rem), var(--container)); padding-bottom: 1.25rem; }
   .mobile-menu a { min-height: 4.45rem; grid-template-columns: 2.25rem minmax(0, 1fr) auto; }
   .mobile-menu-copy strong { font-size: clamp(1.75rem, 9vw, 2.5rem); }
-  .mobile-menu-copy small { font-size: .65rem; }
   .mobile-menu-meta { align-items: flex-start; flex-direction: column; gap: .3rem; letter-spacing: .07em; }
   .hero-shell { padding-bottom: 3rem; }
   .hero-kicker { min-height: 3rem; margin-bottom: 3rem; }

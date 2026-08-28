@@ -4,11 +4,11 @@ import { pageContent } from "./page-content.js";
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
 const primaryNav = [
-  { label: "About", href: "/about/", description: "Mission, story, and organization" },
-  { label: "Programs", href: "/programs/", description: "Youth experiences and annual programs" },
-  { label: "Resources", href: "/resources/", description: "Practical tools for next steps" },
-  { label: "Get involved", href: "/get-involved/", description: "Contribute, collaborate, and support" },
-  { label: "Contact", href: "/contact/", description: "Questions and general inquiries" },
+  { label: "About", href: "/about/" },
+  { label: "Programs", href: "/programs/" },
+  { label: "Resources", href: "/resources/" },
+  { label: "Get involved", href: "/get-involved/" },
+  { label: "Contact", href: "/contact/" },
 ];
 const exploreLinks = [
   ["About", "/about/"],
@@ -62,10 +62,10 @@ function Header({ path }) {
           <div className="mobile-menu-inner">
             <p className="mobile-menu-kicker">Choose a direction</p>
             <nav aria-label="Mobile navigation">
-            {primaryNav.map(({ label, href, description }, index) => (
+            {primaryNav.map(({ label, href }, index) => (
               <a key={`${label}-${href}`} href={href} aria-current={activeHref === href ? "page" : undefined}>
                 <span className="mobile-menu-index" aria-hidden="true">0{index + 1}</span>
-                <span className="mobile-menu-copy"><strong>{label}</strong><small>{description}</small></span>
+                <span className="mobile-menu-copy"><strong>{label}</strong></span>
                 <span className="mobile-menu-arrow" aria-hidden="true">↗</span>
               </a>
             ))}
