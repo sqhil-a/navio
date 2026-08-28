@@ -9,6 +9,13 @@ const ROLES = Object.freeze([
   "Chief Technology Officer",
 ]);
 
+const ACCESS_HASH = "60fa97d2e22292b50d431ba0a7ca35fbf6a250a6426485e63d522a52924905e4";
+const accessGate = document.querySelector("#access-gate");
+const generatorShell = document.querySelector("#signature-generator");
+const accessForm = document.querySelector("#access-form");
+const accessPassword = document.querySelector("#access-password");
+const accessError = document.querySelector("#access-error");
+
 const form = document.querySelector("#signature-form");
 const nameInput = document.querySelector("#full-name");
 const roleSelect = document.querySelector("#role");
@@ -16,6 +23,38 @@ const nameError = document.querySelector("#name-error");
 const roleError = document.querySelector("#role-error");
 const formStatus = document.querySelector("#form-status");
 const preview = document.querySelector("#signature-preview");
+
+const hashValue = async (value) => {
+  const encoded = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", encoded);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
+const openGenerator = () => {
+  accessGate.hidden = true;
+  generatorShell.hidden = false;
+  nameInput.focus();
+};
+
+accessForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  accessError.textContent = "";
+  const enteredPassword = accessPassword.value;
+  if (!enteredPassword) {
+    accessError.textContent = "Enter the shared password.";
+    accessPassword.focus();
+    return;
+  }
+
+  const enteredHash = await hashValue(enteredPassword);
+  accessPassword.value = "";
+  if (enteredHash !== ACCESS_HASH) {
+    accessError.textContent = "That password is not recognized.";
+    accessPassword.focus();
+    return;
+  }
+  openGenerator();
+});
 
 const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({
   "&": "&amp;",
