@@ -5,7 +5,7 @@ const ROLES = Object.freeze([
   "Chief Growth Officer",
   "Chief Financial Officer",
   "Chief Marketing Officer",
-  "Chief Experience Officer",
+  "Chief Program Officer",
   "Chief Technology Officer",
 ]);
 
