@@ -22,7 +22,7 @@
           <div id="google-signin-button" aria-label="Sign in with Google"></div>
           <p class="access-error" id="access-error" role="alert" aria-live="polite"></p>
         </div>
-        <p class="access-note">Only Google Workspace accounts managed by naviopathways.com can continue.</p>
+        <p class="access-note">Only naviopathways.com accounts can continue. This browser remembers your sign-in until you sign out.</p>
       </div>
     </section>
 
@@ -31,7 +31,21 @@
         <a class="utility-brand" href="https://naviopathways.com/" aria-label="Navio Pathways home">
           <span class="utility-wordmark" aria-hidden="true"></span>
         </a>
-        <p>Internal utility</p>
+        <div class="account-menu" id="account-menu">
+          <button class="account-trigger" id="account-trigger" type="button" aria-label="Open account menu" aria-expanded="false" aria-controls="account-popover">
+            <img id="account-avatar" alt="" referrerpolicy="no-referrer" hidden />
+            <span id="account-initials" aria-hidden="true">N</span>
+          </button>
+          <div class="account-popover" id="account-popover" hidden>
+            <p>Signed in as</p>
+            <strong id="account-name">Navio account</strong>
+            <span id="account-email"></span>
+            <button class="sign-out-button" id="sign-out-button" type="button">
+              <span>Sign out</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </div>
       </header>
 
       <section class="utility-intro" aria-labelledby="page-title">

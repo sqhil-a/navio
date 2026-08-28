@@ -11,10 +11,19 @@ const ROLES = Object.freeze([
 
 const GOOGLE_CLIENT_ID = "83200696643-5s4mukedu7n1kco61m9jpc012lnphp94.apps.googleusercontent.com";
 const REQUIRED_DOMAIN = "naviopathways.com";
+const SAVED_ACCOUNT_KEY = "navio-google-account";
 const accessGate = document.querySelector("#access-gate");
 const generatorShell = document.querySelector("#signature-generator");
 const accessError = document.querySelector("#access-error");
 const googleSignInButton = document.querySelector("#google-signin-button");
+const accountMenu = document.querySelector("#account-menu");
+const accountTrigger = document.querySelector("#account-trigger");
+const accountPopover = document.querySelector("#account-popover");
+const accountAvatar = document.querySelector("#account-avatar");
+const accountInitials = document.querySelector("#account-initials");
+const accountName = document.querySelector("#account-name");
+const accountEmail = document.querySelector("#account-email");
+const signOutButton = document.querySelector("#sign-out-button");
 
 const form = document.querySelector("#signature-form");
 const nameInput = document.querySelector("#full-name");
@@ -24,7 +33,60 @@ const roleError = document.querySelector("#role-error");
 const formStatus = document.querySelector("#form-status");
 const preview = document.querySelector("#signature-preview");
 
-const openGenerator = () => {
+const initialsFor = (name) => String(name || "Navio")
+  .trim()
+  .split(/\s+/)
+  .slice(0, 2)
+  .map((part) => part[0])
+  .join("")
+  .toUpperCase();
+
+const showAccount = (account) => {
+  accountName.textContent = account.name || "Navio account";
+  accountEmail.textContent = account.email;
+  accountInitials.textContent = initialsFor(account.name);
+  if (account.picture?.startsWith("https://")) {
+    accountAvatar.src = account.picture;
+    accountAvatar.alt = `${account.name || "Navio account"} profile picture`;
+    accountAvatar.hidden = false;
+    accountInitials.hidden = true;
+  } else {
+    accountAvatar.removeAttribute("src");
+    accountAvatar.hidden = true;
+    accountInitials.hidden = false;
+  }
+};
+
+const saveAccount = (claims) => {
+  const account = {
+    name: String(claims.name || "Navio account"),
+    email: String(claims.email || "").toLowerCase(),
+    picture: String(claims.picture || ""),
+    sub: String(claims.sub || ""),
+    hd: String(claims.hd || ""),
+  };
+  try {
+    localStorage.setItem(SAVED_ACCOUNT_KEY, JSON.stringify(account));
+  } catch {
+    // The utility still works when private browsing blocks local storage.
+  }
+  return account;
+};
+
+const readSavedAccount = () => {
+  try {
+    const account = JSON.parse(localStorage.getItem(SAVED_ACCOUNT_KEY));
+    const validAccount = account?.hd === REQUIRED_DOMAIN
+      && account?.email?.endsWith(`@${REQUIRED_DOMAIN}`)
+      && Boolean(account?.sub);
+    return validAccount ? account : null;
+  } catch {
+    return null;
+  }
+};
+
+const openGenerator = (account) => {
+  showAccount(account);
   accessGate.hidden = true;
   generatorShell.hidden = false;
   generatorShell.focus({ preventScroll: true });
@@ -57,15 +119,29 @@ const handleGoogleCredential = (response) => {
     }
 
     accessError.textContent = "";
-    openGenerator();
+    openGenerator(saveAccount(claims));
   } catch {
     accessError.textContent = "Google sign-in could not be verified. Please try again.";
   }
 };
 
+const renderGoogleButton = () => {
+  if (!window.google?.accounts?.id) return;
+  googleSignInButton.replaceChildren();
+  window.google.accounts.id.renderButton(googleSignInButton, {
+      type: "standard",
+      theme: "filled_black",
+      size: "large",
+      text: "signin_with",
+      shape: "pill",
+      logo_alignment: "left",
+      width: Math.min(360, Math.max(240, googleSignInButton.clientWidth || 320)),
+  });
+};
+
 const initializeGoogleSignIn = () => {
   if (!window.google?.accounts?.id) {
-    accessError.textContent = "Google sign-in could not load. Check your connection and refresh the page.";
+    if (generatorShell.hidden) accessError.textContent = "Google sign-in could not load. Check your connection and refresh the page.";
     return;
   }
 
@@ -75,16 +151,52 @@ const initializeGoogleSignIn = () => {
     hd: REQUIRED_DOMAIN,
     auto_select: false,
   });
-  window.google.accounts.id.renderButton(googleSignInButton, {
-    type: "standard",
-    theme: "filled_black",
-    size: "large",
-    text: "signin_with",
-    shape: "pill",
-    logo_alignment: "left",
-    width: Math.min(360, Math.max(240, googleSignInButton.clientWidth || 320)),
-  });
+  if (generatorShell.hidden) renderGoogleButton();
 };
+
+const closeAccountMenu = () => {
+  accountPopover.hidden = true;
+  accountTrigger.setAttribute("aria-expanded", "false");
+};
+
+accountTrigger.addEventListener("click", () => {
+  const shouldOpen = accountPopover.hidden;
+  accountPopover.hidden = !shouldOpen;
+  accountTrigger.setAttribute("aria-expanded", String(shouldOpen));
+});
+
+accountAvatar.addEventListener("error", () => {
+  accountAvatar.hidden = true;
+  accountInitials.hidden = false;
+});
+
+document.addEventListener("click", (event) => {
+  if (!accountMenu.contains(event.target)) closeAccountMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeAccountMenu();
+    accountTrigger.focus();
+  }
+});
+
+signOutButton.addEventListener("click", () => {
+  try {
+    localStorage.removeItem(SAVED_ACCOUNT_KEY);
+  } catch {
+    // There may be no available browser storage to clear.
+  }
+  closeAccountMenu();
+  generatorShell.hidden = true;
+  accessGate.hidden = false;
+  window.google?.accounts?.id?.disableAutoSelect();
+  renderGoogleButton();
+  window.scrollTo(0, 0);
+});
+
+const savedAccount = readSavedAccount();
+if (savedAccount) openGenerator(savedAccount);
 
 window.addEventListener("load", initializeGoogleSignIn, { once: true });
 
