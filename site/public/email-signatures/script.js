@@ -45,6 +45,7 @@ const showAccount = (account) => {
   accountName.textContent = account.name || "Navio account";
   accountEmail.textContent = account.email;
   accountInitials.textContent = initialsFor(account.name);
+  if (!nameInput.value.trim() && account.name) nameInput.value = account.name;
   if (account.picture?.startsWith("https://")) {
     accountAvatar.src = account.picture;
     accountAvatar.alt = `${account.name || "Navio account"} profile picture`;
@@ -120,6 +121,7 @@ const handleGoogleCredential = (response) => {
 
     accessError.textContent = "";
     openGenerator(saveAccount(claims));
+    updatePreview();
   } catch {
     accessError.textContent = "Google sign-in could not be verified. Please try again.";
   }
