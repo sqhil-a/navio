@@ -6,14 +6,18 @@ const header = document.querySelector(".site-header");
 const toggle = document.querySelector(".menu-toggle");
 const menu = document.getElementById("mobile-menu");
 
-const setMenuOpen = (open) => {
+let menuTrigger = null;
+const setMenuOpen = (open, restoreFocus = false) => {
   if (!toggle || !menu) return;
+  if (open) menuTrigger = document.activeElement;
   toggle.classList.toggle("is-open", open);
   toggle.setAttribute("aria-expanded", String(open));
   toggle.querySelector(".sr-only").textContent = `${open ? "Close" : "Open"} navigation menu`;
   menu.classList.toggle("is-open", open);
   menu.setAttribute("aria-hidden", String(!open));
   document.body.classList.toggle("menu-open", open);
+  if (open) window.requestAnimationFrame(() => menu.querySelector("a")?.focus());
+  else if (restoreFocus && menuTrigger instanceof HTMLElement) menuTrigger.focus();
 };
 
 toggle?.addEventListener("click", () => {
@@ -25,8 +29,24 @@ menu?.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") setMenuOpen(false);
+  const menuIsOpen = toggle?.getAttribute("aria-expanded") === "true";
+  if (event.key === "Escape" && menuIsOpen) setMenuOpen(false, true);
+  if (event.key !== "Tab" || !menuIsOpen) return;
+  const focusable = [toggle, ...menu.querySelectorAll("a")];
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 });
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 1080 && toggle?.getAttribute("aria-expanded") === "true") setMenuOpen(false);
+}, { passive: true });
 
 let headerFrame = 0;
 const updateHeader = () => {

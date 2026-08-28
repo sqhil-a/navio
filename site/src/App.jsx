@@ -4,11 +4,11 @@ import { pageContent } from "./page-content.js";
 const email = "hello@naviopathways.com";
 const instagram = "https://www.instagram.com/naviopathways/";
 const primaryNav = [
-  ["About", "/about/"],
-  ["Programs", "/programs/"],
-  ["Resources", "/resources/"],
-  ["Get involved", "/get-involved/"],
-  ["Contact", "/contact/"],
+  { label: "About", href: "/about/", description: "Mission, story, and organization" },
+  { label: "Programs", href: "/programs/", description: "Youth experiences and annual programs" },
+  { label: "Resources", href: "/resources/", description: "Practical tools for next steps" },
+  { label: "Get involved", href: "/get-involved/", description: "Contribute, collaborate, and support" },
+  { label: "Contact", href: "/contact/", description: "Questions and general inquiries" },
 ];
 const exploreLinks = [
   ["About", "/about/"],
@@ -41,7 +41,7 @@ function Brand({ footer = false }) {
 }
 
 function Header({ path }) {
-  const activeHref = primaryNav.find(([, href]) => path.startsWith(href))?.[1];
+  const activeHref = primaryNav.find(({ href }) => path.startsWith(href))?.href;
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -49,7 +49,7 @@ function Header({ path }) {
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Primary navigation">
-            {primaryNav.map(([label, href]) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
+            {primaryNav.map(({ label, href }) => <a key={href} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>)}
           </nav>
           <div className="header-actions">
             <button className="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -59,11 +59,22 @@ function Header({ path }) {
           </div>
         </div>
         <div className="mobile-menu" id="mobile-menu" aria-hidden="true">
-          <nav aria-label="Mobile navigation">
-            {primaryNav.map(([label, href]) => (
-              <a key={`${label}-${href}`} href={href} aria-current={activeHref === href ? "page" : undefined}>{label}</a>
+          <div className="mobile-menu-inner">
+            <p className="mobile-menu-kicker">Choose a direction</p>
+            <nav aria-label="Mobile navigation">
+            {primaryNav.map(({ label, href, description }, index) => (
+              <a key={`${label}-${href}`} href={href} aria-current={activeHref === href ? "page" : undefined}>
+                <span className="mobile-menu-index" aria-hidden="true">0{index + 1}</span>
+                <span className="mobile-menu-copy"><strong>{label}</strong><small>{description}</small></span>
+                <span className="mobile-menu-arrow" aria-hidden="true">↗</span>
+              </a>
             ))}
-          </nav>
+            </nav>
+            <div className="mobile-menu-meta">
+              <p>Ontario incorporated not-for-profit</p>
+              <a href={`mailto:${email}`}>{email}</a>
+            </div>
+          </div>
         </div>
       </header>
     </>
