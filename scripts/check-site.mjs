@@ -17,6 +17,7 @@ for (const root of roots) {
     const file = join(root, route);
     if (!existsSync(file)) { errors.push(`${file} is missing`); continue; }
     const html = readFileSync(file, "utf8");
+    if (html.includes("/email-signatures/")) errors.push(`${file} exposes the private email signature utility`);
     for (const expected of ["<title>", "name=\"description\"", "rel=\"canonical\"", "id=\"root\"", "<h1"]) {
       if (!html.includes(expected)) errors.push(`${file} is missing ${expected}`);
     }
@@ -71,6 +72,25 @@ for (const root of roots) {
   }
   const programWords = programs.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").trim().split(/\s+/).length;
   if (programWords < 350) errors.push(`${join(root, "programs/index.html")} is too thin at ${programWords} rendered words`);
+
+  const signatureRoot = join(root, "email-signatures");
+  for (const filename of ["index.html", "style.css", "script.js"]) {
+    if (!existsSync(join(signatureRoot, filename))) errors.push(`${join(signatureRoot, filename)} is missing`);
+  }
+  if (existsSync(join(signatureRoot, "index.html"))) {
+    const signaturePage = readFileSync(join(signatureRoot, "index.html"), "utf8");
+    for (const expected of ["Navio Email Signature Generator", "noindex, nofollow", "id=\"full-name\"", "id=\"role\"", "Generate Signature", "./script.js"]) {
+      if (!signaturePage.includes(expected)) errors.push(`${join(signatureRoot, "index.html")} is missing ${expected}`);
+    }
+  }
+  if (existsSync(join(signatureRoot, "script.js"))) {
+    const signatureScript = readFileSync(join(signatureRoot, "script.js"), "utf8");
+    for (const expected of ["const ROLES", "escapeHtml", "window.open", "document.write", "https://naviopathways.com", "https://www.linkedin.com/company/navio-pathways/", "https://www.instagram.com/naviopathways/"]) {
+      if (!signatureScript.includes(expected)) errors.push(`${join(signatureRoot, "script.js")} is missing ${expected}`);
+    }
+  }
+  const sitemap = readFileSync(join(root, "sitemap.xml"), "utf8");
+  if (sitemap.includes("email-signatures")) errors.push(`${join(root, "sitemap.xml")} exposes the private email signature utility`);
 }
 
 if (errors.length) {
