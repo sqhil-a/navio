@@ -78,60 +78,60 @@ const signatureMarkup = (fullName, role) => `
 <table cellpadding="0" cellspacing="0" border="0"
        style="font-family: Arial, Helvetica, sans-serif; color:#111111;">
   <tr>
-    <td style="vertical-align:middle; padding-right:18px;">
+    <td style="vertical-align:middle; padding-right:14px;">
       <img
         src="https://sqhil-a.github.io/navio/assets/email-signature.png"
         alt="Navio Pathways"
-        width="120"
-        style="display:block; width:120px; height:auto; border:0;"
+        width="84"
+        style="display:block; width:84px; height:auto; border:0;"
       >
     </td>
     <td
-      width="2"
-      style="width:2px; background-color:#6257ff; font-size:1px; line-height:1px;"
+      width="1"
+      style="width:1px; background-color:#6257ff; font-size:1px; line-height:1px;"
     >
       &nbsp;
     </td>
-    <td style="vertical-align:middle; padding-left:20px;">
+    <td style="vertical-align:middle; padding-left:14px;">
       <div style="
-        font-size:22px;
-        line-height:26px;
+        font-size:16px;
+        line-height:20px;
         font-weight:700;
         color:#111111;
       ">${fullName}</div>
       <div style="
-        margin-top:2px;
-        font-size:14px;
-        line-height:19px;
+        margin-top:1px;
+        font-size:11px;
+        line-height:14px;
         font-weight:600;
         color:#6257ff;
       ">${role}</div>
       <div style="
-        margin-top:6px;
-        font-size:16px;
-        line-height:20px;
+        margin-top:4px;
+        font-size:13px;
+        line-height:16px;
         font-weight:700;
         color:#111111;
       ">Navio Pathways</div>
       <div style="
         margin-top:1px;
-        font-size:10px;
-        line-height:14px;
+        font-size:8px;
+        line-height:10px;
         font-weight:600;
-        letter-spacing:1.3px;
+        letter-spacing:1.1px;
         color:#777777;
         text-transform:uppercase;
       ">Guiding Youth. Shaping Futures.</div>
-      <table cellpadding="0" cellspacing="0" border="0" style="margin-top:10px;">
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-top:7px;">
         <tr>
           <td style="padding-right:8px;">
             <a href="https://naviopathways.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
               <img
                 src="https://sqhil-a.github.io/navio/assets/website.png"
                 alt="Website"
-                width="42"
-                height="42"
-                style="display:block; width:42px; height:42px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
@@ -140,9 +140,9 @@ const signatureMarkup = (fullName, role) => `
               <img
                 src="https://sqhil-a.github.io/navio/assets/linkedin.png"
                 alt="LinkedIn"
-                width="42"
-                height="42"
-                style="display:block; width:42px; height:42px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
@@ -151,9 +151,9 @@ const signatureMarkup = (fullName, role) => `
               <img
                 src="https://sqhil-a.github.io/navio/assets/instagram.png"
                 alt="Instagram"
-                width="42"
-                height="42"
-                style="display:block; width:42px; height:42px; border:0;"
+                width="30"
+                height="30"
+                style="display:block; width:30px; height:30px; border:0;"
               >
             </a>
           </td>
